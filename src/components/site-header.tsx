@@ -1,6 +1,8 @@
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 
 const SiteHeader = () => {
   const ref = useRef<HTMLElement>(null);
@@ -124,7 +126,77 @@ const SiteHeader = () => {
           </div> */}
 
           <div className="flex space-between items-center space-x-4">
-            <HamburgerMenuIcon className="w-5 h-5" />
+          <Sheet>
+              <SheetTrigger asChild>
+                <Button variant={"ghost"}>
+                  <HamburgerMenuIcon className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <div className="flex flex-col items-center justify-between gap-8">
+                  <Link
+                    to="/"
+                    className={`duration-200 hover:text-neutral-900	 ${
+                      pathname === "/" 
+                        ? "text-neutral-900 underline"
+                        : "text-slate-950	"
+                    }`}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    to="/about"
+                    className={`duration-200 hover:text-neutral-900	 ${
+                      pathname === "/about"
+                           ? "text-neutral-900 underline"
+                        : "text-slate-950	"
+                    }`}
+                  >
+                    About us
+                  </Link>
+                  <Link
+                    to="/projects"
+                    className={`duration-200 hover:text-neutral-900	 ${
+                      pathname === "/projects"
+                        ? "text-neutral-900	"
+                        : "text-slate-950	"
+                    }`}
+                  >
+                    Exhibits
+                  </Link>
+                  <Link
+                    to="/museums"
+                    className={`duration-200 hover:text-neutral-900	 ${
+                      pathname === "/museums"
+                        ? "text-neutral-900	underline"
+                        : "text-slate-950	"
+                    }`}
+                  >
+                    Museums
+                  </Link>
+                  <Link
+                    to="/contact"
+                    className={`duration-200 hover:text-neutral-900	 ${
+                      pathname === "/contact"
+                        ? "text-neutral-900	"
+                        : "text-slate-950	"
+                    }`}
+                  >
+                    Events
+                  </Link>
+                  <Link
+                    to="/contact"
+                    className={`duration-200 hover:text-neutral-900	 ${
+                      pathname === "/contact"
+                        ? "text-neutral-900	"
+                        : "text-slate-950	"
+                    }`}
+                  >
+                    Contact Us
+                  </Link>
+                </div>
+              </SheetContent>
+            </Sheet>
             <Link
               to="/"
               className="text-md font-light antaliased py-4"
