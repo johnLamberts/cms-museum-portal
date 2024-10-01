@@ -1,4 +1,5 @@
 import HomeLayout from "@/layouts/home.layout";
+import LoginPage from "@/modules/authentication/login.page";
 import GeneralError from "@/modules/errors/general-error.page";
 import MoreAbout from "@/modules/landing-page/more-about.page";
 import Museums from "@/modules/landing-page/museums.page";
@@ -33,6 +34,19 @@ export const appRouter = createBrowserRouter([
         errorElement: <GeneralError />
       }
     ]
+  },
+  {
+    path: '/login',
+    Component: LoginPage
+  },
+  {
+    path: '/admin-dashboard',
+    lazy: async () => { 
+    const AppShell = await import('@/layouts/admin.layout');
+    return { Component: AppShell.default }
+    },
+    errorElement: <GeneralError />,
+  
   }
 
 ])

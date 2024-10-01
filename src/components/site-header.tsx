@@ -64,9 +64,9 @@ const SiteHeader = () => {
               Services
             </Link> */}
             <Link
-              to="/contact"
+              to="/login"
               className={`duration-200 hover:text-neutral-900	underline py-4 ${
-                pathname === "/contact" ? "text-neutral-900	" : "text-slate-950	"
+                pathname === "/login" ? "text-neutral-900	" : "text-slate-950	"
               }`}
             >
               Sign In
