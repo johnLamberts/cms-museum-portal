@@ -21,7 +21,9 @@ const SiteHeader = () => {
     return () => observer.disconnect();
   }, []);
 
+  
   const { pathname } = useLocation();
+  console.log(pathname === "/home" )
   return (
     <header ref={ref}>
       <div
@@ -137,7 +139,7 @@ const SiteHeader = () => {
                   <Link
                     to="/"
                     className={`duration-200 hover:text-neutral-900	 ${
-                      pathname === "/" 
+                      pathname === "/"  ||  pathname === "/home" 
                         ? "text-neutral-900 underline"
                         : "text-slate-950	"
                     }`}

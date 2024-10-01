@@ -67,7 +67,6 @@ const MoreAbout = () => {
                 title="Our Commitment"
                 description="We are committed to preserving and promoting the cultural legacy of Rizal Province. Our team works closely with local museums, historians, and cultural advocates to ensure the accuracy and quality of the information provided. We believe that knowledge is best shared, and we encourage visitors to explore, engage, and participate in our vibrant cultural scene"
               />
-              
       </div>
     </div>
 
