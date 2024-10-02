@@ -2,6 +2,7 @@ import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 
 const SiteHeader = () => {
@@ -195,6 +196,18 @@ const SiteHeader = () => {
                     }`}
                   >
                     Contact Us
+                  </Link>
+
+                  <Separator />
+                  <Link
+                    to="/login"
+                    className={`flex lg:hidden xl:hidden duration-200 hover:text-neutral-900	 ${
+                      pathname === "/contact"
+                        ? "text-neutral-900	"
+                        : "text-slate-950	"
+                    }`}
+                  >
+                    Sign In
                   </Link>
                 </div>
               </SheetContent>

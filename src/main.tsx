@@ -6,7 +6,7 @@ import './index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <div className="">
+    <div className="bg-[#E7E5E1]">
       <RouterProvider router={appRouter} />
     </div>
   </StrictMode>,
