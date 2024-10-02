@@ -23,6 +23,7 @@ const LoginPage = () => {
           variant={"expandIcon"}
           iconPlacement="left"
           Icon={ArrowLeftIcon}
+          className="bg-[#0B0400]"
         >
           Back home
         </Button>
@@ -31,6 +32,7 @@ const LoginPage = () => {
           variant={"expandIcon"}
           iconPlacement="right"
           Icon={ArrowRightIcon}
+          className="bg-[#0B0400]"
         >
           Go to Admin UI
         </Button>
@@ -88,7 +90,7 @@ const LoginPage = () => {
                     {...form.register("password")}
                   />
                 </div>
-                <Button variant={"gooeyRight"}>Sign In</Button>
+                <Button variant={"gooeyRight"} className="bg-[#0B0400]">Sign In</Button>
               </div>
             </form>
             <div className="relative">

@@ -1,4 +1,8 @@
+import AdminLayout from "@/layouts/admin.layout";
 import HomeLayout from "@/layouts/home.layout";
+import UserForm from "@/modules/admin/user-management/user-form";
+import UsersList from "@/modules/admin/user-management/users-list";
+import UsersPage from "@/modules/admin/user-management/users.page";
 import LoginPage from "@/modules/authentication/login.page";
 import GeneralError from "@/modules/errors/general-error.page";
 import MoreAbout from "@/modules/landing-page/more-about.page";
@@ -46,7 +50,28 @@ export const appRouter = createBrowserRouter([
     return { Component: AppShell.default }
     },
     errorElement: <GeneralError />,
-  
+    children: [
+      {
+        index: true,
+        Component: AdminLayout
+      },
+      {
+        path: 'users',
+        Component: UsersPage,
+        children: [
+         
+          {
+            index: true,
+            Component: UsersList
+          }, 
+          {
+            path: 'add_form',
+            Component: UserForm
+          }
+        ]
+      },
+      
+    ]
   }
 
 ])

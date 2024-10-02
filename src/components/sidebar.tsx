@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Cross1Icon, DashboardIcon, DoubleArrowLeftIcon, GearIcon, HamburgerMenuIcon, PersonIcon, RotateCounterClockwiseIcon } from "@radix-ui/react-icons";
-import { BackpackIcon, FileTextIcon, IdCardIcon, } from "lucide-react";
+import { CameraIcon, Cross1Icon, DashboardIcon, DoubleArrowLeftIcon, FilePlusIcon, GearIcon, HamburgerMenuIcon, HomeIcon, Pencil2Icon, PersonIcon, RotateCounterClockwiseIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { Layout, LayoutHeader } from "./layouts";
 import Navbar, { SideLink } from "./navbar";
@@ -19,54 +18,28 @@ export const sidelinks: SideLink[] = [
     icon: <DashboardIcon height={18} />,
   },
   {
-    title: "Product Management",
-    // label: "3",
-    href: "/products",
-    icon: <BackpackIcon height={18} />,
-  },
-  {
     title: "User Management",
     label: "9",
-    href: "/users",
+    href: "users",
     icon: <PersonIcon height={18} />,
   },
   {
-    title: "Customer Management",
+    title: "Museums",
     label: "9",
     href: "/customer-mgm",
-    icon: <PersonIcon height={18} />,
+    icon: <HomeIcon height={18} />,
   },
   {
-    title: "Transaction",
+    title: "Exhibits Management",
     label: "",
     href: "/transaction",
-    icon: <IdCardIcon height={18} />,
-    sub: [
-      {
-        title: "Place order",
-        label: "",
-        href: "/sign-in",
-        icon: <DashboardIcon height={18} />,
-      },
-      {
-        title: "Point of Sale",
-        label: "",
-        href: "/point-of-sale",
-        icon: <DashboardIcon height={18} />,
-      },
-      {
-        title: "Transaction List",
-        label: "",
-        href: "/forgot-password",
-        icon: <DashboardIcon height={18} />,
-      },
-    ],
+    icon: <CameraIcon height={18} />,
   },
   {
     title: "Reports",
     label: "10",
     href: "/requests",
-    icon: <FileTextIcon height={18} />,
+    icon: <FilePlusIcon height={18} />,
     sub: [
       {
         title: "Sales Report",
@@ -99,6 +72,12 @@ export const sidelinks: SideLink[] = [
         icon: <DashboardIcon height={18} />,
       },
     ],
+  },
+  {
+    title: "Audit Trail",
+    label: "",
+    href: "/transaction",
+    icon: <Pencil2Icon height={18} />,
   },
   {
     title: "Settings",
@@ -156,22 +135,24 @@ const Sidebar = ({ className, isCollapsed, setIsCollapsed }: SidebarProps) => {
           {/* Header */}
           <LayoutHeader className="sticky top-0 justify-between px-4 py-3 shadow md:px-4">
             <div className={`flex items-center ${!isCollapsed ? "gap-1" : ""}`}>
-              Logo
+              <img src="/mock/logo-ipsum.svg" className={`transition-all ${
+                  isCollapsed ? "h-4 w-4" : "h-8 w-8"
+                }`}
+            alt="" />
               <div
                 className={`flex flex-col justify-end truncate ${
                   isCollapsed ? "invisible w-0" : "visible w-auto"
                 }`}
               >
                 <span className="font-medium uppercase font-extrabold">
-                  KapeJuan
+                  Museo Rizal
                 </span>
-                <span className="text-xs italic">Coffee Shop</span>
               </div>
             </div>
 
             {/* Toggle Button in mobile */}
             <Button
-              variant="ghost"
+              variant="gooeyRight"
               size="icon"
               className="md:hidden"
               aria-label="Toggle Navigation"
