@@ -1,5 +1,7 @@
 import AdminLayout from "@/layouts/admin.layout";
 import HomeLayout from "@/layouts/home.layout";
+import MusuemsPage from "@/modules/admin/museums/musuems.page";
+import Municipalities from "@/modules/admin/settings/municipalities/municipalities.page";
 import UserForm from "@/modules/admin/user-management/user-form";
 import UsersList from "@/modules/admin/user-management/users-list";
 import UsersPage from "@/modules/admin/user-management/users.page";
@@ -55,23 +57,36 @@ export const appRouter = createBrowserRouter([
         index: true,
         Component: AdminLayout
       },
+      // Users
       {
         path: 'users',
         Component: UsersPage,
         children: [
-         
           {
             index: true,
             Component: UsersList
           }, 
+         
           {
             path: 'add_form',
+            Component: UserForm
+          },
+          {
+            path: 'update_form/:userid',
             Component: UserForm
           }
         ]
       },
-      
+      //Museums
+      {
+        path: 'museums',
+        Component: MusuemsPage
+      }
     ]
+  },
+  {
+    path: '/settings',
+    Component: Municipalities
   }
 
 ])

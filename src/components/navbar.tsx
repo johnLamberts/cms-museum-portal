@@ -103,6 +103,7 @@ const NavLink = ({
         buttonVariants({
           variant: checkActiveNav(href) ? "secondary" : "ghost",
           size: "sm",
+          className:  checkActiveNav(href) && "bg-[#927B6B]/95 italic"
         }),
         "h-12 justify-start text-wrap rounded-none px-6 relative z-0 overflow-hidden transition-all duration-500 after:absolute after:inset-0 after:-z-10 after:translate-x-[-150%] after:translate-y-[150%] after:scale-[2.5] after:rounded-[100%] after:bg-gradient-to-l from-zinc-400 after:transition-transform after:duration-1000  hover:after:translate-x-[0%] hover:after:translate-y-[0%] ",
         subLink && "h-10 w-full border-l border-l-slate-500 px-2 "

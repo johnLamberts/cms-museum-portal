@@ -26,7 +26,7 @@ export const sidelinks: SideLink[] = [
   {
     title: "Museums",
     label: "9",
-    href: "/customer-mgm",
+    href: "museums",
     icon: <HomeIcon height={18} />,
   },
   {
@@ -117,7 +117,7 @@ const Sidebar = ({ className, isCollapsed, setIsCollapsed }: SidebarProps) => {
     <>
       <aside
         className={cn(
-          `fixed left-0 right-0 top-0 z-50 w-full border-r-2 border-r-muted transition-[width] md:bottom-0 md:right-auto md:h-svh ${
+          `bg-[#E7E5E1] fixed left-0 right-0 top-0 z-50 w-full border-r-2 border-r-muted transition-[width] md:bottom-0 md:right-auto md:h-svh ${
             isCollapsed ? "md:w-14" : "md:w-72"
           }`,
           className
@@ -131,9 +131,9 @@ const Sidebar = ({ className, isCollapsed, setIsCollapsed }: SidebarProps) => {
           } w-full bg-black md:hidden`}
         />
 
-        <Layout>
+        <Layout  >
           {/* Header */}
-          <LayoutHeader className="sticky top-0 justify-between px-4 py-3 shadow md:px-4">
+          <LayoutHeader className="bg-[#E7E5E1] sticky top-0 justify-between px-4 py-3 shadow md:px-4">
             <div className={`flex items-center ${!isCollapsed ? "gap-1" : ""}`}>
               <img src="/mock/logo-ipsum.svg" className={`transition-all ${
                   isCollapsed ? "h-4 w-4" : "h-8 w-8"
@@ -167,7 +167,7 @@ const Sidebar = ({ className, isCollapsed, setIsCollapsed }: SidebarProps) => {
           {/* Navigation links */}
           <Navbar
             id="sidebar-menu"
-            className={`h-full flex-1 overflow-auto border ${
+            className={`bg-[#E7E5E1] h-full flex-1 overflow-auto border ${
               navOpened
                 ? "max-h-screen"
                 : "max-h-0 py-0 md:max-h-screen md:py-2"

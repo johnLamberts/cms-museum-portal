@@ -9,10 +9,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useParams } from "react-router-dom";
 const Users = () => {
 
   const { pathname } = useLocation();
+  const { userid } = useParams();
+
+  console.log(userid);
 
   
   const identifierCrumb = (): string => {
@@ -25,10 +28,11 @@ const Users = () => {
       finalName = "All Users"
     } else if (name === 'add_form') {
        finalName = "Create User"
+    } else if (userid !== undefined) {
+      finalName = "Modify User"
     }
 
     return finalName;
-
   }
 
   return (
