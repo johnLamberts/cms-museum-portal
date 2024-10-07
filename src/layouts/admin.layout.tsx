@@ -1,12 +1,13 @@
 import Sidebar from "@/components/sidebar";
 import useIsCollapsed from "@/hooks/useIsCollapsed";
+import LayoutPage from "@/modules/admin/layout.page";
 import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
   const [isCollapsed, setIsCollapsed] = useIsCollapsed();
   
   return (
-    <div className="relative h-full">
+    <div className="relative h-full bg-white">
         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />{" "}
         <div
           id="content"
@@ -14,7 +15,9 @@ const AdminLayout = () => {
             isCollapsed ? "md:ml-14" : "md:ml-72"
           } h-full`}
         >
-          <Outlet />
+          <LayoutPage>
+            <Outlet />
+          </LayoutPage>
         </div>
     </div>
   )

@@ -1,8 +1,9 @@
+import { Outlet } from "react-router-dom"
 
-const MusuemsPage = () => {
+const MusuemMgmPage = () => {
   return (
-    <div>MusuemsPage</div>
+    <Outlet />
   )
 }
 
-export default MusuemsPage
+export default MusuemMgmPage
