@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BubbleMenu as BaseBubbleMenu, useEditorState } from '@tiptap/react';
 import { useCallback, useState } from 'react';
 
@@ -25,12 +26,12 @@ export const LinkMenu = ({ editor, appendTo }: MenuProps): JSX.Element => {
   }, [])
 
   const onSetLink = useCallback(
-    (url: string, openInNewTab?: boolean) => {
+    (_url: string, _openInNewTab?: boolean) => {
       editor
         .chain()
         .focus()
         .extendMarkRange('link')
-        .setLink({ href: url, target: openInNewTab ? '_blank' : '' })
+        // .setLink({ href: url, target: openInNewTab ? '_blank' : '' })
         .run()
       setShowEdit(false)
     },
@@ -38,7 +39,7 @@ export const LinkMenu = ({ editor, appendTo }: MenuProps): JSX.Element => {
   )
 
   const onUnsetLink = useCallback(() => {
-    editor.chain().focus().extendMarkRange('link').unsetLink().run()
+    // editor.chain().focus().extendMarkRange('link').unsetLink().run()
     setShowEdit(false)
     return null
   }, [editor])
