@@ -69,7 +69,7 @@ const CreateUser = () => {
                 <span className="sr-only">Back</span>
               </Button>
               <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                John Lambert P. Asis
+                Jericho Sunga
               </h1>
               <Badge className="ml-auto sm:ml-0" variant="outline">
                 New User
