@@ -1,7 +1,7 @@
 import AdminLayout from "@/layouts/admin.layout";
 import HomeLayout from "@/layouts/home.layout";
+import MuseumContent from "@/modules/admin/museums/museum-content";
 import MuseumLists from "@/modules/admin/museums/museums-list";
-import MuseumForm from "@/modules/admin/museums/musuem-form";
 import MusuemMgmPage from "@/modules/admin/museums/musuems.page";
 import Municipalities from "@/modules/admin/settings/municipalities/municipalities.page";
 import UserForm from "@/modules/admin/user-management/user-form";
@@ -100,7 +100,7 @@ export const appRouter = createBrowserRouter([
   // For Musuem Form
   {
     path: '/musuem/add_museum',
-    Component: MuseumForm
+    Component: MuseumContent
   }
 
 ])

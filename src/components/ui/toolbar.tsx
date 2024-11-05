@@ -1,9 +1,9 @@
 import { ButtonHTMLAttributes, HTMLProps, forwardRef } from 'react'
 
 import { cn } from '@/lib/utils'
-import { Button, ButtonProps } from './Button'
-import { Surface } from './Surface'
-import { Tooltip } from './tooltip'
+import { Button, ButtonProps } from '../q_ui/button'
+import { Tooltip } from '../q_ui/tooltip'
+import { Surface } from '../surface'
 
 export type ToolbarWrapperProps = {
   shouldShowContent?: boolean
