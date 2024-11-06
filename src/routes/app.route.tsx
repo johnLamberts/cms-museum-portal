@@ -1,5 +1,8 @@
 import AdminLayout from "@/layouts/admin.layout";
 import HomeLayout from "@/layouts/home.layout";
+import ExhibitContentForm from "@/modules/admin/exhibits/exhibit-form.content";
+import ExhibitsList from "@/modules/admin/exhibits/exhibits-list";
+import ExhibitsPage from "@/modules/admin/exhibits/exhibits.page";
 import MuseumContent from "@/modules/admin/museums/museum-content";
 import MuseumLists from "@/modules/admin/museums/museums-list";
 import MusuemMgmPage from "@/modules/admin/museums/musuems.page";
@@ -9,6 +12,7 @@ import UsersList from "@/modules/admin/user-management/users-list";
 import UsersPage from "@/modules/admin/user-management/users.page";
 import LoginPage from "@/modules/authentication/login.page";
 import GeneralError from "@/modules/errors/general-error.page";
+import { default as ExhibitLandPage } from "@/modules/landing-page/exhibits.page";
 import MoreAbout from "@/modules/landing-page/more-about.page";
 import Museums from "@/modules/landing-page/museums.page";
 import { createBrowserRouter } from "react-router-dom";
@@ -39,6 +43,11 @@ export const appRouter = createBrowserRouter([
       {
         path: '/museums',
         Component: Museums,
+        errorElement: <GeneralError />
+      },
+      {
+        path: '/exhibits',
+        Component: ExhibitLandPage,
         errorElement: <GeneralError />
       }
     ]
@@ -89,6 +98,17 @@ export const appRouter = createBrowserRouter([
             Component: MuseumLists
           }
         ],
+      },
+       //Exhibits
+       {
+        path: 'exhibits_mgm',
+        Component: ExhibitsPage,
+        children: [
+          {
+            index: true,
+            Component: ExhibitsList
+          }
+        ],
       }
     ]
   },
@@ -101,7 +121,13 @@ export const appRouter = createBrowserRouter([
   {
     path: '/musuem/add_museum',
     Component: MuseumContent
+  },
+  // For Exhibit Form
+  {
+    path: '/exhibits_mgm/add_exhibit',
+    Component: ExhibitContentForm
   }
+
 
 ])
 

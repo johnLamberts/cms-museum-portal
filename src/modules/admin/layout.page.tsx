@@ -24,7 +24,9 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
        finalName = "All Museums"
     }  else if (name === 'add_museum') {
       finalName = "Create Museum"
-   }
+    } else if (name === 'exhibits_mgm') {
+      finalName = "All Exhibits "
+    }
 
     return finalName;
   }
@@ -40,7 +42,9 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
       finalName = "Users"
     } else if (name === 'museums') {
        finalName = "Museums"
-    }
+    } else if (name === 'exhibits_mgm') {
+      finalName = "Exhibits"
+   }
 
     return finalName;
   }

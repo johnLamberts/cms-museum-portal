@@ -10,20 +10,13 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import generatePassword from "@/lib/generaPassword";
 import { UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const UserForm = ({ form }: any) => {
+const ExhibitForm = ({ form }: any) => {
   const navigate = useNavigate();
   const { setFocus, setValue, formState } = form;
   const { errors } = formState;
@@ -62,7 +55,7 @@ const UserForm = ({ form }: any) => {
                   <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
                     <Card x-chunk="dashboard-07-chunk-0">
                       <CardHeader>
-                        <CardTitle>User Details</CardTitle>
+                        <CardTitle>Exhibit Details</CardTitle>
                         <CardDescription>
                           Basic details you might include when adding a user such as
                           name, and other information.
@@ -80,7 +73,7 @@ const UserForm = ({ form }: any) => {
                             /> */}
                             <FormField
                               control={form.control}
-                              name="firstName"
+                              name="exhibitName"
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Name <span className="text-red-600">*</span></FormLabel>
@@ -96,7 +89,7 @@ const UserForm = ({ form }: any) => {
                           <div className="grid gap-3">
                             <FormField
                                 control={form.control}
-                                name="middleName"
+                                name="description"
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Middle Name <span className="text-red-600">*</span></FormLabel>
@@ -122,77 +115,6 @@ const UserForm = ({ form }: any) => {
                                   </FormItem>
                                 )}
                               />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card x-chunk="dashboard-07-chunk-2">
-                      <CardHeader>
-                        <CardTitle>User Authentication</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-                          <div className="grid gap-3">
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Email <span className="text-red-600">*</span></FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="john.doe@example.com" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                            <div className="grid gap-3">
-                              <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Password <span className="text-red-600">*</span></FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="shadcn" type="password" disabled {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card x-chunk="dashboard-07-chunk-2">
-                      <CardHeader>
-                        <CardTitle>User Role</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-                          <div className="grid gap-1">
-                            <FormField
-                              control={form.control}
-                              name="userRole"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>User Role <span className="text-red-600">*</span></FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select a role to user" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="admin">Admin</SelectItem>
-                                      <SelectItem value="staff">Staff</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            /> 
                           </div>
                         </div>
                       </CardContent>
@@ -268,4 +190,4 @@ const UserForm = ({ form }: any) => {
         </main>
   );
 };
-export default UserForm;
+export default ExhibitForm;

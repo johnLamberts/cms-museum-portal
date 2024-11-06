@@ -158,7 +158,7 @@ const SiteHeader = () => {
                     About us
                   </Link>
                   <Link
-                    to="/projects"
+                    to="/exhibits"
                     className={`duration-200 hover:text-neutral-900	 ${
                       pathname === "/projects"
                         ? "text-neutral-900	"

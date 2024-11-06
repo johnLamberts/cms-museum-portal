@@ -19,58 +19,46 @@ export const sidelinks: SideLink[] = [
   },
   {
     title: "User Management",
-    label: "9",
+    label: "",
     href: "users",
     icon: <PersonIcon height={18} />,
   },
   {
     title: "Museums",
-    label: "9",
+    label: "",
     href: "museums",
     icon: <HomeIcon height={18} />,
   },
   {
     title: "Exhibits Management",
     label: "",
-    href: "/transaction",
+    href: "exhibits_mgm",
     icon: <CameraIcon height={18} />,
   },
   {
     title: "Reports",
-    label: "10",
+    label: "",
     href: "/requests",
     icon: <FilePlusIcon height={18} />,
     sub: [
       {
-        title: "Sales Report",
+        title: "Visitor Report",
         label: "9",
         href: "/trucks",
         icon: <DashboardIcon height={18} />,
       },
       {
-        title: "Inventory Report",
+        title: "User Report",
         label: "",
         href: "/cargos",
         icon: <DashboardIcon height={18} />,
       },
       {
-        title: "Customer Report",
+        title: "Exhibits Report",
         label: "",
         href: "/cargos",
         icon: <DashboardIcon height={18} />,
-      },
-      {
-        title: "Stock Report",
-        label: "",
-        href: "/cargos",
-        icon: <DashboardIcon height={18} />,
-      },
-      {
-        title: "Audit Trail",
-        label: "",
-        href: "/cargos",
-        icon: <DashboardIcon height={18} />,
-      },
+      }
     ],
   },
   {
