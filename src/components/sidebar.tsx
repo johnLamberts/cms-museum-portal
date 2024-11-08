@@ -14,7 +14,7 @@ export const sidelinks: SideLink[] = [
   {
     title: "Admin Dashboard",
     label: "",
-    href: "/dashboard-app",
+    href: "/admin-dashboard",
     icon: <DashboardIcon height={18} />,
   },
   {

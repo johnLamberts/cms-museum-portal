@@ -31,6 +31,8 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
     return finalName;
   }
 
+  console.log(identifierCrumb())
+
   const secondaryCrumb = (): string => {
     const lastRoute = pathname.split('/');
     const name = lastRoute[2];
@@ -48,6 +50,7 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
 
     return finalName;
   }
+
 
 
   return (
@@ -74,12 +77,19 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
                   {/* <Link href="#">Users</Link> */}
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="text-[#492309]">
-                  {identifierCrumb()}
-                </BreadcrumbPage>
-              </BreadcrumbItem>
+              {identifierCrumb().length < 2 ? 
+              "Welcome Admin, John"
+                
+              :
+              (<>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="text-[#492309]">
+                    {identifierCrumb()}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              </>)
+              }
             </BreadcrumbList>
           </Breadcrumb>
         }

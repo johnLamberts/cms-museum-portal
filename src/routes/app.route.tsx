@@ -1,5 +1,6 @@
-import AdminLayout from "@/layouts/admin.layout";
 import HomeLayout from "@/layouts/home.layout";
+import DashboardPage from "@/modules/admin/dashboard/dashboard.page";
+import OverviewDashboard from "@/modules/admin/dashboard/overview.dashboard";
 import ExhibitContentForm from "@/modules/admin/exhibits/exhibit-form.content";
 import ExhibitsList from "@/modules/admin/exhibits/exhibits-list";
 import ExhibitsPage from "@/modules/admin/exhibits/exhibits.page";
@@ -66,7 +67,22 @@ export const appRouter = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: AdminLayout
+        Component: DashboardPage
+      },
+      {
+        path: '/admin-dashboard',
+        Component: DashboardPage,
+        children: [
+          {
+            index: true,
+            Component: OverviewDashboard
+          },
+          {
+            path: 'overview',
+            Component: OverviewDashboard
+          },
+          
+        ]
       },
       // Users
       {
