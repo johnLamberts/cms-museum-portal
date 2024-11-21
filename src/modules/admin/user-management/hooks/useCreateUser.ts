@@ -14,7 +14,7 @@ export default function useCreateUser() {
           `Success! The ${(data).email} has been created successfully. `
         );
         queryClient.invalidateQueries({
-          queryKey: [CMS_KEYZ.CREATE_USERS_ADDED],
+          queryKey: [CMS_KEYZ.READ_CREATE_USERS_ADDED],
         });
       },
       onError: (err) => toast.error(err.message),
