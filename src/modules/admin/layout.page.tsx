@@ -1,5 +1,6 @@
 import { Layout, LayoutBody, LayoutHeader } from "@/components/layouts"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import { UserHeader } from "@/components/user-header"
 import { ReactNode } from "react"
 import { Link, useLocation, useParams } from "react-router-dom"
@@ -26,6 +27,10 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
       finalName = "Create Museum"
     } else if (name === 'exhibits_mgm') {
       finalName = "All Exhibits "
+    } else if (name === 'municipalities') {
+      finalName = "All Municipalities "
+    } else if (name === 'page_editor') {
+      finalName = "Maximize your landing page capability"
     }
 
     return finalName;
@@ -35,8 +40,10 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
 
   const secondaryCrumb = (): string => {
     const lastRoute = pathname.split('/');
-    const name = lastRoute[2];
+    
+    const name =lastRoute.length > 3 ? lastRoute[lastRoute.length - 1] : lastRoute[2] ; 
 
+    console.log(name)
     console.log(lastRoute)
     let finalName = "";
 
@@ -46,7 +53,14 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
        finalName = "Museums"
     } else if (name === 'exhibits_mgm') {
       finalName = "Exhibits"
-   }
+    } else if (name === 'visitors') {
+    finalName = "Visitor"
+    } else if (name === 'municipalities') {
+      finalName = "Municipality"
+    } else if (name === 'page_editor') {
+      finalName = "Page Editor"
+    }  
+     
 
     return finalName;
   }
@@ -56,6 +70,8 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
   return (
     <Layout>
     <LayoutHeader>
+    <SidebarTrigger className="-ml-1" />
+
       <UserHeader
         headerName={
           <Breadcrumb className="hidden md:flex">

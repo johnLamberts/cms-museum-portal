@@ -7,10 +7,18 @@ import ExhibitsPage from "@/modules/admin/exhibits/exhibits.page";
 import MuseumContent from "@/modules/admin/museums/museum-content";
 import MuseumLists from "@/modules/admin/museums/museums-list";
 import MusuemMgmPage from "@/modules/admin/museums/musuems.page";
-import Municipalities from "@/modules/admin/settings/municipalities/municipalities.page";
+import AboutEditor from "@/modules/admin/page-editor/about.editor";
+import HomeEditor from "@/modules/admin/page-editor/home.editor";
+import PageEditorPage from "@/modules/admin/page-editor/page-editor.page";
+import MunicipalitiesList from "@/modules/admin/settings/municipalities/municipalities-list";
+import MunicipalitiesPage from "@/modules/admin/settings/municipalities/municipalities.page";
+import SettingsPage from "@/modules/admin/settings/settings.page";
 import UserForm from "@/modules/admin/user-management/user-form";
 import UsersList from "@/modules/admin/user-management/users-list";
 import UsersPage from "@/modules/admin/user-management/users.page";
+import VisitorForm from "@/modules/admin/visitors/visitor-form";
+import VisitorList from "@/modules/admin/visitors/visitor-list";
+import VisitorPage from "@/modules/admin/visitors/visitor.page";
 import LoginPage from "@/modules/authentication/login.page";
 import GeneralError from "@/modules/errors/general-error.page";
 import { default as ExhibitLandPage } from "@/modules/landing-page/exhibits.page";
@@ -84,6 +92,27 @@ export const appRouter = createBrowserRouter([
           
         ]
       },
+
+      // Page editor
+      {
+        path: 'page_editor',
+        Component: PageEditorPage,
+        children: [
+          {
+            index: true,
+            Component: HomeEditor
+          },
+          {
+            path: 'homepage',
+            Component: HomeEditor
+          },
+          {
+            path: 'aboutpage',
+            Component: AboutEditor
+          },
+          
+        ]
+      },
       // Users
       {
         path: 'users',
@@ -101,6 +130,26 @@ export const appRouter = createBrowserRouter([
           {
             path: 'update_form/:userid',
             Component: UserForm
+          }
+        ]
+      },
+      // Visitors
+      {
+        path: 'visitors',
+        Component: VisitorPage,
+        children: [
+          {
+            index: true,
+            Component: VisitorList
+          }, 
+         
+          {
+            path: 'add_form',
+            Component: VisitorForm
+          },
+          {
+            path: 'update_form/:visitorId',
+            Component: VisitorForm
           }
         ]
       },
@@ -125,13 +174,30 @@ export const appRouter = createBrowserRouter([
             Component: ExhibitsList
           }
         ],
-      }
+      },
+      {
+        path: 'settings',
+        Component: SettingsPage,
+        children: [
+          {
+            index: true,
+            Component: MunicipalitiesPage
+          }, 
+          {
+            path: 'municipalities',
+            Component: MunicipalitiesPage,
+            children: [
+              {
+                index: true,
+                Component: MunicipalitiesList
+              }
+            ]
+          }
+        ]
+      },
     ]
   },
-  {
-    path: '/settings',
-    Component: Municipalities
-  },
+  
 
   // For Musuem Form
   {

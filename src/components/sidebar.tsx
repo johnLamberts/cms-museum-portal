@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { CameraIcon, Cross1Icon, DashboardIcon, DoubleArrowLeftIcon, FilePlusIcon, GearIcon, HamburgerMenuIcon, HomeIcon, Pencil2Icon, PersonIcon, RotateCounterClockwiseIcon } from "@radix-ui/react-icons";
+import { CameraIcon, Cross1Icon, DashboardIcon, DoubleArrowLeftIcon, FaceIcon, FilePlusIcon, GearIcon, HamburgerMenuIcon, HomeIcon, Pencil2Icon, PersonIcon, RotateCounterClockwiseIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { Layout, LayoutHeader } from "./layouts";
 import Navbar, { SideLink } from "./navbar";
@@ -24,6 +24,12 @@ export const sidelinks: SideLink[] = [
     icon: <PersonIcon height={18} />,
   },
   {
+    title: "Visitor Management",
+    label: "",
+    href: "visitors",
+    icon: <FaceIcon height={18} />,
+  },
+  {
     title: "Museums",
     label: "",
     href: "museums",
@@ -33,6 +39,12 @@ export const sidelinks: SideLink[] = [
     title: "Exhibits Management",
     label: "",
     href: "exhibits_mgm",
+    icon: <CameraIcon height={18} />,
+  },
+  {
+    title: "Page Editor",
+    label: "",
+    href: "page_editor",
     icon: <CameraIcon height={18} />,
   },
   {
@@ -70,7 +82,7 @@ export const sidelinks: SideLink[] = [
   {
     title: "Settings",
     label: "",
-    href: "/settings",
+    href: "settings",
     icon: <GearIcon height={18} />,
     sub: [
       {
@@ -80,9 +92,9 @@ export const sidelinks: SideLink[] = [
         icon: <DashboardIcon height={18} />,
       },
       {
-        title: "User Role",
+        title: "Municipalities",
         label: "9",
-        href: "/trucks",
+        href: "settings/municipalities",
         icon: <RotateCounterClockwiseIcon height={18} />,
       },
     ],

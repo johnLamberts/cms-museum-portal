@@ -9,9 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MoreHorizontalIcon, SearchIcon } from "lucide-react"
 import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
-import useUsers from "./hooks/useUsers"
-import UserContentForm from "./user-content.form"
-import { IUser } from "./user.interface"
+import useVisitors from "./hooks/useVisitor"
+import VisitorContentForm from "./visitor-content.form"
+import { IVisitor } from "./visitor.interface"
 
 
 // // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,22 +40,22 @@ const RoleBadge = ({ role }: { role: string }) => {
   );
 };
 
-const UsersList = () => {
+const VisitorList = () => {
   const navigate = useNavigate();
-  const { data: usersData, isLoading, error } = useUsers();
+  const { data: visitorsData, isLoading, error } = useVisitors();
 
-  const memoUsers = useMemo(() => {
-    return usersData?.data?.users || [];
-  }, [usersData]);
+  const memoVisitors = useMemo(() => {
+    return visitorsData?.data?.visitors || [];
+  }, [visitorsData]);
 
 
 
   const pagination = useMemo(() => ({
-    currentPage: usersData?.data?.currentPage?.page || 1,
-    totalPages: usersData?.data?.totalPages || 1,
-    totalDocs: usersData?.data?.totalDocs || 0,
-    limit: usersData?.data?.currentPage?.limit || 20
-  }), [usersData]);
+    currentPage: visitorsData?.data?.currentPage?.page || 1,
+    totalPages: visitorsData?.data?.totalPages || 1,
+    totalDocs: visitorsData?.data?.totalDocs || 0,
+    limit: visitorsData?.data?.currentPage?.limit || 20
+  }), [visitorsData]);
 
   console.log(pagination)
 
@@ -66,7 +66,7 @@ const UsersList = () => {
         <TableRow>
           <TableCell colSpan={6} className="h-[400px] text-center">
             <Spinner className="mx-auto" />
-            <span className="sr-only">Loading users...</span>
+            <span className="sr-only">Loading visitors...</span>
           </TableCell>
         </TableRow>
       );
@@ -76,31 +76,31 @@ const UsersList = () => {
       return (
         <TableRow>
           <TableCell colSpan={6} className="h-[400px] text-center text-red-500">
-            Error loading users. Please try again later.
+            Error loading visitors. Please try again later.
           </TableCell>
         </TableRow>
       );
     }
 
    
-    if (!memoUsers || memoUsers.length === 0) {
+    if (!memoVisitors || memoVisitors.length === 0) {
       return (
         <TableRow>
           <TableCell colSpan={6} className="h-[400px] text-center">
-            No users found.
+            No users visitors.
           </TableCell>
         </TableRow>
       );
     }
 
-    return memoUsers.map((user: IUser) => (
-      <TableRow key={user.user_id}>
+    return memoVisitors.map((user: IVisitor) => (
+      <TableRow key={user.visitor_id}>
         <TableCell className="hidden sm:table-cell">
           <img
             alt={`${user.firstName}'s avatar`}
             className="aspect-square rounded-md object-cover"
             height="64"
-            src={user.userImg}
+            src={user.visitorImg}
             width="64"
           />
         </TableCell>
@@ -113,9 +113,6 @@ const UsersList = () => {
         </TableCell>
         <TableCell className="hidden md:table-cell">
           <RoleBadge role={user.userRole || "admin"} />
-        </TableCell>
-        <TableCell className="hidden md:table-cell">
-          {user.municipal_id}
         </TableCell>
         <TableCell className="hidden md:table-cell">
           {user.created_at}
@@ -134,7 +131,7 @@ const UsersList = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigate(`update_form/${user.user_id}`)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate(`update_form/${user.visitor_id}`)}>Edit</DropdownMenuItem>
               <DropdownMenuItem>Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -158,19 +155,19 @@ const UsersList = () => {
             <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               className="w-full h-8 rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-              placeholder="Search user..."
+              placeholder="Search visitors..."
               type="search"
             />
           </div>
-          <UserContentForm />
+          <VisitorContentForm />
         </div>
       </div>
       <TabsContent value="all">
         <Card>
           <CardHeader>
-            <CardTitle className="text-[#492309]">Users</CardTitle>
+            <CardTitle className="text-[#492309]">Visitors</CardTitle>
             <CardDescription>
-              Manage your Users and view their profile.
+              Manage your Visitors and view their profile.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -184,9 +181,6 @@ const UsersList = () => {
                   <TableHead>Status</TableHead>
                   <TableHead className="hidden md:table-cell">
                     Role
-                  </TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    Location
                   </TableHead>
                   <TableHead className="hidden md:table-cell">
                     Created at
@@ -212,4 +206,4 @@ const UsersList = () => {
   )
 }
 
-export default UsersList
+export default VisitorList

@@ -7,7 +7,6 @@ const DashboardPage = () => {
   const currentTab = location.pathname.split("/").pop(); // Get current tab based on the route
 
 
-  console.log(currentTab)
   return (
     <Tabs defaultValue="overview">
       <div className="flex items-center">

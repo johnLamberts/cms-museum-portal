@@ -135,9 +135,6 @@ const MuseumLists = () => {
                 <TableHead>Status</TableHead>
 
                 <TableHead className="hidden md:table-cell">
-                  Role{" "}
-                </TableHead>
-                <TableHead className="hidden md:table-cell">
                   Created at
                 </TableHead>
                 <TableHead>

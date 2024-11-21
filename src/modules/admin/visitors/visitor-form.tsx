@@ -10,40 +10,14 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import generatePassword from "@/lib/generaPassword";
 import { UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useMunicipalities from "../settings/municipalities/hooks/useMunicipality";
-import IMunicipal from "../settings/municipalities/municipal.interface";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const UserForm = ({ form }: any) => {
+const VisitorForm = ({ form }: any) => {
   const navigate = useNavigate();
-
-  const { data: municipalitiesData, isLoading, error  } = useMunicipalities();
-
-  const [municipalities, setMunicipalities] = useState<IMunicipal[]>([])
-
-  useEffect(() => {
-    console.log("municipalitiesData:", municipalitiesData)
-    if (municipalitiesData && municipalitiesData.data && Array.isArray(municipalitiesData.data.municipality)) {
-      setMunicipalities(municipalitiesData.data.municipality)
-    }
-  }, [municipalitiesData])
-
-  const handleSelectChange = (value: string) => {
-    console.log("Selected value:", value)
-    form.setValue("userLocation", value)
-  }
-
   const { setFocus, setValue, formState } = form;
   const { errors } = formState;
 
@@ -71,8 +45,6 @@ const UserForm = ({ form }: any) => {
     setValue("password", generatePassword());
   }, [])
 
-  console.log(municipalities)
-
   
   return (
         <main className="grid flex-1 items-start gap-4 p-4 md:gap-8">
@@ -83,7 +55,7 @@ const UserForm = ({ form }: any) => {
                   <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
                     <Card x-chunk="dashboard-07-chunk-0">
                       <CardHeader>
-                        <CardTitle>User Details</CardTitle>
+                        <CardTitle>Visitor Details</CardTitle>
                         <CardDescription>
                           Basic details you might include when adding a user such as
                           name, and other information.
@@ -91,78 +63,14 @@ const UserForm = ({ form }: any) => {
                       </CardHeader>
                       <CardContent>
                         <div className="grid gap-6">
-                        <div className="grid gap-3">
-                            <FormField
-                              control={form.control}
-                              name="userRole"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>User Role <span className="text-red-600">*</span></FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select a role to user" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="admin">Admin</SelectItem>
-                                      <SelectItem value="staff">Staff</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            /> 
-                          </div>
                           <div className="grid gap-3">
-                          <FormField
-                          control={form.control}
-                          name="userLocation"
-                          render={({ field }) => {
-
-                            console.log(field.value)
-
-                            return (
-                              <FormItem>
-                                <FormLabel>User Location <span className="text-red-600">*</span></FormLabel>
-                                <Select 
-                                  onValueChange={handleSelectChange}
-                                  value={field.value || ""}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Set a specific location to user">
-                                        {field.value ? 
-                                          municipalities.find(m => m.municipal_id?.toString() === field.value)?.municipal || "Unknown Location" 
-                                          : ""}
-                                      </SelectValue>
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {isLoading ? (
-                                      <SelectItem value="loading">Loading locations...</SelectItem>
-                                    ) : error ? (
-                                      <SelectItem value="error">Error loading locations</SelectItem>
-                                    ) : municipalities.length > 0 ? (
-                                      municipalities.map((municipal: IMunicipal) => (
-                                        <SelectItem key={municipal.municipal_id} value={municipal.municipal_id || ""}>
-                                          {municipal.municipal || "Unnamed Location"}
-                                        </SelectItem>
-                                      ))
-                                    ) : (
-                                      <SelectItem value="no-locations">No locations available</SelectItem>
-                                    )}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              
-                              </FormItem>
-                            )
-                          }}
-                        />
-                          </div>
-
-                          <div className="grid gap-3">
+                            {/* <Label htmlFor="firstName">First Name</Label>
+                            <Input
+                              className="w-full"
+                              defaultValue="Gamer Gear Pro Controller"
+                              id="firstName"
+                              type="text"
+                            /> */}
                             <FormField
                               control={form.control}
                               name="firstName"
@@ -209,6 +117,22 @@ const UserForm = ({ form }: any) => {
                               />
                           </div>
                         </div>
+
+                        <div className="grid gap-3">
+                            <FormField
+                                control={form.control}
+                                name="address"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Address <span className="text-red-600">*</span></FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Dela Cruz" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                          </div>
                       </CardContent>
                     </Card>
                     <Card x-chunk="dashboard-07-chunk-2">
@@ -257,7 +181,7 @@ const UserForm = ({ form }: any) => {
                       x-chunk="dashboard-07-chunk-4"
                     >
                       <CardHeader>
-                        <CardTitle>User Image</CardTitle>
+                        <CardTitle>Visitor Image</CardTitle>
                         <CardDescription>
                           Dropoff your user image here, or you can just disregard this section
                         </CardDescription>
@@ -313,7 +237,7 @@ const UserForm = ({ form }: any) => {
                   <Button size="sm" variant="outline" onClick={() => navigate(-1)}>
                     Cancel
                   </Button>
-                  <Button size="sm">Save User</Button>
+                  <Button size="sm">Save Product</Button>
                 </div>
               </form>
            </Form>
@@ -321,4 +245,4 @@ const UserForm = ({ form }: any) => {
         </main>
   );
 };
-export default UserForm;
+export default VisitorForm;

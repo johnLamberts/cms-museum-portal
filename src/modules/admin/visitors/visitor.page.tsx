@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-const MunicipalitiesPage = () => {
+const VisitorPage = () => {
 
   return (
     
@@ -8,4 +8,4 @@ const MunicipalitiesPage = () => {
        
   );
 };
-export default MunicipalitiesPage;
+export default VisitorPage;
