@@ -1,12 +1,14 @@
 import HomeLayout from "@/layouts/home.layout";
 import DashboardPage from "@/modules/admin/dashboard/dashboard.page";
+import DetailedDashboard from "@/modules/admin/dashboard/detailed.dashboard";
 import OverviewDashboard from "@/modules/admin/dashboard/overview.dashboard";
+import EventPage from "@/modules/admin/events/events.page";
 import ExhibitContentForm from "@/modules/admin/exhibits/exhibit-form.content";
 import ExhibitsList from "@/modules/admin/exhibits/exhibits-list";
 import ExhibitsPage from "@/modules/admin/exhibits/exhibits.page";
 import MuseumContent from "@/modules/admin/museums/museum-content";
 import MuseumLists from "@/modules/admin/museums/museums-list";
-import MusuemMgmPage from "@/modules/admin/museums/musuems.page";
+import MuseumPage from "@/modules/admin/museums/musuems.page";
 import AboutEditor from "@/modules/admin/page-editor/about.editor";
 import HomeEditor from "@/modules/admin/page-editor/home.editor";
 import PageEditorPage from "@/modules/admin/page-editor/page-editor.page";
@@ -89,7 +91,10 @@ export const appRouter = createBrowserRouter([
             path: 'overview',
             Component: OverviewDashboard
           },
-          
+          {
+            path: 'detailed',
+            Component: DetailedDashboard
+          }
         ]
       },
 
@@ -156,10 +161,14 @@ export const appRouter = createBrowserRouter([
       //Museums
       {
         path: 'museums',
-        Component: MusuemMgmPage,
+        Component: MuseumPage,
         children: [
           {
             index: true,
+            Component: MuseumLists
+          },
+          {
+            path: 'museum-lists',
             Component: MuseumLists
           }
         ],
@@ -195,6 +204,11 @@ export const appRouter = createBrowserRouter([
           }
         ]
       },
+      //Events
+      {
+        path: 'events',
+        Component: EventPage,
+      }
     ]
   },
   

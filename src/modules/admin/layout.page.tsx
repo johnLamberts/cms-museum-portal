@@ -21,8 +21,8 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
        finalName = "Create User"
     } else if (userid !== undefined) {
       finalName = "Modify User"
-    }  else if (name === 'museums') {
-       finalName = "All Museums"
+    }  else if (name === 'museums' || name === 'museum-lists') {
+       finalName = "Manage museum details, and information"
     }  else if (name === 'add_museum') {
       finalName = "Create Museum"
     } else if (name === 'exhibits_mgm') {
@@ -31,7 +31,10 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
       finalName = "All Municipalities "
     } else if (name === 'page_editor') {
       finalName = "Maximize your landing page capability"
+    } else if (name === 'visitors') {
+      finalName = "All Visitors"
     }
+
 
     return finalName;
   }
@@ -43,13 +46,11 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
     
     const name =lastRoute.length > 3 ? lastRoute[lastRoute.length - 1] : lastRoute[2] ; 
 
-    console.log(name)
-    console.log(lastRoute)
     let finalName = "";
 
     if(name === 'users') {
       finalName = "Users"
-    } else if (name === 'museums') {
+    } else if (name === 'museums' || name === 'museum-lists') {
        finalName = "Museums"
     } else if (name === 'exhibits_mgm') {
       finalName = "Exhibits"
@@ -78,7 +79,7 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to={"/dashboard-app"} className="font-light text-[#927B6B]">
+                  <Link to={"/admin-dashboard"} className="font-light text-[#927B6B]">
                     Dashboard
                   </Link>
                   {/* <Link href="#">Dashboard</Link> */}
@@ -94,7 +95,7 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               {identifierCrumb().length < 2 ? 
-              "Welcome Admin, John"
+              "Welcome Admin, Echo!"
                 
               :
               (<>

@@ -6,7 +6,6 @@ const PageEditorPage = () => {
   const location = useLocation();
   const currentTab = location.pathname.split("/").pop(); // Get current tab based on the route
 
-  console.log(currentTab)
   return (
     <Tabs defaultValue="homepage">
       <div className="flex items-center">

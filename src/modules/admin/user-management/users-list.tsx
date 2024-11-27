@@ -57,7 +57,6 @@ const UsersList = () => {
     limit: usersData?.data?.currentPage?.limit || 20
   }), [usersData]);
 
-  console.log(pagination)
 
 
   const renderTableContent = () => {

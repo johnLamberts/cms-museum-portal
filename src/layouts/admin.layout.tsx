@@ -29,7 +29,6 @@ const AdminLayout = () => {
         <LayoutPage>
           <Outlet />
         </LayoutPage>
-        asdasd
       </SidebarInset>
     </SidebarProvider>
   )

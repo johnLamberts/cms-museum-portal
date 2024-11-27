@@ -40,7 +40,6 @@ const data = {
       title: "Manage Users",
       url: "#",
       icon: UserIcon,
-      isActive: true,
       items: [
         {
           title: "User Management",
@@ -82,7 +81,7 @@ const data = {
         },
         {
           title: "Exhibits",
-          url: "exhibits",
+          url: "exhibits_mgm",
         },
         {
           title: "Site Editor",
@@ -105,7 +104,7 @@ const data = {
   projects: [
     {
       name: "Events",
-      url: "#",
+      url: "events",
       icon: Frame,
     },
     {
