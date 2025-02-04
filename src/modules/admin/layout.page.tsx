@@ -33,7 +33,9 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
       finalName = "Maximize your landing page capability"
     } else if (name === 'visitors') {
       finalName = "All Visitors"
-    }
+    } else if (name === 'baranggay') {
+      finalName = "All Baranggay"
+    }  
 
 
     return finalName;
@@ -60,7 +62,10 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
       finalName = "Municipality"
     } else if (name === 'page_editor') {
       finalName = "Page Editor"
+    }  else if (name === 'baranggay') {
+      finalName = "Baranggay"
     }  
+     
      
 
     return finalName;

@@ -7,13 +7,13 @@ import { UseFormReturn } from "react-hook-form";
 import { ColorPicker } from "../color-picker";
 
 interface MuseumHeaderFormProps {
-  editor: Editor;
+  editor?: Editor;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<any>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const MuseumHeaderForm: React.FC<MuseumHeaderFormProps> = ({ editor, form }) => {
+ 
+const MuseumHeaderForm: React.FC<MuseumHeaderFormProps> = ({ form }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { register, watch, setValue } = form;
   const coverPhoto = watch("coverPhoto");

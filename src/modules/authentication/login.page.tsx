@@ -4,15 +4,19 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import useLogin from "./useLogin";
 
 const LoginPage = () => {
   const navigate = useNavigate();
 
   const form = useForm();
 
+  const { loginUser, isPending } = useLogin();
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleLoginSubmit = (payload: Record<string, any>) => {
-    console.log(payload);
+  const handleLoginSubmit =  (payload: Record<string, any>) => {
+    // console.log(payload);
+    loginUser(payload)
   };
 
   return (
@@ -90,7 +94,9 @@ const LoginPage = () => {
                     {...form.register("password")}
                   />
                 </div>
-                <Button variant={"gooeyRight"} className="bg-[#0B0400]">Sign In</Button>
+                <Button disabled={isPending} variant={"gooeyRight"} className="bg-[#0B0400]">
+                  {isPending ? "Signing in" : "Sign in"}
+                </Button>
               </div>
             </form>
             <div className="relative">

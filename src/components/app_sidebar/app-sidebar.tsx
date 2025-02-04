@@ -76,13 +76,13 @@ const data = {
       icon: BookOpen,
       items: [
         {
-          title: "Museums",
+          title: "Exhibits",
           url: "museums",
         },
-        {
-          title: "Exhibits",
-          url: "exhibits_mgm",
-        },
+        // {
+        //   title: "Exhibits",
+        //   url: "exhibits_mgm",
+        // },
         {
           title: "Site Editor",
           url: "page_editor",
@@ -97,6 +97,10 @@ const data = {
         {
           title: "Municipality",
           url: "settings/municipalities",
+        },
+        {
+          title: "Baranggay",
+          url: "settings/baranggay",
         },
       ],
     },
