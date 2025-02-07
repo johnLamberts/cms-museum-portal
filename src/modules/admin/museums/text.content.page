@@ -1,0 +1,106 @@
+import { ContentItemMenu } from '@/components/content-menus/content-item-menu'
+import LinkMenu from '@/components/content-menus/link-menu'
+import { TextMenu } from '@/components/content-menus/text-menus/text-menu'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import ImageBlockMenu from '@/modules/extensions/image-block/image-menu.block'
+import { EditorContent } from '@tiptap/react'
+import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { ColorPicker } from './color-picker'
+import { useBlockEditor } from './hooks/useMuseumEditor'
+import { ImageUpload } from './image-uploader'
+import { MuseumExhibitPreview } from './museum-preview'
+
+type MuseumFormData = {
+  title: string
+  coverPhoto: string
+  description: string
+  colorTheme: string
+}
+
+export const MuseumForm = () => {
+  const { control, handleSubmit, setValue } = useForm<MuseumFormData>()
+  const { editor } = useBlockEditor()
+  const [previewMode, setPreviewMode] = useState(false)
+
+  const onSubmit = (data: MuseumFormData) => {
+    console.log(data)
+    // Handle form submission
+  }
+
+  if (!editor) return null
+
+  return (
+    <Card className="w-full max-w-4xl mx-auto">
+      <CardHeader>
+        <CardTitle>Create Museum Exhibit</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div>
+            <Label htmlFor="title">Title</Label>
+            <Controller
+              name="title"
+              control={control}
+              defaultValue=""
+              render={({ field }) => <Input {...field} id="title" placeholder="Enter exhibit title" />}
+            />
+          </div>
+
+          <div>
+            <Label>Cover Photo</Label>
+            <ImageUpload
+              onImageUpload={(imageUrl) => setValue('coverPhoto', imageUrl)}
+            />
+          </div>
+
+          <div>
+            <Label>Description</Label>
+            <div className="border rounded-md p-2">
+              <EditorContent editor={editor} />
+              <ContentItemMenu editor={editor} />
+              <LinkMenu editor={editor} />
+              <TextMenu editor={editor} />
+              <ImageBlockMenu editor={editor} />
+            </div>
+          </div>
+
+          <div>
+            <Label>Color Theme</Label>
+            <ColorPicker
+              onColorChange={(color) => setValue('colorTheme', color)}
+            />
+          </div>
+
+          <div className="flex justify-between">
+            <Button type="button" onClick={() => setPreviewMode(!previewMode)}>
+              {previewMode ? 'Edit' : 'Preview'}
+            </Button>
+            <Button type="submit">Save Exhibit</Button>
+          </div>
+        </form>
+
+        {previewMode && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Preview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MuseumExhibitPreview
+                title={control._formValues.title}
+                coverPhoto={control._formValues.coverPhoto}
+                description={editor.getHTML()}
+                colorTheme={control._formValues.colorTheme}
+              />
+            </CardContent>
+          </Card>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+export default MuseumForm;

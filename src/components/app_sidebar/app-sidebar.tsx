@@ -40,7 +40,6 @@ const data = {
       title: "Manage Users",
       url: "#",
       icon: UserIcon,
-      isActive: true,
       items: [
         {
           title: "User Management",
@@ -77,13 +76,13 @@ const data = {
       icon: BookOpen,
       items: [
         {
-          title: "Museums",
+          title: "Exhibits",
           url: "museums",
         },
-        {
-          title: "Exhibits",
-          url: "exhibits",
-        },
+        // {
+        //   title: "Exhibits",
+        //   url: "exhibits_mgm",
+        // },
         {
           title: "Site Editor",
           url: "page_editor",
@@ -99,13 +98,17 @@ const data = {
           title: "Municipality",
           url: "settings/municipalities",
         },
+        {
+          title: "Baranggay",
+          url: "settings/baranggay",
+        },
       ],
     },
   ],
   projects: [
     {
       name: "Events",
-      url: "#",
+      url: "events",
       icon: Frame,
     },
     {

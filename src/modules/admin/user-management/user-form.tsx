@@ -33,7 +33,6 @@ const UserForm = ({ form }: any) => {
   const [municipalities, setMunicipalities] = useState<IMunicipal[]>([])
 
   useEffect(() => {
-    console.log("municipalitiesData:", municipalitiesData)
     if (municipalitiesData && municipalitiesData.data && Array.isArray(municipalitiesData.data.municipality)) {
       setMunicipalities(municipalitiesData.data.municipality)
     }

@@ -1,15 +1,19 @@
 import HomeLayout from "@/layouts/home.layout";
 import DashboardPage from "@/modules/admin/dashboard/dashboard.page";
+import DetailedDashboard from "@/modules/admin/dashboard/detailed.dashboard";
 import OverviewDashboard from "@/modules/admin/dashboard/overview.dashboard";
+import EventPage from "@/modules/admin/events/events.page";
 import ExhibitContentForm from "@/modules/admin/exhibits/exhibit-form.content";
 import ExhibitsList from "@/modules/admin/exhibits/exhibits-list";
 import ExhibitsPage from "@/modules/admin/exhibits/exhibits.page";
 import MuseumContent from "@/modules/admin/museums/museum-content";
 import MuseumLists from "@/modules/admin/museums/museums-list";
-import MusuemMgmPage from "@/modules/admin/museums/musuems.page";
+import MuseumPage from "@/modules/admin/museums/musuems.page";
 import AboutEditor from "@/modules/admin/page-editor/about.editor";
 import HomeEditor from "@/modules/admin/page-editor/home.editor";
 import PageEditorPage from "@/modules/admin/page-editor/page-editor.page";
+import BaranggayList from "@/modules/admin/settings/baranggay/baranggay-list";
+import BaranggayPage from "@/modules/admin/settings/baranggay/baranggay.page";
 import MunicipalitiesList from "@/modules/admin/settings/municipalities/municipalities-list";
 import MunicipalitiesPage from "@/modules/admin/settings/municipalities/municipalities.page";
 import SettingsPage from "@/modules/admin/settings/settings.page";
@@ -24,6 +28,8 @@ import GeneralError from "@/modules/errors/general-error.page";
 import { default as ExhibitLandPage } from "@/modules/landing-page/exhibits.page";
 import MoreAbout from "@/modules/landing-page/more-about.page";
 import Museums from "@/modules/landing-page/museums.page";
+import VisitorHome from "@/modules/visitor/visitor-home.page";
+import VisitorProfile from "@/modules/visitor/visitor-profile.page";
 import { createBrowserRouter } from "react-router-dom";
 
 export const appRouter = createBrowserRouter([
@@ -89,7 +95,10 @@ export const appRouter = createBrowserRouter([
             path: 'overview',
             Component: OverviewDashboard
           },
-          
+          {
+            path: 'detailed',
+            Component: DetailedDashboard
+          }
         ]
       },
 
@@ -156,10 +165,14 @@ export const appRouter = createBrowserRouter([
       //Museums
       {
         path: 'museums',
-        Component: MusuemMgmPage,
+        Component: MuseumPage,
         children: [
           {
             index: true,
+            Component: MuseumLists
+          },
+          {
+            path: 'museum-lists',
             Component: MuseumLists
           }
         ],
@@ -192,9 +205,47 @@ export const appRouter = createBrowserRouter([
                 Component: MunicipalitiesList
               }
             ]
+          },
+          {
+            path: 'baranggay',
+            Component: BaranggayPage,
+            children: [
+              {
+                index: true,
+                Component: BaranggayList
+              }
+            ]
           }
         ]
       },
+      //Events
+      {
+        path: 'events',
+        Component: EventPage,
+      }
+    ]
+  },
+
+  {
+    path: '/visitor',
+    lazy: async () => { 
+    const AppShell = await import('@/layouts/visitor.layout');
+    return { Component: AppShell.default }
+    },
+    errorElement: <GeneralError />,
+    children: [
+      {
+        index: true,
+        Component: VisitorHome
+      },
+      {
+        path: '/visitor',
+        Component: VisitorHome
+      },
+      {
+        path: 'profile',
+        Component: VisitorProfile
+      }
     ]
   },
   

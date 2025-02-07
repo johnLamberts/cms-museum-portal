@@ -1,5 +1,6 @@
 import appRouter from '@/routes/app.route'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
@@ -15,6 +16,7 @@ createRoot(document.getElementById('root')!).render(
             <RouterProvider router={appRouter} />
             <Toaster richColors />
           </div>
+          <ReactQueryDevtools initialIsOpen={false} />
        </QueryClientProvider>
   </StrictMode>,
 )

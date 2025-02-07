@@ -1,52 +1,104 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Editor, useEditorState } from "@tiptap/react";
-import { EditorInfo } from "./musuem-info";
+import { Label } from "@/components/ui/label";
+import { Editor } from "@tiptap/react";
+import { useState } from "react";
+import { UseFormReturn } from "react-hook-form";
+import { ColorPicker } from "../color-picker";
 
-export type EditorHeaderProps = {
-  isSidebarOpen?: boolean
-  toggleSidebar?: () => void
-  editor: Editor,
+interface MuseumHeaderFormProps {
+  editor?: Editor;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form?: any;
+  form: UseFormReturn<any>;
 }
 
+ 
+const MuseumHeaderForm: React.FC<MuseumHeaderFormProps> = ({ form }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { register, watch, setValue } = form;
+  const coverPhoto = watch("coverPhoto");
 
-const MuseumHeaderForm = ({ editor, form }: EditorHeaderProps) => {
- 
-  const { characters, words } = useEditorState({
-    editor,
-    selector: (ctx): { characters: number; words: number } => {
-      const { characters, words } = ctx.editor?.storage.characterCount || { characters: () => 0, words: () => 0 }
-      
-      
-      return { characters: characters(), words: words() }
-    },
-  })
- 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          setValue("coverPhoto", reader.result.toString());
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
-
-    <div className="flex flex-row items-center justify-between flex-none py-2 pl-6 pr-3  border-b-2 border-indigo-500 dark:bg-black dark:text-white dark:border-neutral-800">
-      <div className="flex flex-row	 gap-x-1 5 items-center ">
-        <div className="flex items-center gap-x-1 5">
-          <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem >
-                  <FormLabel>Title <span className="text-red-600">*</span></FormLabel>
-                  <FormControl>
-                    <Input placeholder="South Drugs" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+    <div className="relative">
+      {/* Dynamic Cover Photo Section */}
+      <div
+        className="h-64 bg-cover bg-center relative"
+        style={{
+          backgroundImage: `url(${coverPhoto || "/placeholder.svg"})`,
+        }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="text-center text-white p-4">
+            <Input
+              {...register("title")}
+              className="text-4xl font-bold bg-transparent border-none text-center mb-4"
+              placeholder="Enter Museum Title"
             />
+          </div>
         </div>
       </div>
-      <EditorInfo characters={characters} words={words} />
-    </div>
-  )
-}
 
-export default MuseumHeaderForm
+      {/* Expandable Header Options */}
+      <div className="">
+        <Button
+          className="absolute  bottom-4 right-4"
+          onClick={() => setIsExpanded(!isExpanded)}
+          >
+          {isExpanded ? "Collapse" : "Expand"} Header Options
+        </Button>
+      </div>
+
+      {/* Expanded Form Options */}
+      {isExpanded && (
+        <div className="bg-background p-4 shadow-lg ">
+          <div className="mb-4">
+            <Label htmlFor="coverPhotoUpload">Upload Cover Photo</Label>
+            <Input
+              id="coverPhotoUpload"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+          </div>
+          <div className="mb-4">
+            <Label htmlFor="museumFee">Fee</Label>
+            <Input
+              id="museumFee"
+              {...register("fee")}
+              placeholder="Enter museum fee"
+            />
+          </div>
+          <div className="mb-4">
+            <Label htmlFor="museumAddress">Address</Label>
+            <Input
+              id="museumAddress"
+              {...register("address")}
+              placeholder="Enter address"
+            />
+          </div>
+          <div>
+            <Label>Color Theme</Label>
+            <ColorPicker
+              onColorChange={(color) => setValue("colorTheme", color)}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MuseumHeaderForm;

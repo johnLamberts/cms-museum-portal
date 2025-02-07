@@ -40,7 +40,7 @@ const MunicipalForm = ({ form }: any) => {
                   <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
                     <Card x-chunk="dashboard-07-chunk-0">
                       <CardHeader>
-                        <CardTitle>Municipal Detail</CardTitle>
+                        <CardTitle>Baranggay Detail</CardTitle>
                         <CardDescription>
                           Basic details you might include when adding a user such as
                           name, and other information.
