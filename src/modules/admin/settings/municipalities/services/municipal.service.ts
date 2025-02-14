@@ -38,7 +38,9 @@ export default {
         url: `${import.meta.env.VITE_SERVER_URL}/api/v1/municipality/`,
       });
 
-      return response.data;
+      console.log('munciiapl', response.data);
+      
+      return response?.data;
 
     } catch (err) {
       if (err instanceof axios.AxiosError) {

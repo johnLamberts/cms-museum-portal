@@ -1,33 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { Clock, Heart, MessageCircle, Share2 } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import useFeaturedEvents from "./hooks/useFeaturedEvent"
 
 
-const featuredExhibits = [
-  {
-    id: 1,
-    title: "Rizal's Letters",
-    curator: "Dr. Santos",
-    image: "/placeholder.svg?height=200&width=200",
-    status: "Now Showing",
-  },
-  {
-    id: 2,
-    title: "Revolution Art",
-    curator: "Maria Cruz",
-    image: "/placeholder.svg?height=200&width=200",
-    status: "Coming Soon",
-  },
-  {
-    id: 3,
-    title: "Cultural Gallery",
-    curator: "Juan Dela Cruz",
-    image: "/placeholder.svg?height=200&width=200",
-    status: "Now Showing",
-  },
-]
 
 const visitorPosts = [
   {
@@ -57,20 +37,27 @@ const visitorPosts = [
 ]
 
 export default function VisitorHome() {
+
+  const {data: featuredEvents, isLoading } = useFeaturedEvents();
+
+  const navigate = useNavigate();
+
+
+  if(isLoading) return <>Loading...</>
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       {/* Featured Exhibits */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Featured Exhibits</h2>
+        <h2 className="text-2xl font-semibold mb-4">Featured Event</h2>
         <ScrollArea className="w-full">
           <div className="flex gap-4">
-            {featuredExhibits.map((exhibit) => (
-              <Card key={exhibit.id} className="w-[300px] flex-shrink-0">
+            {featuredEvents?.map((exhibit: any) => (
+              <Card key={exhibit.event_id} className="w-[300px] flex-shrink-0">
                 <CardHeader className="relative h-[200px] p-0">
                   <img
-                    src={exhibit.image || "/placeholder.svg"}
+                    src={exhibit.coverPhoto || "/placeholder.svg"}
                     alt={exhibit.title}
-                    className="object-cover rounded-t-lg"
+                    className="object-cover rounded-t-lg max-h-24"
                   />
                   <div className="absolute top-2 right-2">
                     <span
@@ -85,7 +72,7 @@ export default function VisitorHome() {
                 </CardHeader>
                 <CardContent className="p-4">
                   <h3 className="font-semibold">{exhibit.title}</h3>
-                  <p className="text-sm text-gray-500">Curator: {exhibit.curator}</p>
+                  {/* <p className="text-sm text-gray-500">Curator: {exhibit.curator}</p> */}
                 </CardContent>
               </Card>
             ))}
@@ -96,7 +83,12 @@ export default function VisitorHome() {
 
       {/* Visitor Experiences */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Visitor Experiences</h2>
+        <div className="flex justify-between">
+          <h2 className="text-2xl font-semibold mb-4">Visitor Experiences</h2>
+            <Button variant="shine" size="sm" onClick={() => navigate("visitor_exhibits")}>
+              View more
+            </Button>
+        </div>
         <div className="grid gap-6">
           {visitorPosts.map((post) => (
             <Card key={post.id}>

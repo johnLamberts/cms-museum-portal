@@ -17,10 +17,15 @@ export default function useLogin() {
 
     onSuccess: (user) => {
       queryClient.setQueryData(
-        [CMS_KEYZ.CURRENT_USER], user.data
+        [CMS_KEYZ.CURRENT_USER], user
       );
 
-      if(user.data.userRole === "admin") navigate("/admin-dashboard")
+      console.log(user);
+
+      if(user?.userRole === "admin") navigate("/admin-dashboard");
+
+      if(user?.userRole === "visitor") navigate("/visitor");
+
     }
   })
 
