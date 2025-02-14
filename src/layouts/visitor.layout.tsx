@@ -9,7 +9,7 @@ const navItems = [
   { icon: MessageCircle, label: "Discussions", to: "/visitor/discussions" },
   { icon: Heart, label: "Notifications", to: "/visitor/notifications" },
   { icon: PlusSquare, label: "Share Experience", to: "/visitor/create" },
-  { icon: User, label: "Profile", to: "/visitor/profile" },
+  { icon: User, label: "Profile", to: "profile" },
 ]
 
 
@@ -40,7 +40,7 @@ const VisitorLayout = () => {
           <Link to="/visitor/notifications" className="p-2 hover:bg-gray-100 rounded-full">
             <Bell className="h-6 w-6" />
           </Link>
-          <Link to="/visitor/profile" className="p-2 hover:bg-gray-100 rounded-full">
+          <Link to="profile" className="p-2 hover:bg-gray-100 rounded-full">
             <User className="h-6 w-6" />
           </Link>
         </div>
