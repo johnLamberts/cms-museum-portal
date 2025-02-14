@@ -4,35 +4,44 @@ import "@/styles/museums/index.css";
 import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import useCreateMuseum from "./hooks/useCreateMuseum";
-import MuseumForm from "./musuem-form";
+import EventForm from "./event-form";
+import useCreateEvent from "./hooks/useCreateEvent";
 
-export type MuseumFormData = {
+export type EventFormData = {
+
   title: string
-  coverPhoto: string
-  description: string
-  colorTheme: string
-  museumContent: string
+
+  coverPhoto: File
+
+
+
+  
+  eventContent: string
+
+
+
 }
 
 
-const MuseumContent = () => {
+const EventContent = () => {
 
   const navigate = useNavigate();
-  const form = useForm<MuseumFormData>();
+  const form = useForm<EventFormData>();
 
-  const { isAddingMuseum, addMuseumHandler} = useCreateMuseum();
+  const { isAddingEvent, addEventHandler} = useCreateEvent();
 
 
    
-  const onSubmit = async (data: MuseumFormData) => {
+  const onSubmit = async (data: EventFormData) => {
     try {
 
      
-      await addMuseumHandler(data)
+      await addEventHandler(data)
+
      
+      console.log(form.getValues())
        
-      navigate("/admin-dashboard/museums")
+      // navigate("/admin-dashboard/events")
       
     
     } catch (err) {
@@ -43,10 +52,10 @@ const MuseumContent = () => {
 
   const actionButtons = createPortal(
     <Surface className="flex items-center gap-1 fixed bottom-6 right-6 z-[99999] p-1 ">
-      <Toolbar.Button disabled={isAddingMuseum}  onClick={() => navigate("/admin-dashboard/museums")}>
+      <Toolbar.Button disabled={isAddingEvent}  onClick={() => navigate("/admin-dashboard/museums")}>
         Back
       </Toolbar.Button>
-      <Toolbar.Button disabled={isAddingMuseum}  type="submit" className="bg-[#927B6B]/95 text-white" onClick={form.handleSubmit(onSubmit)}>
+      <Toolbar.Button disabled={isAddingEvent}  type="submit" className="bg-[#927B6B]/95 text-white" onClick={form.handleSubmit(onSubmit)}>
         Save
       </Toolbar.Button>
     </Surface>,
@@ -56,10 +65,10 @@ const MuseumContent = () => {
     <>
       <div className="flex flex-col h-screen">
         {actionButtons}
-        <MuseumForm form={form} />
+        <EventForm form={form} />
       </div>
     </>
   )
 }
 
-export default MuseumContent
+export default EventContent

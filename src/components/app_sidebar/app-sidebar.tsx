@@ -112,8 +112,8 @@ const data = {
       icon: Frame,
     },
     {
-      name: "News",
-      url: "#",
+      name: "Donations",
+      url: "donations",
       icon: PieChart,
     },
     {

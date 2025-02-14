@@ -8,11 +8,11 @@ export default {
   addMuseum: async (payload: MuseumFormData) => {
     try {
 
-      console.log(payload)
 
+      console.log(payload)
     const response = await axios({
       method: "POST",
-      url: `${import.meta.env.VITE_SERVER_URL}/api/v1/museum/add_museum`,
+      url: `${import.meta.env.VITE_SERVER_URL}/api/v1/exhibit/add_exhibit`,
       data: payload,
     });
 
@@ -33,7 +33,7 @@ export default {
     try{
       const response = await axios({
         method: "GET",
-        url: `${import.meta.env.VITE_SERVER_URL}/api/v1/museum/`,
+        url: `${import.meta.env.VITE_SERVER_URL}/api/v1/exhibit/`,
       });
 
       return response.data;

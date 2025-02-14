@@ -1,8 +1,15 @@
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Bookmark, Grid3X3, Settings } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Bookmark, Grid3X3, Settings } from "lucide-react";
+import useCurrentUser from "../authentication/useCurrentUser";
 
 export default function VisitorProfile() {
+
+  const { user } = useCurrentUser();
+
+  console.log(user);
+
+  console.log(user);
   const userPosts = [
     { id: 1, image: "/placeholder.svg?height=300&width=300" },
     { id: 2, image: "/placeholder.svg?height=300&width=300" },
@@ -18,11 +25,11 @@ export default function VisitorProfile() {
       <div className="px-4 py-8">
         <div className="flex items-start gap-8">
           <div className="w-20 h-20 relative rounded-full overflow-hidden">
-            <img src="/placeholder.svg?height=80&width=80" alt="Profile picture" className="object-cover" />
+            <img src={user?.user_metadata.visitorImg || "/placeholder.svg?height=80&width=80"} alt="Profile picture" className="object-cover" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-4">
-              <h1 className="text-xl font-semibold">visitor_username</h1>
+              <h1 className="text-xl font-semibold">{user?.user_metadata.firstName} {user?.user_metadata.lastName}</h1>
               <Button variant="outline" size="sm">
                 Edit Profile
               </Button>
@@ -31,15 +38,7 @@ export default function VisitorProfile() {
               </Button>
             </div>
             <div className="flex gap-6 mb-4">
-              <div>
-                <span className="font-semibold">42</span> posts
-              </div>
-              <div>
-                <span className="font-semibold">825</span> followers
-              </div>
-              <div>
-                <span className="font-semibold">267</span> following
-              </div>
+              
             </div>
             <div>
               <p className="font-semibold">Museum Enthusiast</p>

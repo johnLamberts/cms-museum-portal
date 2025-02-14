@@ -6,6 +6,8 @@ export enum CMS_KEYZ{
   READ_CREATE_MUSEUMS_ADDED = 'museums',
 
 
+  LATEST_FEATURED_EVENTS = "featured_events",
+
 
   CURRENT_USER = "current_user"
 }

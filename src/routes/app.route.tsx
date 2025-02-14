@@ -2,6 +2,10 @@ import HomeLayout from "@/layouts/home.layout";
 import DashboardPage from "@/modules/admin/dashboard/dashboard.page";
 import DetailedDashboard from "@/modules/admin/dashboard/detailed.dashboard";
 import OverviewDashboard from "@/modules/admin/dashboard/overview.dashboard";
+import DonationList from "@/modules/admin/donations/donation-list";
+import DonationsPage from "@/modules/admin/donations/donations.page";
+import EventContent from "@/modules/admin/events/event-content";
+import EventLists from "@/modules/admin/events/event-lists";
 import EventPage from "@/modules/admin/events/events.page";
 import ExhibitContentForm from "@/modules/admin/exhibits/exhibit-form.content";
 import ExhibitsList from "@/modules/admin/exhibits/exhibits-list";
@@ -28,6 +32,7 @@ import GeneralError from "@/modules/errors/general-error.page";
 import { default as ExhibitLandPage } from "@/modules/landing-page/exhibits.page";
 import MoreAbout from "@/modules/landing-page/more-about.page";
 import Museums from "@/modules/landing-page/museums.page";
+import VisitorExhibitPage from "@/modules/visitor/visitor-exhibits.page";
 import VisitorHome from "@/modules/visitor/visitor-home.page";
 import VisitorProfile from "@/modules/visitor/visitor-profile.page";
 import { createBrowserRouter } from "react-router-dom";
@@ -58,6 +63,11 @@ export const appRouter = createBrowserRouter([
       {
         path: '/museums',
         Component: Museums,
+        errorElement: <GeneralError />
+      },
+      {
+        path: '/events',
+        Component: EventPage,
         errorElement: <GeneralError />
       },
       {
@@ -222,7 +232,34 @@ export const appRouter = createBrowserRouter([
       {
         path: 'events',
         Component: EventPage,
-      }
+        children: [
+          {
+            index: true,
+            Component: EventLists
+          },
+          {
+            path: 'museum-lists',
+            Component: MuseumLists
+          }
+        ],
+      },
+
+
+      //Donations
+      {
+        path: 'donations',
+        Component: DonationsPage,
+        children: [
+          {
+            index: true,
+            Component: DonationList
+          },
+          {
+            path: 'donation-lists',
+            Component: DonationList
+          }
+        ],
+      },
     ]
   },
 
@@ -245,6 +282,10 @@ export const appRouter = createBrowserRouter([
       {
         path: 'profile',
         Component: VisitorProfile
+      },
+      {
+        path: 'visitor_exhibits',
+        Component: VisitorExhibitPage
       }
     ]
   },
@@ -259,7 +300,13 @@ export const appRouter = createBrowserRouter([
   {
     path: '/exhibits_mgm/add_exhibit',
     Component: ExhibitContentForm
-  }
+  },
+    // For Event Form
+    {
+      path: '/event/add_event',
+      Component: EventContent
+    },
+  
 
 
 ])
