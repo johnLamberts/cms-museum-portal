@@ -1,5 +1,8 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Bell, Compass, Heart, Home, MessageCircle, PlayCircle, PlusSquare, Search, User } from 'lucide-react'
-import { Link, Outlet, } from 'react-router-dom'
+import { Link, NavLink, Outlet, } from 'react-router-dom'
 
 const navItems = [
   { icon: Home, label: "Home", to: "/visitor" },
@@ -15,40 +18,50 @@ const navItems = [
 
 const VisitorLayout = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
     {/* Top Navigation Bar */}
-    <header className="sticky top-0 z-50 w-full border-b bg-white">
-      <div className="flex h-16 items-center px-4 md:px-6">
-        <div className="flex items-center gap-2">
-          <Link to="/visitor" className="flex items-center gap-2">
-            <span className="text-lg font-semibold">Museo Rizal</span>
-          </Link>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 items-center">
+          <div className="mr-4 hidden md:flex">
+            <a className="mr-6 flex items-center space-x-2" href="#">
+              <span className="hidden font-bold sm:inline-block">Museo Rizal</span>
+            </a>
+            <nav className="flex items-center space-x-6 text-sm font-medium">
+              <NavLink className="transition-colors hover:text-foreground/80" to="/visitor">
+                Home
+              </NavLink>
+              <NavLink className="transition-colors hover:text-foreground/80" to="/visitor">
+                Exhibits
+              </NavLink>
+              <NavLink className="transition-colors hover:text-foreground/80" to="/visitor">
+                Events
+              </NavLink>
+              <NavLink className="transition-colors hover:text-foreground/80" to="/visitor">
+                Virtual Tours
+              </NavLink>
+            </nav>
+          </div>
+          <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            <div className="w-full flex-1 md:w-auto md:flex-none">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Search exhibits and events..." className="pl-8 md:w-[300px]" />
+              </div>
+            </div>
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-4 w-4" />
+              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary" />
+            </Button>
+            <Avatar>
+              <AvatarImage src="/placeholder.svg" />
+              <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
+          </div>
         </div>
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6 ml-6">
-          {navItems.slice(0, 4).map((item) => (
-            <Link
-              key={item.label}
-              to={item.to}
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="ml-auto flex items-center gap-2">
-          <Link to="/visitor/notifications" className="p-2 hover:bg-gray-100 rounded-full">
-            <Bell className="h-6 w-6" />
-          </Link>
-          <Link to="profile" className="p-2 hover:bg-gray-100 rounded-full">
-            <User className="h-6 w-6" />
-          </Link>
-        </div>
-      </div>
-    </header>
+      </header>
 
     {/* Main Content */}
-    <main className="container mx-auto px-4 py-6">
+    <main className="container py-6">
       <Outlet />
     </main>
 

@@ -35,6 +35,8 @@ import Museums from "@/modules/landing-page/museums.page";
 import VisitorExhibitPage from "@/modules/visitor/visitor-exhibits.page";
 import VisitorHome from "@/modules/visitor/visitor-home.page";
 import VisitorProfile from "@/modules/visitor/visitor-profile.page";
+import VisitorVisitEvent from "@/modules/visitor/visitor-visit-event.page";
+import VisitorVisitsExhibit from "@/modules/visitor/visitor-visits-exhibit.page";
 import { createBrowserRouter } from "react-router-dom";
 
 export const appRouter = createBrowserRouter([
@@ -286,6 +288,14 @@ export const appRouter = createBrowserRouter([
       {
         path: 'visitor_exhibits',
         Component: VisitorExhibitPage
+      },
+      {
+        path: 'exhibit/:exid',
+        Component: VisitorVisitsExhibit
+      },
+      {
+        path: 'event/:evid',
+        Component: VisitorVisitEvent
       }
     ]
   },
