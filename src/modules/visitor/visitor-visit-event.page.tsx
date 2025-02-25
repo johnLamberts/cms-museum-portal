@@ -1,79 +1,14 @@
 "use client"
 
-import { Calendar, CalendarDays, ChevronLeft, Clock, ExternalLink, MapPin, Share2 } from "lucide-react"
+import { CalendarDays, ChevronLeft, Clock, ExternalLink, MapPin } from "lucide-react"
 import { useEffect, useState } from "react"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { NavLink, useParams } from "react-router-dom"
+import { NavLink } from "react-router-dom"
+import useFeaturedEventById from "./hooks/useFeaturedEventById"
 
-const events = [
-  {
-    id: "rizal-letters-unveiling",
-    title: "Unveiling of Rizal's Last Letters",
-    description:
-      "Join us for a historic moment as we unveil the last letters of Jose Rizal, offering unprecedented insights into his final thoughts.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    startDate: "2024-03-15T18:00:00",
-    endDate: "2024-03-15T21:00:00",
-    location: "Main Gallery, Museo Rizal",
-    organizer: "Dr. Maria Santos",
-    organizerRole: "Chief Curator, Museo Rizal",
-    ticketPrice: "₱500",
-    capacity: 200,
-    attendees: 178,
-    tags: ["History", "Literature", "National Hero"],
-    schedule: [
-      { time: "18:00", description: "Doors Open" },
-      { time: "18:30", description: "Welcome Remarks" },
-      { time: "19:00", description: "Unveiling Ceremony" },
-      { time: "19:30", description: "Expert Panel Discussion" },
-      { time: "20:30", description: "Q&A Session" },
-      { time: "21:00", description: "Closing and Networking" },
-    ],
-    content: `
-      <h2>A Glimpse into History</h2>
-      <p>For the first time, the public will have the opportunity to view the last letters penned by Jose Rizal before his execution. These documents provide an intimate look into the thoughts and emotions of the Philippines' national hero during his final days.</p>
-      <h3>What to Expect</h3>
-      <ul>
-        <li>Expertly curated exhibition of Rizal's letters</li>
-        <li>Insightful commentary from leading historians</li>
-        <li>Interactive displays showcasing the historical context</li>
-        <li>Exclusive preview of upcoming Rizal-focused exhibitions</li>
-      </ul>
-      <blockquote>
-        "These letters are not just historical artifacts; they are a window into the soul of a man who shaped a nation." - Dr. Maria Santos
-      </blockquote>
-      <p>Don't miss this once-in-a-lifetime opportunity to connect with a pivotal moment in Philippine history. Spaces are limited, so secure your spot today!</p>
-    `,
-  },
-  // Add more events here...
-]
 
-const relatedEvents = [
-  {
-    id: "rizal-art-workshop",
-    title: "Rizal-Inspired Art Workshop",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Mar 20, 2024",
-  },
-  {
-    id: "philippine-literature-seminar",
-    title: "Seminar on Philippine Literature",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Mar 25, 2024",
-  },
-  {
-    id: "historical-film-screening",
-    title: "Historical Film Screening: Rizal",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Apr 1, 2024",
-  },
-]
 
 function EventCountdown({ targetDate }: { targetDate: string }) {
   const [timeLeft, setTimeLeft] = useState({
@@ -117,14 +52,16 @@ function EventCountdown({ targetDate }: { targetDate: string }) {
 }
 
 export default function VisitorVisitEvent() {
-  const { evid } = useParams()
-  const event = events.find((e) => e.id === evid) || events[0]
+
+  const { data: featureEvent, isLoading} = useFeaturedEventById()
+
+  if(isLoading) return <>Loading...</>
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative h-[50vh] lg:h-[60vh] w-full overflow-hidden">
-        <img src={event.image || "/placeholder.svg"} alt={event.title}  className="object-cover"  />
+        <img src={featureEvent?.coverPhoto|| "/placeholder.svg"} alt={featureEvent?.title}  className="object-cover"  />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
         <div className="absolute inset-0 flex flex-col justify-end p-6 lg:p-12">
           <div className="container max-w-4xl mx-auto text-white">
@@ -133,11 +70,11 @@ export default function VisitorVisitEvent() {
                 <ChevronLeft className="mr-2 h-4 w-4" /> Back to Events
               </Button>
             </NavLink>
-            <h1 className="text-3xl lg:text-5xl font-bold mb-2 text-muted-foreground">{event.title}</h1>
+            <h1 className="text-3xl lg:text-5xl font-bold mb-2 text-muted-foreground">{featureEvent.title}</h1>
             <div className="flex flex-wrap gap-4 text-sm lg:text-base text-muted-foreground">
               <span className="flex items-center gap-1">
                 <CalendarDays className="h-4 w-4" />
-                {new Date(event.startDate).toLocaleDateString("en-US", {
+                {new Date(featureEvent.eventDate).toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
@@ -145,12 +82,12 @@ export default function VisitorVisitEvent() {
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                {new Date(event.startDate).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })} -
-                {new Date(event.endDate).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                {/* {new Date(featureEvent.startDate).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })} - */}
+                {featureEvent.eventTime}
               </span>
               <span className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
-                {event.location}
+                {featureEvent.address} Morong
               </span>
             </div>
           </div>
@@ -163,37 +100,37 @@ export default function VisitorVisitEvent() {
           <Card className="p-6">
             <CardContent className="space-y-4">
               <h2 className="text-2xl font-semibold text-center">Event Starts In</h2>
-              <EventCountdown targetDate={event.startDate} />
+              <EventCountdown targetDate={featureEvent.startDate} />
             </CardContent>
           </Card>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-2">
+          {/* <div className="flex flex-wrap gap-2">
             {event.tags.map((tag) => (
               <Badge key={tag} variant="secondary">
                 {tag}
               </Badge>
             ))}
-          </div>
+          </div> */}
 
           {/* Rich Content */}
-          <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: event.content }} />
+          <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featureEvent.eventContent }} />
 
           {/* Event Schedule */}
-          <div>
+          {/*<div>
             <h2 className="text-2xl font-semibold mb-4">Event Schedule</h2>
             <div className="space-y-2">
-              {event.schedule.map((item, index) => (
+               {event.schedule.map((item, index) => (
                 <div key={index} className="flex items-center gap-4 p-2 bg-muted rounded-md">
                   <div className="font-semibold min-w-[60px]">{item.time}</div>
                   <div>{item.description}</div>
                 </div>
-              ))}
+              ))} 
             </div>
-          </div>
+          </div>*/}
 
           {/* Organizer Info */}
-          <Card>
+          {/* <Card>
             <CardContent className="flex items-center gap-4 py-6">
               <Avatar className="h-16 w-16">
                 <AvatarImage src="/placeholder.svg" />
@@ -209,10 +146,10 @@ export default function VisitorVisitEvent() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* Ticket Info and RSVP */}
-          <Card>
+          {/* <Card>
             <CardContent className="py-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
@@ -254,10 +191,10 @@ export default function VisitorVisitEvent() {
                 </TooltipProvider>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* Related Events */}
-          <div>
+          {/* <div>
             <h2 className="text-2xl font-semibold mb-4">Related Events</h2>
             <Carousel className="w-full max-w-sm mx-auto">
               <CarouselContent>
@@ -284,7 +221,7 @@ export default function VisitorVisitEvent() {
               <CarouselPrevious />
               <CarouselNext />
             </Carousel>
-          </div>
+          </div> */}
 
           {/* Social Media Integration */}
           <div className="flex justify-center gap-4">

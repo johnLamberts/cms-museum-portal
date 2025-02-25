@@ -13,9 +13,11 @@ export type EventFormData = {
 
   coverPhoto: File
 
+  status?: string;
 
+  eventDate?: string;
+  eventTime?: string;
 
-  
   eventContent: string
 
 
@@ -38,10 +40,11 @@ const EventContent = () => {
      
       await addEventHandler(data)
 
+      console.log(data)
      
-      console.log(form.getValues())
+      // console.log(form.getValues())
        
-      // navigate("/admin-dashboard/events")
+      navigate("/admin-dashboard/events")
       
     
     } catch (err) {

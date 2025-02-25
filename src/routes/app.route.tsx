@@ -14,6 +14,7 @@ import MuseumContent from "@/modules/admin/museums/museum-content";
 import MuseumLists from "@/modules/admin/museums/museums-list";
 import MuseumPage from "@/modules/admin/museums/musuems.page";
 import AboutEditor from "@/modules/admin/page-editor/about.editor";
+import HomeContent from "@/modules/admin/page-editor/home-editor/home-content";
 import HomeEditor from "@/modules/admin/page-editor/home.editor";
 import PageEditorPage from "@/modules/admin/page-editor/page-editor.page";
 import BaranggayList from "@/modules/admin/settings/baranggay/baranggay-list";
@@ -131,6 +132,10 @@ export const appRouter = createBrowserRouter([
             path: 'aboutpage',
             Component: AboutEditor
           },
+          {
+            path: 'home-content',
+            Component: HomeContent // ✅ Corrected placement
+          }
           
         ]
       },
@@ -295,7 +300,8 @@ export const appRouter = createBrowserRouter([
       },
       {
         path: 'event/:evid',
-        Component: VisitorVisitEvent
+        Component: VisitorVisitEvent,
+
       }
     ]
   },
@@ -311,12 +317,22 @@ export const appRouter = createBrowserRouter([
     path: '/exhibits_mgm/add_exhibit',
     Component: ExhibitContentForm
   },
-    // For Event Form
-    {
-      path: '/event/add_event',
-      Component: EventContent
+  // For Event Form
+  { 
+    path: '/event/add_event',
+    Component: EventContent
+  },
+  // For Event Form
+  {
+    path: '/page_editor/home_editor',
+    Component: HomeContent,
+
+    lazy: async () => { 
+      const AppShell = await import('@/modules/admin/page-editor/home-editor/home-content');
+      return { Component: AppShell.default }
     },
-  
+    errorElement: <GeneralError />,
+  },
 
 
 ])

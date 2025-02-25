@@ -8,16 +8,22 @@ import { DropdownButton } from '../content-dropdown-button'
 const FONT_SIZES = [
   { label: 'Smaller', value: '12px' },
   { label: 'Small', value: '14px' },
-  { label: 'Medium', value: '' },
+  { label: 'Medium', value: '16px' },
   { label: 'Large', value: '18px' },
   { label: 'Extra Large', value: '24px' },
+  { label: 'XXL', value: '32px' },
+  { label: 'Jumbo', value: '40px' },
+  { label: 'Mega', value: '48px' },
+  { label: 'Giant', value: '64px' },
+  { label: 'Colossal', value: '80px' },
+  { label: 'Titan', value: '96px' }
 ]
 
 export type FontSizePickerProps = {
   onChange: (value: string) => void  
   value: string
 }
-
+  
 export const FontSizePicker = ({ onChange, value }: FontSizePickerProps) => {
   const currentValue = FONT_SIZES.find(size => size.value === value)
   const currentSizeLabel = currentValue?.label.split(' ')[0] || 'Medium'
@@ -40,7 +46,7 @@ export const FontSizePicker = ({ onChange, value }: FontSizePickerProps) => {
               onClick={selectSize(size.value)}
               key={`${size.label}_${size.value}`}
             >
-              <span style={{ fontSize: size.value }}>{size.label}</span>
+              <span>{size.label}</span>
             </DropdownButton>
           ))}
         </Surface>

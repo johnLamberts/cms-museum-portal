@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { UploadIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import "../../../styles/partials/home-index.css";
 
 const HomeEditor = () => {
   const navigate = useNavigate();
@@ -46,8 +47,8 @@ const HomeEditor = () => {
                 >
                   Cancel
                 </Button>
-                <Button size="sm" variant={"gooeyRight"}>
-                  Save Changes
+                <Button size="sm" variant={"gooeyRight"} onClick={() => navigate("/page_editor/home_editor")}>
+                  Edit Home Page
                 </Button>
               </div>
             </div>

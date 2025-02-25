@@ -9,6 +9,7 @@ export const Column = Node.create({
 
   addAttributes() {
     return {
+      
       position: {
         default: '',
         parseHTML: element => element.getAttribute('data-position'),

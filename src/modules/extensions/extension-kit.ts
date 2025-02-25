@@ -1,6 +1,8 @@
+import uploadImageToSupabase from "@/lib/storage-upload"
 import Details from "@tiptap-pro/extension-details"
 import DetailsContent from "@tiptap-pro/extension-details-content"
 import DetailsSummary from "@tiptap-pro/extension-details-summary"
+import FileHandler from "@tiptap-pro/extension-file-handler"
 import TableOfContents from "@tiptap-pro/extension-table-of-contents"
 import UniqueID from "@tiptap-pro/extension-unique-id"
 import CharacterCount from "@tiptap/extension-character-count"
@@ -23,6 +25,7 @@ import Typography from "@tiptap/extension-typography"
 import StarterKit from "@tiptap/starter-kit"
 import { BlockquoteFigure } from "./block-qoute"
 import { CodeBlock } from "./code-block"
+import { CustomPage } from "./custom-page/custom-page"
 import { Document } from "./document"
 import { FontSize } from "./font-size"
 import Heading from "./heading/heading"
@@ -37,6 +40,7 @@ import { TrailingNode } from "./trailing-node/trailing-node"
 export { Table, TableCell, TableHeader, TableRow } from './table'
 
 export const ExtensionKit = () => [
+  CustomPage,
   Document,
   Columns,
   Column,
@@ -89,8 +93,6 @@ export const ExtensionKit = () => [
   DetailsContent,
   DetailsSummary,
   TrailingNode,
-  ImageBlock,
-  ImageUpload,
   Placeholder.configure({
     includeChildren: true,
     showOnlyCurrent: false,
@@ -107,27 +109,37 @@ export const ExtensionKit = () => [
   TableCell,
   TableHeader,
   TableRow,
-  // FileHandler.configure({
-  //   allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
-  //   onDrop: (currentEditor, files, pos) => {
-  //     files.forEach(async file => {
-  //       // const url = await API.uploadImage(file)
-
-  //       currentEditor.chain().setImageBlockAt({ pos, src: "url" }).focus().run()
-  //     })
-  //   },
-  //   onPaste: (currentEditor, files) => {
-  //     files.forEach(async file => {
-  //       // const url = await API.uploadImage(file)
-
-  //       return currentEditor
-  //         .chain()
-  //         .setImageBlockAt({ pos: currentEditor.state.selection.anchor, src: "url" })
-  //         .focus()
-  //         .run()
-  //     })
-  //   },
-  // }),
+  ImageUpload,
+  ImageBlock,
+  FileHandler.configure({
+    allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
+    onDrop: (currentEditor, files, pos) => {
+      files.forEach(async file => {
+        try {
+          const url = await uploadImageToSupabase(file)
+          currentEditor.chain().setImageBlockAt({ pos, src: url }).focus().run()
+        } catch (error) {
+          console.error('Error uploading image:', error)
+          // Handle error (e.g., show a notification to the user)
+        }
+      })
+    },
+    onPaste: (currentEditor, files) => {
+      files.forEach(async file => {
+        try {
+          const url = await uploadImageToSupabase(file)
+          currentEditor
+            .chain()
+            .setImageBlockAt({ pos: currentEditor.state.selection.anchor, src: url })
+            .focus()
+            .run()
+        } catch (error) {
+          console.error('Error uploading image:', error)
+          // Handle error (e.g., show a notification to the user)
+        }
+      })
+    },
+  })
 
 ]
 

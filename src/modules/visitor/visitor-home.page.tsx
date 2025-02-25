@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import {
@@ -30,6 +31,7 @@ import {
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { NavLink } from "react-router-dom"
+import useFeaturedEvents from "./hooks/useFeaturedEvent"
 
 const featuredContent = {
   title: "The Last Letters of Jose Rizal",
@@ -38,36 +40,6 @@ const featuredContent = {
   type: "Exhibition",
   date: "Feb 20 - Mar 30, 2024",
 }
-
-const events = [
-  {
-    id: "rizal-letters-unveiling",
-    title: "Unveiling of Rizal's Last Letters",
-    description: "Join us for a historic moment as we unveil the last letters of Jose Rizal.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Mar 15, 2024",
-    time: "6:00 PM - 9:00 PM",
-    location: "Main Gallery",
-  },
-  {
-    id: "philippine-literature-seminar",
-    title: "Seminar on Philippine Literature",
-    description: "Explore the rich tapestry of Philippine literature with leading scholars.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Mar 25, 2024",
-    time: "2:00 PM - 5:00 PM",
-    location: "Lecture Hall",
-  },
-  {
-    id: "historical-film-screening",
-    title: "Historical Film Screening: Rizal",
-    description: "Watch the award-winning biographical film about Jose Rizal's life.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Apr 1, 2024",
-    time: "7:00 PM - 10:00 PM",
-    location: "Auditorium",
-  },
-]
 
 const exhibits = [
   {
@@ -153,7 +125,7 @@ const trendingTopics = [
   "Digital Preservation",
   "Local Artists",
   "Historical Films",
-]
+] 
 
 export default function Visitor() {
   const [activeExperience, setActiveExperience] = useState(0)
@@ -167,6 +139,10 @@ export default function Visitor() {
   const prevExperience = () => {
     setActiveExperience((prev) => (prev - 1 + visitorExperiences.length) % visitorExperiences.length)
   }
+
+  const { data: featuredEvents, isLoading } = useFeaturedEvents();
+
+  console.log(featuredEvents);
 
   return (
 
@@ -199,12 +175,13 @@ export default function Visitor() {
               </TabsList>
               <TabsContent value="events" className="space-y-4">
                 <div className="grid gap-6 md:grid-cols-2">
-                  {events.map((event, id) => (
-                    <NavLink to={`event/${id}`} key={event.id}>
+                  {isLoading && <>Loading...</>}
+                  {!isLoading && featuredEvents?.map((event: any) => (
+                    <NavLink to={`event/${event.event_id}`} key={event.event_id}>
                       <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                         <div className="relative aspect-video">
                           <img
-                            src={event.image || "/placeholder.svg"}
+                            src={event.coverPhoto || "/placeholder.svg"}
                             alt={event.title}
                             
                             className="object-cover"
@@ -212,16 +189,15 @@ export default function Visitor() {
                         </div>
                         <CardHeader>
                           <CardTitle className="line-clamp-1">{event.title}</CardTitle>
-                          <CardDescription className="line-clamp-2">{event.description}</CardDescription>
                         </CardHeader>
                         <CardFooter className="text-sm text-muted-foreground">
                           <div className="flex items-center">
                             <CalendarDays className="h-4 w-4 mr-2" />
-                            {event.date}
+                            {new Date(event.eventDate).toDateString()}
                           </div>
                           <div className="flex items-center ml-4">
                             <Clock className="h-4 w-4 mr-2" />
-                            {event.time}
+                            {event.eventTime}
                           </div>
                         </CardFooter>
                       </Card>
