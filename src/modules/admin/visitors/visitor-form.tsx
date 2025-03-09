@@ -12,14 +12,11 @@ import generatePassword from "@/lib/generaPassword";
 
 import { UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const VisitorForm = ({ form, isEditingMode }: any) => {
 
-  const navigate = useNavigate();
-  const { setFocus, setValue, formState } = form;
-  const { errors } = formState;
+  const { setValue} = form;
 
   const [imagePreview, setImagePreview] = useState<string | null>(form.getValues("visitorImg") || null) // To store the image preview URL
 
