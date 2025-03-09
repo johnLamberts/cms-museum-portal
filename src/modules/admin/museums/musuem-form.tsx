@@ -25,7 +25,7 @@ interface MuseumProps {
   exhibit?: Record<string, any>;
 }
 
-const MuseumForm = ({ form, isEditingMode, exhibit }: MuseumProps) => {
+const MuseumForm = ({ form }: MuseumProps) => {
   const menuContainerRef = useRef<HTMLDivElement | null>(null)
   const { editor } = useBlockEditor()
 
