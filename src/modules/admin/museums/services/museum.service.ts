@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import supabase from "@/lib/supabase";
 import axios from "axios";
 import { MuseumFormData } from "../museum-content";
 
@@ -27,7 +29,7 @@ export default {
   },
 
    /**-------------------------------------------------- */
-   // Get Museum                                            |
+   // Get Museums                                       |
    /**-------------------------------------------------- */
     getAllMuseums: async () => {
     try{
@@ -44,4 +46,48 @@ export default {
       }
     }
   },
+
+   /**-------------------------------------------------- */
+   // Get Exhibit                                            |
+   /**-------------------------------------------------- */
+   getExhibit: async (payloadId: string) => {
+    try{
+      
+      const { data, error } = await supabase.from("exhibits")
+        .select("*")
+        .eq("exhibits_id", payloadId)
+        .single();
+
+        if(error) return `[ExhibitErrorService]: ${JSON.stringify(error, null, 0)}`;
+
+        return data; 
+        
+    } catch (err) {
+      if (err instanceof axios.AxiosError) {
+        console.log(err.response?.data.error);
+        throw new Error(`${err.response?.data.error}`);
+      }
+    }
+  },
+
+  /**-------------------------------------------------- */
+   // Update Exhibit                                            |
+   /**-------------------------------------------------- */
+  async updateExhibit (payload: any) {
+
+    console.log("service", payload)
+    
+    const { data: exhibit, error: exhibitUpdatingError } = await supabase
+    .from("exhibits")
+    .update({
+      ...payload
+    })
+    .eq("exhibits_id", payload.exhibits_id)
+    .single();
+
+    if(exhibitUpdatingError) throw  `[UpdatingExhibitErrorService]: ${JSON.stringify(exhibitUpdatingError, null, 0)}`;
+
+
+    return exhibit;
+  }
 }

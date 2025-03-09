@@ -13,13 +13,22 @@ import { useWatch } from "react-hook-form"
 import MuseumHeaderForm from "./components/museum-header"
 import { useBlockEditor } from "./hooks/useMuseumEditor"
 // import EditorMenuBar from "./components/editor-menu-bar"
+import ColumnsMenu from "@/modules/extensions/multicolumn/columns-menu"
+import TableColumnMenu from "@/modules/extensions/table/menus/table-column"
+import TableRowMenu from "@/modules/extensions/table/menus/table-row"
 import "@/styles/partials/index.css"
 
 
+interface MuseumProps {
+  form: any;
+  isEditingMode?: boolean;
+  exhibit?: Record<string, any>;
+}
 
-const MuseumForm = ({ form }: any) => {
+const MuseumForm = ({ form, isEditingMode, exhibit }: MuseumProps) => {
   const menuContainerRef = useRef<HTMLDivElement | null>(null)
   const { editor } = useBlockEditor()
+
 
   // const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
@@ -77,10 +86,15 @@ const MuseumForm = ({ form }: any) => {
           </div>
 
           <div ref={menuContainerRef} className="sticky bottom-0 bg-background border-t">
-            <ContentItemMenu editor={editor} />
-            <LinkMenu editor={editor} appendTo={menuContainerRef} />
-            <TextMenu editor={editor} />
-            <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
+            <>
+              <ContentItemMenu editor={editor} />
+              <TextMenu editor={editor} />
+              <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
+              <LinkMenu editor={editor} appendTo={menuContainerRef} />
+              <TableRowMenu editor={editor} appendTo={menuContainerRef} />
+              <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
+              <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
+            </>
           </div>
         </form>
       </Form>

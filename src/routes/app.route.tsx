@@ -312,6 +312,10 @@ export const appRouter = createBrowserRouter([
     path: '/musuem/add_museum',
     Component: MuseumContent
   },
+  {
+    path: '/musuem/update_museum/:exhibitId',
+    Component: MuseumContent
+  },
   // For Exhibit Form
   {
     path: '/exhibits_mgm/add_exhibit',
