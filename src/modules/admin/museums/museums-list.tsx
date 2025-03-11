@@ -143,7 +143,7 @@ const MuseumLists = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => navigate(`/musuem/update_museum/${museum.exhibits_id}`)}>Edit</DropdownMenuItem>
-              <DropdownMenuItem>Delete</DropdownMenuItem>
+              <DropdownMenuItem>Add Gallery</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </TableCell>

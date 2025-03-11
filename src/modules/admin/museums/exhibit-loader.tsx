@@ -121,7 +121,7 @@ export default function MuseumLoader({ onLoadingComplete, minLoadingTime = 3000 
               className="mb-12 text-center"
             >
               <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
-                MUSEUM
+                Morong Museum
                 <span className="block text-primary">PORTAL</span>
               </h1>
               <p className="mt-3 text-base text-gray-400 sm:text-lg md:mt-5 md:text-xl">

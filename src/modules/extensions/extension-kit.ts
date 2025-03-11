@@ -28,6 +28,7 @@ import { CodeBlock } from "./code-block"
 import { CustomPage } from "./custom-page/custom-page"
 import { Document } from "./document"
 import { FontSize } from "./font-size"
+import { Gallery, GalleryItem } from "./gallery/gallery"
 import Heading from "./heading/heading"
 import ImageBlock from "./image-block/image-block"
 import ImageUpload from "./image-upload/image-upload"
@@ -111,35 +112,43 @@ export const ExtensionKit = () => [
   TableRow,
   ImageUpload,
   ImageBlock,
+  Gallery,
+  GalleryItem,
   FileHandler.configure({
-    allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
+    allowedMimeTypes: ["image/png", "image/jpeg", "image/gif", "image/webp"],
     onDrop: (currentEditor, files, pos) => {
-      files.forEach(async file => {
+      files.forEach(async (file) => {
         try {
           const url = await uploadImageToSupabase(file)
-          currentEditor.chain().setImageBlockAt({ pos, src: url }).focus().run()
+          // Check if cursor is inside a gallery
+          if (currentEditor.isActive("gallery")) {
+            currentEditor.chain().addGalleryItem({ src: url, alt: file.name }).focus().run()
+          } else {
+            currentEditor.chain().setImageBlockAt({ pos, src: url }).focus().run()
+          }
         } catch (error) {
-          console.error('Error uploading image:', error)
+          console.error("Error uploading image:", error)
           // Handle error (e.g., show a notification to the user)
         }
       })
     },
     onPaste: (currentEditor, files) => {
-      files.forEach(async file => {
+      files.forEach(async (file) => {
         try {
           const url = await uploadImageToSupabase(file)
-          currentEditor
-            .chain()
-            .setImageBlockAt({ pos: currentEditor.state.selection.anchor, src: url })
-            .focus()
-            .run()
+          // Check if cursor is inside a gallery
+          if (currentEditor.isActive("gallery")) {
+            currentEditor.chain().addGalleryItem({ src: url, alt: file.name }).focus().run()
+          } else {
+            currentEditor.chain().setImageBlockAt({ pos: currentEditor.state.selection.anchor, src: url }).focus().run()
+          }
         } catch (error) {
-          console.error('Error uploading image:', error)
+          console.error("Error uploading image:", error)
           // Handle error (e.g., show a notification to the user)
         }
       })
     },
-  })
+  }),
 
 ]
 

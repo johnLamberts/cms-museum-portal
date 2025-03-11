@@ -6,7 +6,7 @@ async function uploadImageToSupabase(file: File): Promise<string> {
   const filePath = `images/${fileName}`
 
   const { data, error } = await supabase.storage
-    .from('your-bucket-name')
+    .from('museo_rizal')
     .upload(filePath, file)
 
     console.log(data)
@@ -17,7 +17,7 @@ async function uploadImageToSupabase(file: File): Promise<string> {
   }
 
   const { data: { publicUrl } } = supabase.storage
-    .from('your-bucket-name')
+    .from('museo_rizal')
     .getPublicUrl(filePath)
 
   return publicUrl

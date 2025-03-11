@@ -75,7 +75,6 @@ export default {
    /**-------------------------------------------------- */
   async updateExhibit (payload: any) {
 
-    console.log("service", payload)
     
     const { data: exhibit, error: exhibitUpdatingError } = await supabase
     .from("exhibits")

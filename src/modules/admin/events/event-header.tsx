@@ -16,45 +16,30 @@ interface EventHeaderFormProps {
  
 const EventmHeaderForm: React.FC<EventHeaderFormProps> = ({  form }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { register,  setValue } = form;
+  const { register,  setValue, watch } = form;
 
-  const [photo, setPhoto] = useState("");
+  const coverPhoto = watch("coverPhoto");
 
-
-  const dataURLToFile = (dataURL: string, fileName: string): File => {
-    const arr = dataURL.split(',');
-    const mime = arr[0].match(/:(.*?);/)?.[1] || '';
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new File([u8arr], fileName, { type: mime });
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (reader.result) {
-          // Save the Base64 string
-          const base64String = reader.result.toString();
-          
-          setPhoto(base64String);
-
-          // Convert Base64 back to File
-          const originalFile = dataURLToFile(base64String, file.name);
+  //  const { data: baranggay, isLoading, error } = useBaranggay();
   
   
-          // Save it to your form state if needed
-          setValue("coverPhoto", originalFile);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  //    const memobaranggay = useMemo(() => {
+  //       return baranggay?.data?.exhibition || [];
+  //     }, [baranggay]);
+      
+
+const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (reader.result) {
+        setValue("coverPhoto", reader.result.toString());
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
   return (
     <div className="relative">
@@ -62,7 +47,7 @@ const EventmHeaderForm: React.FC<EventHeaderFormProps> = ({  form }) => {
       <div
         className="h-64 bg-cover bg-center relative"
         style={{
-          backgroundImage: `url(${photo || "/placeholder.svg"})`,
+          backgroundImage: `url(${coverPhoto || "/placeholder.svg"})`,
         }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">

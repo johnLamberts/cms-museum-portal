@@ -111,6 +111,12 @@ export const ContentItemMenu = ({ editor }: ContentItemMenuProps) => {
           </Popover.Trigger>
           <Popover.Content side="bottom" align="start" sideOffset={8}>
             <Surface className="p-2 flex flex-col min-w-[16rem]">
+            <Popover.Close>
+              <DropdownButton onClick={() => editor.chain().focus().setGallery().run()}>
+                <Icon name="LayoutGrid" />
+                Insert Gallery
+              </DropdownButton>
+            </Popover.Close>
               <Popover.Close>
                 <DropdownButton onClick={actions.resetTextFormatting}>
                   <Icon name="RemoveFormatting" />

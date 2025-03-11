@@ -19,6 +19,8 @@ import HomeEditor from "@/modules/admin/page-editor/home.editor";
 import PageEditorPage from "@/modules/admin/page-editor/page-editor.page";
 import BaranggayList from "@/modules/admin/settings/baranggay/baranggay-list";
 import BaranggayPage from "@/modules/admin/settings/baranggay/baranggay.page";
+import ExhibitionList from "@/modules/admin/settings/exhibition/exhibition-list";
+import ExhibitionPage from "@/modules/admin/settings/exhibition/exhibition.page";
 import MunicipalitiesList from "@/modules/admin/settings/municipalities/municipalities-list";
 import MunicipalitiesPage from "@/modules/admin/settings/municipalities/municipalities.page";
 import SettingsPage from "@/modules/admin/settings/settings.page";
@@ -33,7 +35,9 @@ import GeneralError from "@/modules/errors/general-error.page";
 import { default as ExhibitLandPage } from "@/modules/landing-page/exhibits.page";
 import MoreAbout from "@/modules/landing-page/more-about.page";
 import Museums from "@/modules/landing-page/museums.page";
+import VisitorEventsPage from "@/modules/visitor/visitor-events.page";
 import VisitorExhibitPage from "@/modules/visitor/visitor-exhibits.page";
+import VisitorExperiencePage from "@/modules/visitor/visitor-experiences.page";
 import VisitorHome from "@/modules/visitor/visitor-home.page";
 import VisitorProfile from "@/modules/visitor/visitor-profile.page";
 import VisitorVisitEvent from "@/modules/visitor/visitor-visit-event.page";
@@ -232,6 +236,16 @@ export const appRouter = createBrowserRouter([
                 Component: BaranggayList
               }
             ]
+          },
+          {
+            path: 'exhibition',
+            Component: ExhibitionPage,
+            children: [
+              {
+                index: true,
+                Component: ExhibitionList
+              }
+            ]
           }
         ]
       },
@@ -295,15 +309,26 @@ export const appRouter = createBrowserRouter([
         Component: VisitorExhibitPage
       },
       {
+        path: 'exhibits',
+        Component: VisitorExhibitPage
+      },
+      {
+        path: 'events',
+        Component: VisitorEventsPage
+      },
+      {
         path: 'exhibit/:exid',
         Component: VisitorVisitsExhibit
       },
       {
         path: 'event/:evid',
         Component: VisitorVisitEvent,
-
-      }
-    ]
+      },
+      {
+        path: 'experiences',
+        Component: VisitorExperiencePage
+      },
+    ],
   },
   
 
@@ -324,6 +349,10 @@ export const appRouter = createBrowserRouter([
   // For Event Form
   { 
     path: '/event/add_event',
+    Component: EventContent
+  },
+  {
+    path: '/event/update_event/:eventsId',
     Component: EventContent
   },
   // For Event Form

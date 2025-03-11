@@ -5,7 +5,10 @@ import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { EditorContent } from "@tiptap/react"
 import { NavLink } from "react-router-dom"
+import MuseumLoader from "../admin/museums/exhibit-loader"
+import { useBlockEditor } from "../admin/museums/hooks/useMuseumEditor"
 import useFeaturedEventById from "./hooks/useFeaturedEventById"
 
 
@@ -17,6 +20,8 @@ function EventCountdown({ targetDate }: { targetDate: string }) {
     minutes: 0,
     seconds: 0,
   })
+
+  console.log(targetDate)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -52,10 +57,18 @@ function EventCountdown({ targetDate }: { targetDate: string }) {
 }
 
 export default function VisitorVisitEvent() {
+  const { editor } = useBlockEditor();
 
   const { data: featureEvent, isLoading} = useFeaturedEventById()
 
-  if(isLoading) return <>Loading...</>
+  useEffect(() => {
+      if (editor && featureEvent?.eventContent) {
+        editor.commands.setContent(featureEvent?.eventContent)
+        editor.setEditable(false)
+      }
+    }, [editor, featureEvent?.eventContent])
+
+  if(isLoading) return <MuseumLoader />
 
   return (
     <div className="min-h-screen bg-background">
@@ -100,7 +113,7 @@ export default function VisitorVisitEvent() {
           <Card className="p-6">
             <CardContent className="space-y-4">
               <h2 className="text-2xl font-semibold text-center">Event Starts In</h2>
-              <EventCountdown targetDate={featureEvent.startDate} />
+              <EventCountdown targetDate={featureEvent.eventDate} />
             </CardContent>
           </Card>
 
@@ -114,7 +127,9 @@ export default function VisitorVisitEvent() {
           </div> */}
 
           {/* Rich Content */}
-          <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featureEvent.eventContent }} />
+          <div className="prose dark:prose-invert max-w-none">
+            {editor && <EditorContent editor={editor} />}
+          </div>
 
           {/* Event Schedule */}
           {/*<div>

@@ -40,7 +40,6 @@ export default {
 
       const { data, error } = await supabase.from("home_editor").select("*").single();
 
-      console.log(data)
       if(error) throw Error(JSON.stringify(error, null, 2));
 
       return data;

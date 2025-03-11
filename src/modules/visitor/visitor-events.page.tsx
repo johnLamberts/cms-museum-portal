@@ -8,27 +8,28 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Search, Sparkles, X } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useEvents } from "../admin/events/hooks/useEvents"
 import MuseumLoader from "../admin/museums/exhibit-loader"
-import { useMuseums } from "../admin/museums/hooks/useMuseums"
 
 // Define the MuseumFormData type
-export type MuseumFormData = {
+export type EventFormData = {
   title: string;
   coverPhoto: string;
-  colorTheme: string;
-  museumContent: string;
-  address?: string;
-  fee?: string;
+  status?: string;
+  eventDate?: string;
+  eventTime?: string;
+  eventContent?: string | any;
 };
-
 // Define the Exhibit interface
 interface Exhibit {
-  id: number;
+  id: string;
   title: string;
-  description: string;
-  image: string;
+  coverPhoto: string;
+  status?: string;
+  eventDate?: string;
+  eventTime?: string;
+  eventContent?: string | any;
   category: string;
-  address: string;
 }
 
 // Custom hook for masonry layout with stable updates
@@ -54,27 +55,28 @@ const useMasonryLayout = (items: Exhibit[], columns: number) => {
   return masonryItems;
 };
 
-export default function VisitorExhibitPage() {
+export default function VisitorEventsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedExhibit, setSelectedExhibit] = useState<Exhibit | null>(null)
   const [spotlightExhibit, setSpotlightExhibit] = useState<Exhibit | null>(null)
   const navigate = useNavigate();
 
-  const { data: museumsData, isLoading } = useMuseums()
+  const { data: museumsData, isLoading } = useEvents()
 
   // Map museumsData to the Exhibit interface
  // Memoize flatExhibits to prevent unnecessary recomputation
  const flatExhibits: Exhibit[] = useMemo(() => {
   return (
-    museumsData?.data?.museums?.map((museum: any) => ({
-      id: museum.exhibits_id || Date.now() + Math.random(),
+    museumsData?.data?.events?.map((museum: any) => ({
+      id: museum.event_id,
       title: museum.title,
       description: museum.museumContent || "No content available",
-      image: museum.coverPhoto || "/placeholder.svg",
-      category: museum.fee || "Uncategorized",
+      coverPhoto: museum.coverPhoto || "/placeholder.svg",
+      category: museum.status || "Uncategorized",
       address: museum.address || "",
-    })) || []
+      status: museum.status
+})) || []
   );
 }, [museumsData]);
 
@@ -107,7 +109,7 @@ const filteredExhibits = useMemo(() => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-8 text-center">Museo Exhibit Expedition</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center">Museo Event</h1>
       <div className="flex flex-wrap gap-4 mb-8 justify-center">
         <div className="relative flex-grow max-w-md">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -132,7 +134,7 @@ const filteredExhibits = useMemo(() => {
           ))}
         </div>
         <Button onClick={handleSpotlight} className="ml-auto">
-          <Sparkles className="mr-2 h-4 w-4" /> Spotlight Exhibit
+          <Sparkles className="mr-2 h-4 w-4" /> Spotlight Events
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -146,17 +148,17 @@ const filteredExhibits = useMemo(() => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="relative cursor-pointer group"
-                onClick={() => navigate(`/visitor/exhibit/${exhibit.id}`)}
+                onClick={() => navigate(`/visitor/event/${exhibit.id}`)}
               >
                 <img
-                  src={exhibit.image || "/placeholder.svg"}
+                  src={exhibit.coverPhoto || "/placeholder.svg"}
                   alt={exhibit.title}
                   className="w-full h-auto rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-end">
                   <div className="p-4 text-white">
                     <h3 className="text-xl font-semibold mb-2">{exhibit.title}</h3>
-                    <p className="text-sm">{exhibit.address}</p>
+                    {/* <p className="text-sm">{exhibit.address}</p> */}
                     {/* <p className="text-sm">{exhibit.description.substring(0, 100)}...</p> */}
                   </div>
                 </div>
@@ -186,13 +188,13 @@ const filteredExhibits = useMemo(() => {
                 <X className="h-6 w-6" />
               </button>
               <img
-                src={selectedExhibit.image || "/placeholder.svg"}
+                src={selectedExhibit.coverPhoto || "/placeholder.svg"}
                 alt={selectedExhibit.title}
                 className="w-full h-64 object-cover rounded-lg mb-4"
               />
               <h2 className="text-2xl font-bold mb-2">{selectedExhibit.title}</h2>
               <Badge className="mb-4">{selectedExhibit.category}</Badge>
-              <p className="text-gray-600">{selectedExhibit.description}</p>
+              {/* <p className="text-gray-600">{selectedExhibit.description}</p> */}
             </motion.div>
           </motion.div>
         )}
@@ -205,15 +207,15 @@ const filteredExhibits = useMemo(() => {
             exit={{ opacity: 0, scale: 0.8 }}
             className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 max-w-sm z-40"
           >
-            <h3 className="text-lg font-semibold mb-2">Spotlight Exhibit</h3>
+            <h3 className="text-lg font-semibold mb-2">Spotlight Event</h3>
             <img
-              src={spotlightExhibit.image || "/placeholder.svg"}
+              src={spotlightExhibit.coverPhoto || "/placeholder.svg"}
               alt={spotlightExhibit.title}
               className="w-full h-32 object-cover rounded-lg mb-2"
             />
             <h4 className="font-medium">{spotlightExhibit.title}</h4>
-            <p className="text-sm text-gray-600 mt-1">{spotlightExhibit.address}</p>
-            <Button className="mt-2 w-full" onClick={() => navigate(`/visitor/exhibit/${spotlightExhibit.id}`)}>
+            {/* <p className="text-sm text-gray-600 mt-1">{spotlightExhibit.address}</p> */}
+            <Button className="mt-2 w-full" onClick={() => navigate(`/visitor/event/${spotlightExhibit.id}`)}>
               Learn More
             </Button>
           </motion.div>

@@ -7,9 +7,7 @@ export default function VisitorProfile() {
 
   const { user } = useCurrentUser();
 
-  console.log(user);
 
-  console.log(user);
   const userPosts = [
     { id: 1, image: "/placeholder.svg?height=300&width=300" },
     { id: 2, image: "/placeholder.svg?height=300&width=300" },

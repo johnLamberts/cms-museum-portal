@@ -13,6 +13,7 @@ const HomeLayout = () => {
   useEffect(() => {
     if (editor && homeView?.homeContent) {
       editor.commands.setContent(homeView.homeContent)
+      editor.setEditable(false);
     }
   }, [editor, homeView?.homeContent])
 

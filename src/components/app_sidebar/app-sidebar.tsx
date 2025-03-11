@@ -102,6 +102,10 @@ const data = {
           title: "Baranggay",
           url: "settings/baranggay",
         },
+        {
+          title: "Exhibition",
+          url: "settings/exhibition",
+        },
       ],
     },
   ],

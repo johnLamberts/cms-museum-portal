@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { FileIcon, MoreHorizontalIcon, PlusCircleIcon, SearchIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useEvents from './hooks/useEvents';
+import { useEvents } from './hooks/useEvents';
 
 
 type EventStatusColor = {
@@ -80,7 +80,7 @@ const EventLists = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return memoEvents.map((museum: any) => (
-      <TableRow key={museum.museum_id}>
+      <TableRow key={museum.event_id}>
         <TableCell className="hidden sm:table-cell">
           <img
             alt={`${museum.title}'s avatar`}
@@ -114,7 +114,7 @@ const EventLists = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigate(`update_form/${museum.museum_id}`)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate(`/event/update_event/${museum.event_id}`)}>Edit</DropdownMenuItem>
               <DropdownMenuItem>Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

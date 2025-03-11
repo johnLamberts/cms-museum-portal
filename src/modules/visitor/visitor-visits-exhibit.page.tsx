@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Bookmark, CalendarDays, ChevronLeft, Clock, Heart, MapPin, MessageCircle, Share2 } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -5,62 +6,43 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { EditorContent } from "@tiptap/react"
+import { useEffect, useMemo } from "react"
 import { NavLink, useParams } from "react-router-dom"
+import MuseumLoader from "../admin/museums/exhibit-loader"
+import { useBlockEditor } from "../admin/museums/hooks/useMuseumEditor"
+import { useMuseums } from "../admin/museums/hooks/useMuseums"
 
-const featuredEvents = [
-  {
-    id: "last-letters-rizal",
-    title: "The Last Letters of Jose Rizal",
-    description:
-      "A powerful exhibition showcasing the final correspondences of the national hero, offering intimate insights into his thoughts and emotions during his last days.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Feb 20 - Mar 30, 2024",
-    location: "Main Gallery, 2nd Floor",
-    hours: "9:00 AM - 5:00 PM",
-    curator: "Dr. Maria Santos",
-    likes: 1243,
-    comments: 89,
-  },
-  {
-    id: "iskolar-ni-ynares",
-    title: "Iskolar ni Ynares: Artistic Visions",
-    description:
-      "Celebrating local talent and creativity through a diverse showcase of artworks by Rizal province scholars.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Apr 1 - Apr 30, 2024",
-    location: "East Wing Gallery",
-    hours: "10:00 AM - 6:00 PM",
-    curator: "Prof. Juan dela Cruz",
-    likes: 856,
-    comments: 62,
-  },
-  {
-    id: "ccs-days",
-    title: "CCS Days: Digital Heritage",
-    description:
-      "Exploring the intersection of technology and cultural preservation through interactive digital exhibits.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "May 15 - Jun 15, 2024",
-    location: "Tech Pavilion",
-    hours: "9:00 AM - 7:00 PM",
-    curator: "Engr. Lisa Reyes",
-    likes: 721,
-    comments: 53,
-  },
-  // Add more events as needed
-]
 
 export default function VisitorVisitsExhibit() {
   const { exid } = useParams();
+  const { editor } = useBlockEditor();
 
-  const exhibit = featuredEvents.find((event) => event.id === exid) || featuredEvents[0]
-  const relatedExhibits = featuredEvents.filter((event) => event.id !== exid).slice(0, 3)
+  
+
+  const { data: exhibits, isLoading } = useMuseums();
+
+ const memoMuseums = useMemo(() => {
+    return exhibits?.data?.museums || [];
+  }, [exhibits]);
+
+  const exhibit = memoMuseums.filter((event: any) => event.exhibits_id === Number(exid)).at(0)
+  const relatedExhibits = memoMuseums.filter((event: any) => event.id !== exid).slice(1, 3)
+
+  useEffect(() => {
+    if (editor && exhibit?.museumContent) {
+      editor.commands.setContent(exhibit?.museumContent)
+      editor.setEditable(false)
+    }
+  }, [editor, exhibit?.museumContent])
+  
+  if(isLoading) return <MuseumLoader />
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative h-[60vh] w-full overflow-hidden">
-        <img src={exhibit.image || "/placeholder.svg"} alt={exhibit.title}  className="object-cover"  />
+        <img src={exhibit.coverPhoto || "/placeholder.svg"} alt={exhibit.title}  className="object-cover"  />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         <div className="absolute top-4 left-4">
           <NavLink to="/visitor">
@@ -80,15 +62,15 @@ export default function VisitorVisitsExhibit() {
             <div className="flex justify-center items-center gap-4 text-muted-foreground">
               <span className="flex items-center gap-1">
                 <CalendarDays className="h-4 w-4" />
-                {exhibit.date}
+                {exhibit.exhibitExclusiveDate  || "To be announced"}
               </span>
               <span className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
-                {exhibit.location}
+                {exhibit.address  || "To be announced"}
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                {exhibit.hours}
+                {exhibit.expectedTime  || "To be announced" }
               </span>
             </div>
           </div>
@@ -98,10 +80,10 @@ export default function VisitorVisitsExhibit() {
             <CardContent className="flex items-center gap-4 py-4">
               <Avatar className="h-12 w-12">
                 <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>MR</AvatarFallback>
+                <AvatarFallback>CRTR</AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold">Curated by {exhibit.curator}</p>
+                <p className="font-semibold">Curated by {exhibit.curalator}</p>
                 <p className="text-sm text-muted-foreground">Museo Rizal Historical Archives Team</p>
               </div>
             </CardContent>
@@ -109,43 +91,30 @@ export default function VisitorVisitsExhibit() {
 
           {/* Exhibit Description */}
           <div className="prose dark:prose-invert max-w-none">
-            <p className="text-lg leading-relaxed">{exhibit.description}</p>
+            {/* <p className="text-lg leading-relaxed">{exhibit.description}</p>
             <p>
               Through interactive displays, original manuscripts, and multimedia presentations, visitors can explore the
               complex layers of Rizal's character, his relationships with family and friends, and his enduring love for
               his country. This exhibition offers a unique opportunity to connect with a pivotal moment in Philippine
               history and reflect on the enduring legacy of Jose Rizal.
-            </p>
+            </p> */}
+            {editor && <EditorContent editor={editor} />}
           </div>
 
-          {/* Gallery */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-semibold">Gallery</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="relative aspect-square overflow-hidden rounded-lg">
-                  <img
-                    src={exhibit.image || "/placeholder.svg"}
-                    alt={`Gallery image ${i + 1}`}
-                    className="object-cover transition-transform hover:scale-105"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+         
 
           {/* Related Exhibits */}
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold">Related Exhibits</h2>
             <div className="grid md:grid-cols-3 gap-6">
-              {relatedExhibits.map((relatedExhibit) => (
-                <NavLink to={`/exhibit/${relatedExhibit.id}`} key={relatedExhibit.id}>
+              {relatedExhibits.map((relatedExhibit: any) => (
+                <NavLink to={`/visitor/exhibit/${relatedExhibit.exhibits_id}`} key={relatedExhibit.exhibits_id}>
                   <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="relative aspect-[4/3]">
                       <img
-                        src={relatedExhibit.image || "/placeholder.svg"}
+                        src={relatedExhibit.coverPhoto || "/placeholder.svg"}
                         alt={relatedExhibit.title}
-                        className="object-cover"
+                        className="object-cover w-1/2"
                       />
                     </div>
                     <CardHeader>
