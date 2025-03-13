@@ -28,12 +28,6 @@ interface Post {
   shares: number
 }
 
-interface SuggestedUser {
-  id: string
-  firstName?: string,
-    lastName?: string,
-  visitorImg: string
-}
 
 const VisitorExperiencePage = () => {
 
@@ -211,17 +205,17 @@ const VisitorExperiencePage = () => {
     })
     
     // Fetch exhibitions for dropdown
-    const { data: exhibitions } = useQuery({
-      queryKey: ["exhibitions"],
-      queryFn: async () => {
-        const { data } = await supabase
-          .from("exhibits")
-          .select("exhibits_id, title")
-          .order("title")
+    // const { data: exhibitions } = useQuery({
+    //   queryKey: ["exhibitions"],
+    //   queryFn: async () => {
+    //     const { data } = await supabase
+    //       .from("exhibits")
+    //       .select("exhibits_id, title")
+    //       .order("title")
         
-        return data || []
-      }
-    })
+    //     return data || []
+    //   }
+    // })
 
   // Create post mutation
   const createPost = useMutation({
@@ -410,16 +404,16 @@ const VisitorExperiencePage = () => {
   }
   
   // Format time elapsed
-  const formatTimeElapsed = (dateString: string): string => {
-    const now = new Date()
-    const postDate = new Date(dateString)
-    const diffInSeconds = Math.floor((now.getTime() - postDate.getTime()) / 1000)
+  // const formatTimeElapsed = (dateString: string): string => {
+  //   const now = new Date()
+  //   const postDate = new Date(dateString)
+  //   const diffInSeconds = Math.floor((now.getTime() - postDate.getTime()) / 1000)
     
-    if (diffInSeconds < 60) return `${diffInSeconds}s ago`
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
-    return `${Math.floor(diffInSeconds / 86400)}d ago`
-  }
+  //   if (diffInSeconds < 60) return `${diffInSeconds}s ago`
+  //   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
+  //   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
+  //   return `${Math.floor(diffInSeconds / 86400)}d ago`
+  // }
   
 
   return (
