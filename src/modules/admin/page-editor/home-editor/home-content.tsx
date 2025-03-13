@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import HomeForm from "./home-form";
 import useCreateHomeEditor from "./hooks/useCreateHomeEditor";
+import useViewHomeEditor from "./hooks/useViewHomeEditor";
 
 export type HomeFormData = {
 
@@ -32,7 +33,10 @@ const HomeContent = () => {
   const { isAddingHomeEditor, addHomeHandler } = useCreateHomeEditor();
 
 
-   
+  const { homeView } = useViewHomeEditor();
+
+  console.log(homeView);
+
   const onSubmit = async (data: HomeFormData) => {
 
     try {

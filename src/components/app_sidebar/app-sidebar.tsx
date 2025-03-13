@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import {
@@ -23,13 +24,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import useCurrentUser from "@/modules/authentication/useCurrentUser"
 
 const data = {
-  user: {
-    name: "MuseoRizal",
-    email: "museorizal@site.library",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -129,6 +126,8 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user: currentUser } = useCurrentUser();
+  
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -154,7 +153,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={currentUser as any} />
       </SidebarFooter>
     </Sidebar>
   )

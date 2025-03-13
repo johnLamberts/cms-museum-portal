@@ -21,6 +21,8 @@ const HomeForm = ({ form }: any) => {
   const { editor } = useBlockEditor()
 
 
+  
+
 
   useEffect(() => {
     if (editor && !editor.isDestroyed) {
@@ -38,17 +40,6 @@ const HomeForm = ({ form }: any) => {
     }
   }, [editor, form])
 
-  // useEffect(() => {
-  //   if (editor && !editor.isDestroyed && editorContent) {
-  //     try {
-  //       // Parse the JSON string back to an object
-  //       const content = JSON.parse(editorContent)
-  //       editor.commands.setContent(content)
-  //     } catch (error) {
-  //       console.error("Failed to parse editor content:", error)
-  //     }
-  //   }
-  // }, [editor, editorContent])
 
   if (!editor) return null
 

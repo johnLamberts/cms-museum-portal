@@ -91,8 +91,17 @@ export const appRouter = createBrowserRouter([
   {
     path: '/admin-dashboard',
     lazy: async () => { 
-    const AppShell = await import('@/layouts/admin.layout');
-    return { Component: AppShell.default }
+
+      const AdminLayout = await import('@/layouts/admin.layout');
+
+      const { withAuth } = await import("@/routes/with-auth");
+  
+      const ProtectedAdminLayout = withAuth(AdminLayout.default, ["admin"])
+  
+      return { Component: ProtectedAdminLayout }
+
+    // const AppShell = await import('@/layouts/admin.layout');
+    // return { Component: AppShell.default }
     },
     errorElement: <GeneralError />,
     children: [
@@ -287,8 +296,13 @@ export const appRouter = createBrowserRouter([
   {
     path: '/visitor',
     lazy: async () => { 
-    const AppShell = await import('@/layouts/visitor.layout');
-    return { Component: AppShell.default }
+    const VisitorLayout = await import('@/layouts/visitor.layout');
+
+    const { withAuth } = await import("@/routes/with-auth");
+
+    const ProtectedVisitorLayout = withAuth(VisitorLayout.default, ["visitor"])
+
+    return { Component: ProtectedVisitorLayout }
     },
     errorElement: <GeneralError />,
     children: [

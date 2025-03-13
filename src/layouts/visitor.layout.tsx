@@ -1,19 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import { Bell, Compass, Heart, Home, MessageCircle, PlayCircle, PlusSquare, Search, User } from 'lucide-react'
+import useCurrentUser from '@/modules/authentication/useCurrentUser'
+import useLogout from '@/modules/authentication/useLogout'
+import { Bell, Compass, Home, MessageCircle, PlayCircle, User } from 'lucide-react'
 import { Link, NavLink, Outlet, useNavigate, } from 'react-router-dom'
 
 const navItems = [
   { icon: Home, label: "Home", to: "/visitor" },
-  { icon: Search, label: "Search", to: "/visitor/search" },
-  { icon: Compass, label: "Explore Exhibits", to: "/visitor/explore" },
-  { icon: PlayCircle, label: "Virtual Tours", to: "/visitor/tours" },
-  { icon: MessageCircle, label: "Discussions", to: "/visitor/discussions" },
-  { icon: Heart, label: "Notifications", to: "/visitor/notifications" },
-  { icon: PlusSquare, label: "Share Experience", to: "/visitor/create" },
-  { icon: User, label: "Profile", to: "profile" },
+  { icon: Compass, label: "Explore Exhibits", to: "/visitor/exhibits" },
+  { icon: PlayCircle, label: "Events", to: "/visitor/events" },
+  { icon: MessageCircle, label: "Experience", to: "/visitor/experiences" },
+  { icon: User, label: "Profile", to: "/visitor/profile" },
 ]
 
 
@@ -21,6 +20,11 @@ const VisitorLayout = () => {
 
 
   const navigate = useNavigate();
+
+  const { logoutUser } = useLogout();
+
+  const { user  } = useCurrentUser();
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -49,8 +53,10 @@ const VisitorLayout = () => {
           <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
             <div className="w-full flex-1 md:w-auto md:flex-none">
               <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search exhibits and events..." className="pl-8 md:w-[300px]" />
+                {/* <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" /> */}
+                {/* <Input placeholder="Search exhibits and events..." className="pl-8 md:w-[300px]" /> */}
+
+                <span className="text-sm">Welcome, {(user as any)?.firstName} {(user as any)?.lastName}</span>
               </div>
             </div>
             <Button variant="ghost" size="icon" className="relative">
@@ -68,7 +74,7 @@ const VisitorLayout = () => {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigate("profile")}>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Sign Out</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => logoutUser()}>Sign Out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

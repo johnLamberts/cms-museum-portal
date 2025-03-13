@@ -42,6 +42,8 @@ export default {
 
       if(error) throw Error(JSON.stringify(error, null, 2));
 
+      console.log(data)
+
       return data;
 
     } catch (err) {

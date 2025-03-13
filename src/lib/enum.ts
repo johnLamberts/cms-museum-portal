@@ -12,6 +12,7 @@ export enum CMS_KEYZ{
 
 
   CURRENT_USER = "current_user",
+  CURRENT_USER_POSTS = "current_posts_user",
 
   // PAGE EDITOR
   READ_WRITE_HOME_EDITOR = "page_home_editor",
