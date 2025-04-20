@@ -1,6 +1,9 @@
 import { useBlockEditor } from "@/modules/admin/page-editor/home-editor/hooks/useHomeEditor";
 import useViewHomeEditor from "@/modules/admin/page-editor/home-editor/hooks/useViewHomeEditor";
-import { EditorContent } from "@tiptap/react";
+import About from "@/modules/landing-page/about.page";
+import Hero from "@/modules/landing-page/hero.page";
+import Highlights from "@/modules/landing-page/highlights.page";
+import UpcomingEvents from "@/modules/landing-page/upcoming-events.page";
 import { useEffect } from "react";
 import "../styles/partials/index.css";
 
@@ -24,7 +27,7 @@ const HomeLayout = () => {
    <div className="pt-10">
 
     {/* Landing page */}
-    {/* <Hero />
+    <Hero />
     <About />
    
 
@@ -32,10 +35,12 @@ const HomeLayout = () => {
 
     <UpcomingEvents />
 
-    <Highlights /> */}
+    <Highlights />
 
   {/* <div className="prose max-w-none mx-auto pt-12" dangerouslySetInnerHTML={{ __html: homeView.homeContent }} /> */}
-    {editor && <EditorContent editor={editor} />}
+    {/* {editor && <EditorContent editor={editor} />} */}
+   
+      {/* <Preview content={homeView?.homeContent} /> */}
    </div>
   )
 }

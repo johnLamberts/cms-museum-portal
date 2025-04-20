@@ -5,7 +5,7 @@ import homeEditorService from "../service/home-editor.service";
 const useViewHomeEditor = () => {
   const { isLoading, data: homeView } = useQuery({
     queryKey: [CMS_KEYZ.HOME_EDITOR_PAGE],
-    queryFn: homeEditorService.getHomePage,
+    queryFn: homeEditorService.getHomeContent,
     refetchOnWindowFocus: false,
   });
 

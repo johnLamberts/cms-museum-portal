@@ -1,26 +1,26 @@
-import CMS_KEYZ from "@/lib/enum";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import homeEditorService from "../service/home-editor.service";
-
+// src/modules/admin/page-editor/hooks/useCreateHomeEditor.ts
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { HomeFormData } from '../home-content';
+import homeEditorService from '../service/home-editor.service';
 
 export default function useCreateHomeEditor() {
-    const queryClient = useQueryClient();
+ 
+  const queryClient = useQueryClient();
   
-    const { isPending: isAddingHomeEditor, mutateAsync: addHomeHandler  } = useMutation({
-      mutationFn: homeEditorService.addHomeEdits,
-      onSuccess: () => {
-        toast.success(
-          `Success! Home Page has been modified successfully. `
-        );
-        queryClient.invalidateQueries({
-          queryKey: [CMS_KEYZ.READ_WRITE_HOME_EDITOR],
-        });
-      },
-      onError: (err) => toast.error(err.message),
-  
-    }) 
-  
-    return { isAddingHomeEditor, addHomeHandler }
-  
+  const mutation = useMutation({
+    mutationFn: (data: HomeFormData) => homeEditorService.addHomeEdits(data),
+    onSuccess: (data) => {
+      // Update or invalidate relevant queries after successful mutation
+      queryClient.invalidateQueries({ queryKey: ['homepage_editor'] });
+      
+      // You could also directly update the cache instead of invalidating
+      queryClient.setQueryData(['homepage_editor', data.home_id], data);
+    }
+  });
+
+  return {
+    addHomeHandler: mutation.mutateAsync,
+    isAddingHomeEditor: mutation.isPending,
+    error: mutation.error
+  };
 }

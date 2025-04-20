@@ -32,12 +32,19 @@ import { Gallery, GalleryItem } from "./gallery/gallery"
 import Heading from "./heading/heading"
 import ImageBlock from "./image-block/image-block"
 import ImageUpload from "./image-upload/image-upload"
-import Column from "./multicolumn/column"
-import Columns from "./multicolumn/columns"
+// import Column from "./multicolumn/column"
+import { Columns } from "./multicolumn/columns"
+// import { Columns } from "lucide-react"
+import { Callout } from "./callout/callout"
+import { Card } from "./card/card"
+import { CardContent } from "./card/card-content"
+import { CardHeader } from "./card/card-header"
+import { Column } from "./multicolumn/column"
 import Selection from "./selection/selection"
 import SlashCommand from "./slash-command/slash-command"
 import { Table, TableCell } from "./table"
 import { TrailingNode } from "./trailing-node/trailing-node"
+import { VideoEmbed } from "./video/video"
 export { Table, TableCell, TableHeader, TableRow } from './table'
 
 export const ExtensionKit = () => [
@@ -104,6 +111,24 @@ export const ExtensionKit = () => [
     class: 'ProseMirror-dropcursor border-black',
   }),
   
+  VideoEmbed,
+    
+  // Layout components
+  Columns,
+  Column,
+  Callout,
+  Card,
+  CardHeader,
+  CardContent,
+  
+  // UI/UX
+  Placeholder.configure({
+    placeholder: 'Start writing content...',
+    emptyEditorClass: 'is-editor-empty',
+    showOnlyWhenEditable: true,
+  }),
+
+
   SlashCommand,
   Table,
   TableOfContents,

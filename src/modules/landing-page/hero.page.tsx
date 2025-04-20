@@ -7,7 +7,7 @@ const Hero = () => {
       
         <h1 className="font-display md:text-display-2xl text-display-lg text-[#492309]">
           {/* <span className="bg-[#50C878]/85">Tech's Impact</span>{" "} */}
-          Discover the <span className="bg-[#927B6B]/95 text-gray-300 italic px-2">Rich History</span> and Culture of Rizal
+          Discover the <span className="bg-[#927B6B]/95 text-gray-300 italic px-2">Rich History</span> and Culture of Morong Rizal
         </h1>
         <p className="col-span-8 md:text-body-xl text-body-lg font-light text-neutral-700 max-w-[800px]">
         Immerse yourself in Rizal’s vibrant history and artistic legacy. From iconic landmarks to hidden gems, explore the museums that bring our past to life and shape the stories of tomorrow.
