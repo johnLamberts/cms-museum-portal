@@ -39,6 +39,8 @@ export default {
   /**-------------------------------------------------- */
   updateArtifact: async (payload: any) => {
     try {
+
+      console.log(payload)
       const formData = new FormData();
       Object.entries(payload).forEach(([key, value]) => {
         if (key === 'artifactImg' && value instanceof File) {
@@ -47,6 +49,9 @@ export default {
           formData.append(key, value!.toString());
         }
       });
+
+      console.log(formData)
+
 
       const response = await axios({
         method: "PUT",
@@ -57,6 +62,7 @@ export default {
         },
       });
 
+      console.log(response.data)
       return response.data;
     } catch (err) {
       if (err instanceof axios.AxiosError) {

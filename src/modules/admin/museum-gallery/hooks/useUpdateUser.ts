@@ -11,8 +11,9 @@ export default function useUpdateArtifacts() {
       mutationFn: artifactService.updateArtifact,
       onSuccess: (_newArr, data) => {
         toast.success(
-          `Success! The ${(data).email} has been modified successfully. `
+          `Success! The ${(data).title} has been modified successfully. `
         );
+        console.log(data)
         queryClient.invalidateQueries({
           queryKey: [CMS_KEYZ.READ_CREATE_GALLERY_ADDED],
         });

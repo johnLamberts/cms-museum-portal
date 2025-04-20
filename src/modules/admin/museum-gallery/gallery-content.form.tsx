@@ -98,22 +98,22 @@ const GalleryContentForm = ({ artifact = {}, onOpenChange, open }: GalleryConten
 
   const onSubmit: SubmitHandler<ArtifactFormValues | any> = async (data: ArtifactFormValues) => {
     try {
-      const { title, description, period, category, location, artifactImg, featured } = data;
+      const { title, description, period, category,  artifactImg, featured } = data;
       const artifactData = {
         title,
         description,
         period,
         category,
         artifactImg,
-        municipal_id: location,
         featured: featured || false
       }
 
       if (isEditingMode) {
+
+        console.log(artifactData)
         await updateArtifactHandler({
           ...artifactData,
           artifact_id,
-          artifact_uid: artifact.artifact_uid
         });
       } else {
         await addArtifactHandler(artifactData);
