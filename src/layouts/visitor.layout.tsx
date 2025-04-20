@@ -45,6 +45,9 @@ const VisitorLayout = () => {
               <NavLink className="transition-colors hover:text-foreground/80" to="events">
                 Events
               </NavLink>
+              <NavLink className="transition-colors hover:text-foreground/80" to="gallery">
+                Gallery
+              </NavLink>
               <NavLink className="transition-colors hover:text-foreground/80" to="experiences">
                 Share experiences
               </NavLink>

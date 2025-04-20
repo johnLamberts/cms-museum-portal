@@ -76,10 +76,10 @@ const data = {
           title: "Exhibits",
           url: "museums",
         },
-        // {
-        //   title: "Exhibits",
-        //   url: "exhibits_mgm",
-        // },
+        {
+          title: "Museum Gallery",
+          url: "museum_gallery",
+        },
         {
           title: "Site Editor",
           url: "page_editor",

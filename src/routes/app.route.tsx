@@ -10,6 +10,9 @@ import EventPage from "@/modules/admin/events/events.page";
 import ExhibitContentForm from "@/modules/admin/exhibits/exhibit-form.content";
 import ExhibitsList from "@/modules/admin/exhibits/exhibits-list";
 import ExhibitsPage from "@/modules/admin/exhibits/exhibits.page";
+import GalleryForm from "@/modules/admin/museum-gallery/gallery-form";
+import GalleryList from "@/modules/admin/museum-gallery/gallery-list";
+import MuseumGallery from "@/modules/admin/museum-gallery/museum-gallery.page";
 import MuseumContent from "@/modules/admin/museums/museum-content";
 import MuseumLists from "@/modules/admin/museums/museums-list";
 import MuseumPage from "@/modules/admin/museums/musuems.page";
@@ -31,10 +34,13 @@ import VisitorForm from "@/modules/admin/visitors/visitor-form";
 import VisitorList from "@/modules/admin/visitors/visitor-list";
 import VisitorPage from "@/modules/admin/visitors/visitor.page";
 import LoginPage from "@/modules/authentication/login.page";
+import AccountStatusPage from "@/modules/authentication/pending-approval";
+import RegisterPage from "@/modules/authentication/register.page";
 import GeneralError from "@/modules/errors/general-error.page";
 import { default as ExhibitLandPage } from "@/modules/landing-page/exhibits.page";
 import MoreAbout from "@/modules/landing-page/more-about.page";
 import Museums from "@/modules/landing-page/museums.page";
+import VisitorGalleryPage from "@/modules/visitor/visitor-artifacts-gallery.page";
 import VisitorEventsPage from "@/modules/visitor/visitor-events.page";
 import VisitorExhibitPage from "@/modules/visitor/visitor-exhibits.page";
 import VisitorExperiencePage from "@/modules/visitor/visitor-experiences.page";
@@ -87,6 +93,14 @@ export const appRouter = createBrowserRouter([
   {
     path: '/login',
     Component: LoginPage
+  },
+  {
+    path: '/register',
+    Component: RegisterPage
+  },
+  {
+    path: "/pending-approval",
+    Component: AccountStatusPage
   },
   {
     path: '/admin-dashboard',
@@ -169,6 +183,26 @@ export const appRouter = createBrowserRouter([
           {
             path: 'update_form/:userid',
             Component: UserForm
+          }
+        ]
+      },
+       // Museum Gallery
+       {
+        path: 'museum_gallery',
+        Component: MuseumGallery,
+        children: [
+          {
+            index: true,
+            Component: GalleryList
+          }, 
+         
+          {
+            path: 'add_form',
+            Component: GalleryForm
+          },
+          {
+            path: 'update_form/:visitorId',
+            Component: VisitorForm
           }
         ]
       },
@@ -329,6 +363,10 @@ export const appRouter = createBrowserRouter([
       {
         path: 'events',
         Component: VisitorEventsPage
+      },
+      {
+        path: 'gallery',
+        Component: VisitorGalleryPage
       },
       {
         path: 'exhibit/:exid',

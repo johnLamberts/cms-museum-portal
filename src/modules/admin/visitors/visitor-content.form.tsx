@@ -82,7 +82,8 @@ interface VisitorContentFormProps {
 }
 
 const VisitorContentForm = ({ visitor = {}, onOpenChange, open }: VisitorContentFormProps) => {
-
+  console.log(visitor)
+  
   const { visitor_id, ...otherData } = visitor;
   const isEditingMode = Boolean(visitor_id);
 
@@ -123,6 +124,8 @@ const VisitorContentForm = ({ visitor = {}, onOpenChange, open }: VisitorContent
 
   const onSubmit: SubmitHandler<VisitorFormValues> = async (data: VisitorFormValues) => {
     try {
+      console.log(data);
+
       const userData = {
         ...data,
         confirmPassword: data.password,
@@ -130,6 +133,7 @@ const VisitorContentForm = ({ visitor = {}, onOpenChange, open }: VisitorContent
         user_uid: otherData.user_uid,
         visitor_id: visitor_id
       };
+
 
       if (isEditingMode) {
         await updateVisitorHandler(userData)
