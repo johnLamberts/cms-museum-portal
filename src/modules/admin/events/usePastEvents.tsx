@@ -188,9 +188,7 @@ export const usePastEvents = (eventId: string | null = null): UsePastEventsRetur
       setSavingStatus({ saving: false, success: true, error: null });
 
       // Update the current event
-      await eventService.updateEvent(currentEvent.event_id, {
-        has_documentation: true,
-      });
+      await eventService.updateEvent(currentEvent);
 
       setCurrentEvent({
         ...currentEvent,
@@ -240,9 +238,7 @@ export const usePastEvents = (eventId: string | null = null): UsePastEventsRetur
       setEventTestimonials([...eventTestimonials, ...data]);
 
       // Update the current event
-      await eventService.updateEvent(currentEvent.event_id, {
-        has_testimonials: true,
-      });
+      await eventService.updateEvent(currentEvent);
 
       setCurrentEvent({
         ...currentEvent,
@@ -346,10 +342,7 @@ export const usePastEvents = (eventId: string | null = null): UsePastEventsRetur
 
       // Update cover photo if this is the first image
       if (processedImages.length > 0 && eventImages.length === 0) {
-        await eventService.updateEvent(currentEvent.event_id, {
-          coverPhoto: processedImages[0].url,
-          has_gallery: true,
-        });
+        await eventService.updateEvent(currentEvent);
 
         setCurrentEvent({
           ...currentEvent,
@@ -395,7 +388,9 @@ export const usePastEvents = (eventId: string | null = null): UsePastEventsRetur
     try {
       setSavingStatus({ saving: true, success: false, error: null });
 
-      const { data, error } = await eventService.updateEvent(currentEvent.event_id, eventData);
+      const { data, error } = await eventService.updateEvent({
+        ...eventData, event_id: currentEvent.event_id
+      });
 
       if (error) throw new Error(error);
 
