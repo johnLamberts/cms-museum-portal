@@ -186,9 +186,7 @@ const EventGallery = () => {
     if (!currentEvent || !image) return;
 
     try {
-      await eventService.updateEvent(currentEvent.event_id as string, {
-        coverPhoto: image.url,
-      });
+      await eventService.updateEvent(currentEvent);
 
       await eventService.uploadEventImage(image);
 
