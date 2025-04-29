@@ -38,7 +38,7 @@ const EventContent = () => {
 
   const contentSetupComplete = useRef(false);
 
-  const { event_id, ...otherData } = event || {};
+  const { event_id, ...otherData } = event?.data as any || {};
   const isEditingMode = Boolean(event_id);
 
 

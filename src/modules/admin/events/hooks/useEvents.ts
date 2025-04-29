@@ -15,7 +15,6 @@ const useEvents = () => {
 const useEvent = () => {
 
   const { eventsId } = useParams();
-  console.log(eventsId)
   return useQuery({
     queryKey: [CMS_KEYZ.READ_CREATE_EVENTS_ADDED, eventsId],
     queryFn: () => eventService.getEventById(eventsId as string),

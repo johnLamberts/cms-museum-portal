@@ -55,7 +55,7 @@ const eventService = {
    * @param payload - Event data
    * @returns Created event
    */
-  async addEvent(payload: EventFormData): Promise<EventFormData> {
+  async addEvent(payload: any): Promise<any> {
     try {
       console.log(payload)
 
@@ -79,7 +79,7 @@ const eventService = {
    * Get all events
    * @returns Array of events
    */
-  async getAllEvents(): Promise<EventFormData[]> {
+  async getAllEvents(): Promise<any> {
     try {
       const response = await axios({
         method: "GET",
@@ -132,12 +132,12 @@ const eventService = {
    * @param payload - Update data
    * @returns Updated event
    */
-  async updateEvent(eventId: string, payload: Partial<EventFormData>): Promise<EventFormData> {
+  async updateEvent(payload: Partial<any>): Promise<any> {
     try {
       const { data: event, error: eventError } = await supabase
         .from("events")
         .update(payload)
-        .eq("event_id", eventId)
+        .eq("event_id", payload.event_id)
         .select()
         .single()
 
