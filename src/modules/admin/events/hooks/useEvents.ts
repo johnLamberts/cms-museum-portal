@@ -18,7 +18,7 @@ const useEvent = () => {
   console.log(eventsId)
   return useQuery({
     queryKey: [CMS_KEYZ.READ_CREATE_EVENTS_ADDED, eventsId],
-    queryFn: () => eventService.getEvent(eventsId as string),
+    queryFn: () => eventService.getEventById(eventsId as string),
     enabled: !!eventsId,
     refetchOnWindowFocus: false,
   });

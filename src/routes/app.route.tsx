@@ -5,6 +5,8 @@ import OverviewDashboard from "@/modules/admin/dashboard/overview.dashboard";
 import DonationList from "@/modules/admin/donations/donation-list";
 import DonationsPage from "@/modules/admin/donations/donations.page";
 import EventContent from "@/modules/admin/events/event-content";
+import EventDocumentation from "@/modules/admin/events/event-documentary";
+import EventGallery from "@/modules/admin/events/event-gallery";
 import EventLists from "@/modules/admin/events/event-lists";
 import EventPage from "@/modules/admin/events/events.page";
 import ExhibitContentForm from "@/modules/admin/exhibits/exhibit-form.content";
@@ -406,6 +408,14 @@ export const appRouter = createBrowserRouter([
   {
     path: '/event/update_event/:eventsId',
     Component: EventContent
+  },
+  {
+    path: '/event/documentation/:eventId',
+    Component: EventDocumentation
+  },
+  {
+    path: '/event/gallery/:eventId',
+    Component: EventGallery
   },
   // For Event Form
   {
