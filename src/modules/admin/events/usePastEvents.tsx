@@ -75,6 +75,8 @@ interface UsePastEventsReturn {
   deleteImage: (imageId: string) => Promise<boolean>;
   updateEventDetails: (eventData: Partial<EventFormData>) => Promise<EventFormData | null>;
   resetSavingStatus: () => void;
+
+  updateDocumentation: (payload: any) => Partial<any | null>
 }
 
 // Custom hook for managing past events
@@ -360,6 +362,28 @@ export const usePastEvents = (eventId: string | null = null): UsePastEventsRetur
     }
   };
 
+  const updateDocumentation = async (documentation: EventDocumentation) => {
+    try {
+      setSavingStatus({ saving: true, success: false, error: null });
+      
+      if (!documentation.event_id) {
+        throw new Error('Documentation ID is required for updates');
+      }
+      
+      const { data, error } = await eventService.updateEventDocumentation(documentation);
+      
+      if (error) throw new Error(error.message);
+      
+      setEventDocumentation(data);
+      setSavingStatus({ saving: false, success: true, error: null });
+      return true;
+    } catch (err: any) {
+      console.error('Error updating documentation:', err);
+      setSavingStatus({ saving: false, success: false, error: err.message });
+      return false;
+    }
+  };
+
   // Delete an image
   const deleteImage = async (imageId: string): Promise<boolean> => {
     try {
@@ -431,6 +455,8 @@ export const usePastEvents = (eventId: string | null = null): UsePastEventsRetur
     addImages,
     deleteImage,
     updateEventDetails,
+
+    updateDocumentation,
 
     // Reset status
     resetSavingStatus: () => setSavingStatus({ saving: false, success: false, error: null }),

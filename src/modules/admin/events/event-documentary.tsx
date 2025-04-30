@@ -51,6 +51,7 @@ const EventDocumentation = () => {
     eventDocumentation,
     savingStatus,
     saveDocumentation,
+    updateDocumentation,
     updateEventDetails,
   } = usePastEvents(eventId);
 
@@ -68,13 +69,16 @@ const EventDocumentation = () => {
       engagement: 0,
     },
   });
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [hasChanges, setHasChanges] = useState<boolean>(false);
+  const [originalDocumentation, setOriginalDocumentation] = useState<DocumentationState | null>(null);
 
   // Initialize form state from fetched data
   useEffect(() => {
     if (eventDocumentation && eventDocumentation.content) {
       try {
         const parsedContent: DocumentationState = JSON.parse(eventDocumentation.content);
-        setDocumentation({
+        const doc = {
           summary: parsedContent.summary || '',
           objectives: parsedContent.objectives || '',
           achievements: parsedContent.achievements || '',
@@ -85,7 +89,11 @@ const EventDocumentation = () => {
             satisfaction: parsedContent.statistics?.satisfaction || 0,
             engagement: parsedContent.statistics?.engagement || 0,
           },
-        });
+        };
+        
+        setDocumentation(doc);
+        setOriginalDocumentation(doc);
+        setIsUpdating(true); // We have existing documentation to update
       } catch (err) {
         console.error('Error parsing event documentation content:', err);
       }
@@ -98,8 +106,24 @@ const EventDocumentation = () => {
           attendance: currentEvent.attendees || 0,
         },
       }));
+      setIsUpdating(false); // No existing documentation, so we're creating new
     }
   }, [eventDocumentation, currentEvent]);
+
+  // Track if there are unsaved changes
+  useEffect(() => {
+    if (!originalDocumentation) {
+      // No original to compare to, so this is a new document (always has changes)
+      setHasChanges(true);
+      return;
+    }
+
+    // Deep compare the current state with the original
+    const currentJSON = JSON.stringify(documentation);
+    const originalJSON = JSON.stringify(originalDocumentation);
+    
+    setHasChanges(currentJSON !== originalJSON);
+  }, [documentation, originalDocumentation]);
 
   const handleDocumentationChange = (field: keyof Omit<DocumentationState, 'statistics'>, value: string) => {
     setDocumentation((prev) => ({
@@ -130,8 +154,19 @@ const EventDocumentation = () => {
         created_at: eventDocumentation?.created_at || new Date().toISOString(),
       };
 
-      // Save documentation
-      const success = await saveDocumentation(docData);
+      // Determine if we're updating or creating new
+      let success;
+      
+      if (isUpdating && eventDocumentation?.event_id) {
+        // Update existing documentation
+        success = await updateDocumentation({
+          ...docData,
+          event_id: eventDocumentation.event_id
+        });
+      } else {
+        // Create new documentation
+        success = await saveDocumentation(docData);
+      }
 
       if (success) {
         // Update the event's attendees if changed
@@ -141,13 +176,24 @@ const EventDocumentation = () => {
           });
         }
 
-        // Show success for a moment then navigate away
+        // Update our local state for tracking changes
+        setOriginalDocumentation({...documentation});
+        setHasChanges(false);
+
+        // Show success message
         setTimeout(() => {
           navigate('/events');
         }, 1500);
       }
     } catch (error: any) {
       console.error('Error saving documentation:', error);
+    }
+  };
+
+  // Discard changes and reset to original state
+  const handleDiscard = () => {
+    if (originalDocumentation) {
+      setDocumentation({...originalDocumentation});
     }
   };
 
@@ -182,9 +228,16 @@ const EventDocumentation = () => {
         </Button>
         <div>
           <h1 className="text-2xl font-bold">{currentEvent.title} - Documentation</h1>
-          <p className="text-muted-foreground">Create comprehensive documentation for this completed event</p>
+          <p className="text-muted-foreground">
+            {isUpdating ? 'Update' : 'Create'} comprehensive documentation for this completed event
+          </p>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex gap-2">
+          {isUpdating && hasChanges && (
+            <Button variant="outline" onClick={handleDiscard}>
+              Discard Changes
+            </Button>
+          )}
           <Button variant={previewMode ? 'default' : 'outline'} onClick={() => setPreviewMode(!previewMode)}>
             {previewMode ? 'Edit Mode' : 'Preview Mode'}
           </Button>
@@ -193,7 +246,9 @@ const EventDocumentation = () => {
 
       {savingStatus.success && (
         <Alert className="mb-6 bg-green-50 text-green-800 border-green-200">
-          <AlertDescription>Documentation saved successfully!</AlertDescription>
+          <AlertDescription>
+            Documentation {isUpdating ? 'updated' : 'saved'} successfully!
+          </AlertDescription>
         </Alert>
       )}
 
@@ -443,8 +498,16 @@ const EventDocumentation = () => {
                 <Button variant="outline" onClick={() => setActiveTab('statistics')}>
                   <ArrowLeftIcon className="mr-2 h-4 w-4" /> Back: Statistics
                 </Button>
-                <Button onClick={handleSave} disabled={savingStatus.saving}>
-                  {savingStatus.saving ? 'Saving...' : 'Save Documentation'}
+                <Button 
+                  onClick={handleSave} 
+                  disabled={savingStatus.saving || (!hasChanges && isUpdating)}
+                >
+                  {savingStatus.saving 
+                    ? 'Saving...' 
+                    : isUpdating 
+                      ? hasChanges ? 'Update Documentation' : 'No Changes to Save'
+                      : 'Save Documentation'
+                  }
                 </Button>
               </CardFooter>
             </Card>
@@ -469,9 +532,7 @@ const EventDocumentation = () => {
                     <img
                       src={currentEvent.coverPhoto || '/api/placeholder/400/320'}
                       alt={currentEvent.title}
-                     
-
- className="w-full h-full object-cover"
+                      className="w-full h-full object-cover"
                     />
                   </div>
 
@@ -573,8 +634,16 @@ const EventDocumentation = () => {
             <Button variant="outline" onClick={() => setPreviewMode(false)}>
               Back to Editing
             </Button>
-            <Button onClick={handleSave} disabled={savingStatus.saving}>
-              {savingStatus.saving ? 'Saving...' : 'Save Documentation'}
+            <Button 
+              onClick={handleSave} 
+              disabled={savingStatus.saving || (!hasChanges && isUpdating)}
+            >
+              {savingStatus.saving 
+                ? 'Saving...' 
+                : isUpdating 
+                  ? hasChanges ? 'Update Documentation' : 'No Changes to Save'
+                  : 'Save Documentation'
+              }
             </Button>
           </CardFooter>
         </Card>

@@ -19,6 +19,8 @@ export default {
 
   getFeaturedEventById: async (id?: string) => {
     try {
+
+      console.log(id)
       const {data, error} = await supabase.from("events").select("*").eq("event_id", id).single();
 
       if (error) throw Error(JSON.stringify(error, null, 2));

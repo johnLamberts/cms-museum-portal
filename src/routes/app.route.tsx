@@ -8,6 +8,8 @@ import EventContent from "@/modules/admin/events/event-content";
 import EventDocumentation from "@/modules/admin/events/event-documentary";
 import EventGallery from "@/modules/admin/events/event-gallery";
 import EventLists from "@/modules/admin/events/event-lists";
+import PublicPastEvents from "@/modules/admin/events/event-past-events";
+import EventTestimonials from "@/modules/admin/events/event-testimonials";
 import EventPage from "@/modules/admin/events/events.page";
 import ExhibitContentForm from "@/modules/admin/exhibits/exhibit-form.content";
 import ExhibitsList from "@/modules/admin/exhibits/exhibits-list";
@@ -416,6 +418,14 @@ export const appRouter = createBrowserRouter([
   {
     path: '/event/gallery/:eventId',
     Component: EventGallery
+  },
+  {
+    path: '/event/past-details/:eventId',
+    Component: PublicPastEvents
+  },
+  {
+    path: '/event/testimonials/:eventId',
+    Component: EventTestimonials
   },
   // For Event Form
   {

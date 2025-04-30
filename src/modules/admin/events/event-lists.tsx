@@ -28,7 +28,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  CalendarCheckIcon,
   CameraIcon,
   FileIcon,
   FileTextIcon,
@@ -114,9 +113,9 @@ const EventLists: React.FC = () => {
     navigate(`/event/gallery/${eventId}`);
   };
 
-  const navigateToPastEventDetails = (eventId: string) => {
-    navigate(`/event/past-details/${eventId}`);
-  };
+  // const navigateToPastEventDetails = (eventId: string) => {
+  //   navigate(`/event/past-details/${eventId}`);
+  // };
 
   // Function to mark an event as completed
   const markAsCompleted = async (eventId: string) => {
@@ -245,10 +244,6 @@ const EventLists: React.FC = () => {
                     <DropdownMenuItem onClick={() => navigateToEventTestimonials(event.event_id!)}>
                       <MessageSquareQuoteIcon className="h-4 w-4 mr-2" />
                       {event.has_testimonials ? 'Edit Testimonials' : 'Add Testimonials'}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigateToPastEventDetails(event.event_id!)}>
-                      <CalendarCheckIcon className="h-4 w-4 mr-2" />
-                      View/Edit Past Event Details
                     </DropdownMenuItem>
                   </>
                 )}

@@ -34,6 +34,7 @@ interface EventTestimonial {
   author: string
   content: string
   created_at: string
+  rating?: any;
 }
 
 interface EventDocumentation {
@@ -243,6 +244,29 @@ const eventService = {
       throw err
     }
   },
+
+
+   updateEventDocumentation: async (documentation: any) => {
+    if (!documentation.event_id) {
+      return { error: { message: 'Documentation ID is required for updates' } };
+    }
+  
+    const updateData = {
+      ...documentation,
+      updated_at: new Date().toISOString()
+    };
+  
+    const { data, error } = await supabase
+      .from('event_documentation')
+      .update(updateData)
+      .eq('event_id', documentation.event_id)
+      .select();
+  
+    if (error) return { error };
+  
+    return { data: data[0], error: null };
+  },
+  
 
   /**
    * Get event documentation

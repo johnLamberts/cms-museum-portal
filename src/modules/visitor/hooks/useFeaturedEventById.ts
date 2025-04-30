@@ -10,7 +10,7 @@ const useFeaturedEventById = () => {
 
   return useQuery({
     queryFn: () => featuredService.getFeaturedEventById(evid),
-    queryKey: [CMS_KEYZ.GET_LATEST_FEATURED_EVENTS_BY_ID],
+    queryKey: [CMS_KEYZ.GET_LATEST_FEATURED_EVENTS_BY_ID, evid],
     refetchOnWindowFocus: false,
   });
 }
