@@ -24,7 +24,6 @@ const SiteHeader = () => {
 
   
   const { pathname } = useLocation();
-  console.log(pathname === "/home" )
   return (
     <header ref={ref}>
       <div
@@ -135,7 +134,7 @@ const SiteHeader = () => {
                   <HamburgerMenuIcon className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent>
+              <SheetContent side={'left'}>
                 <div className="flex flex-col items-center justify-between gap-8">
                   <Link
                     to="/"

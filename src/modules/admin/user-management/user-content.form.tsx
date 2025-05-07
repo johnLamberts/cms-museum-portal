@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetFooter, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetFooter } from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircleIcon } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import useCreateUser from "./hooks/useCreateUser";
+import useUpdatePasswordUser from "./hooks/useUpdatePasswordUser";
+import useUpdateUser from "./hooks/useUpdateUser";
 import UserForm from "./user-form";
 
 
@@ -36,23 +37,9 @@ const userSchema = z.object({
       required_error: "Please select an email to display.",
     })
     .email(),
-    userImg:  z.instanceof(File)
-    .refine(file => file.size <= 5 * 1024 * 1024, `File size should be less than 5MB.`)
-    .refine(
-      file => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
-      "Only .jpg, .png, and .webp files are accepted."
-    )
-    .optional(),
+    userImg:  z.any().optional(),
   password: z
-    .string({
-      required_error: "This field is required.",
-    })
-    .min(2, {
-      message: "Password must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Password must not be longer than 30 characters.",
-    }),
+    .any().optional(),
   userRole: z.string({
       required_error: "This field is required.",
     }),
@@ -69,34 +56,72 @@ const defaultValues = {
   password: "",
   email: "",
   userRole: "",
-  userLocation: ""
+  userLocation: "",
 }
 
 export type UserFormValues = z.infer<typeof userSchema>;
 
+interface UserContentFormProps {
+  user?: Record<string, any>
+  isUpdateMode?: boolean
+  onOpenChange?: (open: boolean) => void
+  open?: boolean
+  trigger?: React.ReactNode
+  mode?: "editUser" | "changePassword"
+}
 
-const UserContentForm = () => {
+const UserContentForm = ({ user = {}, onOpenChange, open, mode }: UserContentFormProps) => {
+  const { user_id, ...otherData } = user;
+  const isEditingMode = Boolean(user_id);
+
   const form = useForm<UserFormValues>({
-    resolver: zodResolver(userSchema),
-    mode: "onTouched",
-    defaultValues: defaultValues
-  });
+     resolver: zodResolver(userSchema),
+     defaultValues: isEditingMode && user
+       ? { ...otherData, userLocation: user.municipal}
+       : defaultValues,
+   });
+
+
 
 
   const { isAddingUser, addUserHandler } = useCreateUser()
+  const { isModifyingUser, updateUserHandler } = useUpdateUser()
+
+  const { isModifyingUserPassword, updateUserPasswordHandler } = useUpdatePasswordUser();
 
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+ useEffect(() => {
+     if (open) {
+       form.reset(
+         isEditingMode && user
+           ? { ...otherData  }
+           : defaultValues
+       );
+     } else {
+       form.reset(defaultValues); // Reset when closing
+     }
+   }, [open, isEditingMode, user, form]);
+ 
+   const setSheetOpen = useCallback(
+     (value: boolean) => {
+       if (onOpenChange) {
+         onOpenChange(value);
+       }
+       if (!value) {
+         form.reset(defaultValues);
+         document.body.style.pointerEvents = "auto"; // Extra safety
+       }
+     },
+     [onOpenChange, form]
+   );
+ 
 
 
-  const resetForm = () => {
-    form.reset(defaultValues);
-  };
 
    
   const onSubmit: SubmitHandler<UserFormValues | any> =  async (data: UserFormValues) => {
+   
     try {
-
       const { firstName, lastName, middleName, userRole, userLocation, userImg, password, email } = data;
       const userData = {
         firstName,
@@ -104,60 +129,84 @@ const UserContentForm = () => {
         confirmPassword: data.password,
       }
 
-      
+      if (isEditingMode) {
 
-      console.log(userData)
-      await addUserHandler(userData)
-      
-      resetForm();
-      setIsOpen(false)
-      
-       
+        if(mode === "editUser") {
 
-      console.log(form.getValues())
+          await updateUserHandler({
+            firstName,
+            lastName,middleName,email,password,userImg,userRole, municipal_id: userLocation, user_id, user_uid: user.user_uid
+          })
+
+        } else {
+          
+          await updateUserPasswordHandler({
+            password: userData.password, user_id
+          })
+          
+        }
+
+      } else {
+
+        await addUserHandler(userData);
+      
+      }
+
+      form.reset(defaultValues); // Reset form after submission
+      setSheetOpen(false);
     
     } catch (err) {
       console.error(`[SubmittingError]: ${err}`)
     } 
 
-
   }
   
   return (
-      <Sheet onOpenChange={setIsOpen} open={isOpen}>
-          <SheetTrigger asChild>
+      <Sheet onOpenChange={setSheetOpen} open={open}>
+          {/* <SheetTrigger asChild>
             <Button
             className="h-8 gap-1 bg-[#0B0400]"
             size="sm"
             variant={"gooeyLeft"}
-            onClick={() => setIsOpen(true)}
             >
               <PlusCircleIcon className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                 Add User
               </span>
             </Button>
-          </SheetTrigger>
+          </SheetTrigger> */}
           <SheetContent className=" p-0 flex flex-col h-full md:max-w-[40rem]">
-              <header
-                className={`py-4 bg-overlay-bg
-              border-b border-overlay-border px-6 bg-overlay-bg border-b border-overlay-border flex-shrink-0`}
-              >
-                <div>
-                  <h3 className="text-lg font-medium">Adding User</h3>
-                  <p className="text-xs text-muted-foreground">
-                    Fill in the details.
-                  </p>
-                </div>
-              </header>
+            <header className="py-4 bg-overlay-bg border-b border-overlay-border px-6 flex-shrink-0">
+              <div>
+                <h3 className="text-lg font-medium">
+                  {isEditingMode ? "Update User" : "Adding User"}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {isEditingMode ? "Update User information" : "Fill in the details."}
+                </p>
+              </div>
+             </header>
               <div className="flex-grow overflow-y-auto">
-                <UserForm form={form} />
+                <UserForm form={form} isEditingMode={isEditingMode} mode={mode} user={otherData} />
               </div>
             <SheetFooter className="flex-shrink-0 px-6 py-4 bg-overlay-bg border-t border-overlay-border">
-              <Button type="submit" disabled={isAddingUser} onClick={form.handleSubmit(onSubmit)} >
-                {isAddingUser ? "Creating User..." : "Create User"}
-                  {/* Add User */}
-              </Button>
+            <Button
+              type="submit"
+              disabled={isEditingMode ? (mode === "editUser" ? isModifyingUser : isModifyingUserPassword) : isAddingUser}
+              onClick={form.handleSubmit(onSubmit)}
+            >
+              {isEditingMode
+                ? mode === "changePassword"
+                  ? isModifyingUserPassword
+                    ? "Updating Password..."
+                    : "Update Password"
+                  : isModifyingUser
+                  ? "Updating User..."
+                  : "Update User"
+                : isAddingUser
+                ? "Creating User..."
+                : "Create User"}
+            </Button>
             </SheetFooter>
           </SheetContent>
         </Sheet>

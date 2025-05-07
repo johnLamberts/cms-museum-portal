@@ -7,7 +7,13 @@ import { RouterProvider } from 'react-router-dom'
 import { Toaster } from "sonner"
 import './index.css'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // Adjust based on your needs
+    },
+  },
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -42,16 +42,6 @@ const LoginPage = () => {
         </Button>
       </div>
       <div className="relative hidden h-full flex-col bg-muted text-white lg:flex dark:border-r">
-        {/* <div className="h-screen w-full dark:bg-black bg-white  dark:bg-grid-white/[0.2] bg-grid-black/[0.2] relative flex flex-col items-center justify-center">
-          <div className="absolute pointer-events-none inset-0 flex  items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_30%,black)]" />
-          <h2 className="text-foreground text-3xl uppercase font-bold tracking-tighter md:text-4xl/tight">
-            Kapejuan Coffee Shop
-          </h2>
-          <h2 className="text-foreground text-sm opacity-50 uppercase font-bold w-[80%] text-center">
-            Enter your email below to login to your account and enjoy your
-            favorite coffee
-          </h2>
-        </div> */}
         <img src="/mock/login.jpg" className="h-screen w-screen md:none" alt="" />
        
       </div>
@@ -109,8 +99,8 @@ const LoginPage = () => {
                 </span>
               </div>
             </div>
-            <Button variant="outline" type="button">
-              GitHub
+            <Button variant="outline" type="button" onClick={() => navigate("/register")}>
+              Sign up your Museo Account
             </Button>
           </>
           <p className="px-8 text-center text-sm text-muted-foreground">

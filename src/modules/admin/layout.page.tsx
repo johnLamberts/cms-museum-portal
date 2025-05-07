@@ -1,13 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Layout, LayoutBody, LayoutHeader } from "@/components/layouts"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { UserHeader } from "@/components/user-header"
 import { ReactNode } from "react"
 import { Link, useLocation, useParams } from "react-router-dom"
+import useCurrentUser from "../authentication/useCurrentUser"
 
 const LayoutPage = ({ children }: { children: ReactNode }) => {
   const { pathname } = useLocation();
   const { userid } = useParams();
+
+  const { user: currentUser }  = useCurrentUser();
+
+  console.log(currentUser)
 
   const identifierCrumb = (): string => {
     const lastRoute = pathname.split('/');
@@ -41,7 +47,6 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
     return finalName;
   }
 
-  console.log(identifierCrumb())
 
   const secondaryCrumb = (): string => {
     const lastRoute = pathname.split('/');
@@ -100,7 +105,7 @@ const LayoutPage = ({ children }: { children: ReactNode }) => {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               {identifierCrumb().length < 2 ? 
-              "Welcome Admin, Echo!"
+              `Welcome Admin, ${(currentUser as any)?.firstName} ! `
                 
               :
               (<>

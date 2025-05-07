@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetFooter, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetFooter } from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircleIcon } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import useCreateVisitor from "./hooks/useCreateVisitor";
+import useUpdateVisitor from "./hooks/useUpdateVisitor";
 import VisitorForm from "./visitor-form";
 
 
@@ -55,14 +56,15 @@ const visitorSchemaSchema = z.object({
     })
     .max(30, {
       message: "Password must not be longer than 30 characters.",
-    })
+    }),
+    visitorImg:  z.any().optional(),
 })
 
 const defaultValues = {
   firstName: "",
   lastName: "",
   middleName: "",
-  userImg: undefined,
+  visitorImg: undefined,
   password: "",
   email: "",
   address: ""
@@ -71,92 +73,116 @@ const defaultValues = {
 export type VisitorFormValues = z.infer<typeof visitorSchemaSchema>;
 
 
-const VisitorContentForm = () => {
-  const form = useForm<VisitorFormValues>({
-    resolver: zodResolver(visitorSchemaSchema),
-    mode: "onTouched",
-    defaultValues: defaultValues
-  });
+interface VisitorContentFormProps {
+  visitor?: Record<string, any>
+  isUpdateMode?: boolean
+  onOpenChange?: (open: boolean) => void
+  open?: boolean
+  trigger?: React.ReactNode
+}
+
+const VisitorContentForm = ({ visitor = {}, onOpenChange, open }: VisitorContentFormProps) => {
+  console.log(visitor)
+  
+  const { visitor_id, ...otherData } = visitor;
+  const isEditingMode = Boolean(visitor_id);
 
   const { isAddingVisitor, addVisitorHandler } = useCreateVisitor();
+  const { isModifyVisitor, updateVisitorHandler  }= useUpdateVisitor()
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const form = useForm<VisitorFormValues>({
+    resolver: zodResolver(visitorSchemaSchema),
+    defaultValues: isEditingMode && visitor
+      ? { ...otherData, }
+      : defaultValues,
+  });
 
+  useEffect(() => {
+    if (open) {
+      form.reset(
+        isEditingMode && visitor
+          ? { ...otherData  }
+          : defaultValues
+      );
+    } else {
+      form.reset(defaultValues); // Reset when closing
+    }
+  }, [open, isEditingMode, visitor, form]);
 
-  const resetForm = () => {
-    form.reset(defaultValues);
-  };
+  const setSheetOpen = useCallback(
+    (value: boolean) => {
+      if (onOpenChange) {
+        onOpenChange(value);
+      }
+      if (!value) {
+        form.reset(defaultValues);
+        document.body.style.pointerEvents = "auto"; // Extra safety
+      }
+    },
+    [onOpenChange, form]
+  );
 
-   
-  const onSubmit: SubmitHandler<VisitorFormValues | any> =  async (data: VisitorFormValues) => {
+  const onSubmit: SubmitHandler<VisitorFormValues> = async (data: VisitorFormValues) => {
     try {
+      console.log(data);
+
       const userData = {
         ...data,
         confirmPassword: data.password,
-        userRole: "visitor"
+        userRole: "visitor",
+        user_uid: otherData.user_uid,
+        visitor_id: visitor_id
+      };
+
+
+      if (isEditingMode) {
+        await updateVisitorHandler(userData)
+      } else {
+        await addVisitorHandler(userData);
       }
 
-
-      console.log(userData)
-      await addVisitorHandler(userData)
-      
-      resetForm();
-      setIsOpen(false)
-      
-       
-
-      console.log(form.getValues())
-    
+      form.reset(defaultValues); // Reset form after submission
+      setSheetOpen(false);
     } catch (err) {
-      console.error(`[SubmittingError]: ${err}`)
-    } 
+      console.error(`[SubmittingError]: ${err}`);
+    }
+  };
 
-
-  }
-  
   return (
-      <Sheet onOpenChange={setIsOpen} open={isOpen}>
-          <SheetTrigger asChild>
-            <Button
-            className="h-8 gap-1 bg-[#0B0400]"
-            size="sm"
-            variant={"gooeyLeft"}
-            onClick={() => setIsOpen(true)}
-            >
-              <PlusCircleIcon className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Add Visitor
-              </span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent className=" p-0 flex flex-col h-full md:max-w-[40rem]">
-              <header
-                className={`py-4 bg-overlay-bg
-              border-b border-overlay-border px-6 bg-overlay-bg border-b border-overlay-border flex-shrink-0`}
-              >
-                <div>
-                  <h3 className="text-lg font-medium">Adding Visitor</h3>
-                  <p className="text-xs text-muted-foreground">
-                    Fill in the details.
-                  </p>
-                </div>
-              </header>
-              <div className="flex-grow overflow-y-auto">
-                <VisitorForm form={form} />
-              </div>
+    <Sheet onOpenChange={setSheetOpen} open={open}>
+      <SheetContent className="p-0 flex flex-col h-full md:max-w-[40rem]">
+        <header className="py-4 bg-overlay-bg border-b border-overlay-border px-6 flex-shrink-0">
+          <div>
+            <h3 className="text-lg font-medium">
+              {isEditingMode ? "Update Visitor" : "Adding Visitor"}
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              {isEditingMode ? "Update visitor information" : "Fill in the details."}
+            </p>
+          </div>
+        </header>
+        <div className="flex-grow overflow-y-auto">
+          <VisitorForm form={form} isEditingMode={isEditingMode} />
+        </div>
+        <SheetFooter className="flex-shrink-0 px-6 py-4 bg-overlay-bg border-t border-overlay-border">
+          <Button
+            type="submit"
+            disabled={isEditingMode ? isModifyVisitor : isAddingVisitor}
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            {isEditingMode
+              ? isModifyVisitor ? "Updating Visitor.. " : "Update Visitor" 
+              : isAddingVisitor
+                ? "Creating Visitor..."
+                : "Create Visitor"}
+          </Button>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  );
+};
 
-            <SheetFooter className="flex-shrink-0 px-6 py-4 bg-overlay-bg border-t border-overlay-border">
-              <Button type="submit" disabled={isAddingVisitor} onClick={form.handleSubmit(onSubmit)} >
-                {isAddingVisitor ? "Creating Visitor..." : "Create Visitor"}
-                  {/* Add Visitor */}
-              </Button>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
-  )
-}
+export default VisitorContentForm;
 
-
-export default VisitorContentForm
 
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Spinner } from "@/components/spinner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -6,9 +7,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PlusCircledIcon } from "@radix-ui/react-icons"
 import { MoreHorizontalIcon, SearchIcon } from "lucide-react"
-import { useMemo } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react"
 import useUsers from "./hooks/useUsers"
 import UserContentForm from "./user-content.form"
 import { IUser } from "./user.interface"
@@ -41,8 +42,12 @@ const RoleBadge = ({ role }: { role: string }) => {
 };
 
 const UsersList = () => {
-  const navigate = useNavigate();
   const { data: usersData, isLoading, error } = useUsers();
+
+  const [formOpen, setFormOpen] = useState(false)
+  const [formMode, setFormMode] = useState<"editUser" | "changePassword">("editUser")
+  const [editingVisitor, setEditingVisitor] = useState<IUser | Record<string,any>>({})
+
 
   const memoUsers = useMemo(() => {
     return usersData?.data?.users || [];
@@ -57,6 +62,38 @@ const UsersList = () => {
     limit: usersData?.data?.currentPage?.limit || 20
   }), [usersData]);
 
+    const handleAddVUser = () => {
+      setEditingVisitor({})
+      setFormOpen(true)
+    }
+  
+    const handleEditUser = (visitor: IUser) => {
+      setEditingVisitor(visitor)
+      setFormMode("editUser");
+      setFormOpen(true)
+    }
+
+    const handleEditPassword = (visitor: IUser) => {
+      setEditingVisitor(visitor)
+      setFormMode("changePassword");
+      setFormOpen(true)
+    }
+
+
+    const handleFormClose = (open: boolean) => {
+      setFormOpen(open);
+      setEditingVisitor({});
+      // Force reset pointer-events on body
+      document.body.style.pointerEvents = "auto";
+    };
+  
+    // Reset pointer-events when formOpen changes
+    useEffect(() => {
+      if (!formOpen) {
+        document.body.style.pointerEvents = "auto";
+      }
+
+    }, [formOpen]);
 
 
   const renderTableContent = () => {
@@ -133,7 +170,8 @@ const UsersList = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigate(`update_form/${user.user_id}`)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => handleEditUser(user)}>Edit Profile</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => handleEditPassword(user)}>Change Password</DropdownMenuItem>
               <DropdownMenuItem>Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -143,6 +181,7 @@ const UsersList = () => {
   };
 
   return (
+    <>
     <Tabs defaultValue="all">
       <div className="flex items-center">
         <TabsList>
@@ -161,7 +200,11 @@ const UsersList = () => {
               type="search"
             />
           </div>
-          <UserContentForm />
+
+          <Button className="h-8 gap-1 bg-[#0B0400]" size="sm" variant="gooeyLeft" onClick={handleAddVUser}>
+              <PlusCircledIcon className="h-3.5 w-3.5" />
+              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add User</span>
+          </Button>
         </div>
       </div>
       <TabsContent value="all">
@@ -208,6 +251,17 @@ const UsersList = () => {
         </Card>
       </TabsContent>
     </Tabs>
+      {formOpen && (
+        <UserContentForm
+          user={editingVisitor}
+          isUpdateMode={!!editingVisitor.user_id}
+          open={formOpen}
+          onOpenChange={handleFormClose}
+          mode={formMode}
+        />
+      )}
+
+    </>
   )
 }
 

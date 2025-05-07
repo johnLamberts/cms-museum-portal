@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import {
+  ActivityIcon,
   BookOpen,
   FolderEditIcon,
   Frame,
@@ -23,13 +25,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import useCurrentUser from "@/modules/authentication/useCurrentUser"
 
 const data = {
-  user: {
-    name: "MuseoRizal",
-    email: "museorizal@site.library",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -79,10 +77,10 @@ const data = {
           title: "Exhibits",
           url: "museums",
         },
-        // {
-        //   title: "Exhibits",
-        //   url: "exhibits_mgm",
-        // },
+        {
+          title: "Museum Gallery",
+          url: "museum_gallery",
+        },
         {
           title: "Site Editor",
           url: "page_editor",
@@ -102,7 +100,16 @@ const data = {
           title: "Baranggay",
           url: "settings/baranggay",
         },
+        {
+          title: "Exhibition",
+          url: "settings/exhibition",
+        },
       ],
+    },
+    {
+      title: "Audit Trail",
+      url: "#",
+      icon: ActivityIcon,
     },
   ],
   projects: [
@@ -125,6 +132,8 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user: currentUser } = useCurrentUser();
+  
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -150,7 +159,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={currentUser as any} />
       </SidebarFooter>
     </Sidebar>
   )

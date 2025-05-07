@@ -1,4 +1,5 @@
 // import { API } from '@/lib/api'
+import supabase from '@/lib/supabase'
 import { DragEvent, useCallback, useEffect, useRef, useState } from 'react'
 
 export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) => {
@@ -8,23 +9,31 @@ export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) =
     async (file: File) => {
       setLoading(true)
       try {
-        // const url = await API.uploadImage(file)
-        console.log(file)
-        // onUpload(url)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (errPayload: any) {
-        const error = errPayload?.response?.data?.error || 'Something went wrong'
-        console.error(error);
-        // toast.error(error)
+        // Upload file to Supabase storage bucket
+        const { data, error } = await supabase.storage
+          .from('museo_rizal') // Replace with your bucket name
+          .upload(`page_editor_home/${Date.now()}-${file.name}`, file)
+
+        if (error) throw error
+
+        // Get the public URL
+        const { data: publicUrlData } = supabase.storage
+          .from('museo_rizal')
+          .getPublicUrl(data.path)
+
+        const publicUrl = publicUrlData.publicUrl
+
+        onUpload(publicUrl) // Pass the URL to Tiptap
+      } catch (err) {
+        console.error('Upload failed:', err)
       }
       setLoading(false)
     },
-    [onUpload],
+    [onUpload]
   )
 
   return { loading, uploadFile }
 }
-
 export const useFileUpload = () => {
   const fileInput = useRef<HTMLInputElement>(null)
 

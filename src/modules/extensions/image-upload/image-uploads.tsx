@@ -3,11 +3,16 @@ import { useCallback } from 'react';
 
 import { ImageUploader } from './image-uploader';
 
-export const ImageUpload = ({ getPos, editor }: { getPos: () => number; editor: Editor }) => {
+export const ImageUploadComponent = ({ getPos, editor }: { getPos: () => number; editor: Editor }) => {
   const onUpload = useCallback(
     (url: string) => {
       if (url) {
-        editor.chain().setImageBlock({ src: url }).deleteRange({ from: getPos(), to: getPos() }).focus().run()
+        editor
+          .chain()
+          .focus()
+          .deleteNode('imageUpload') // ✅ Instead of `deleteRange`, remove the placeholder node
+          .setImageBlock({ src: url }) // ✅ Ensure `setImageBlock` is registered
+          .run()
       }
     },
     [getPos, editor],
@@ -22,4 +27,4 @@ export const ImageUpload = ({ getPos, editor }: { getPos: () => number; editor: 
   )
 }
 
-export default ImageUpload
+export default ImageUploadComponent

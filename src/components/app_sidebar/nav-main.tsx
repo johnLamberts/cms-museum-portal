@@ -61,7 +61,6 @@ export function NavMain({ items }: { items: NavItem[] }) {
         {items.map((item) => {
           const active = isActive(item);
 
-          console.log(active)
           
           return (
             <Collapsible key={item.title} asChild defaultOpen={active}>
@@ -83,7 +82,6 @@ export function NavMain({ items }: { items: NavItem[] }) {
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.items.map((subItem) => {
-                          console.log(isSubItemActive(subItem))
                           return (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton 

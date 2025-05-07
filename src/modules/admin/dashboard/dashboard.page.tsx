@@ -1,11 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/sr-tabs";
+import useCurrentUser from "@/modules/authentication/useCurrentUser";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import OverviewDashboard from "./overview.dashboard";
 
 const DashboardPage = () => {
   const location = useLocation();
-  const currentTab = location.pathname.split("/").pop(); // Get current tab based on the route
 
+
+  const { user: currentUser } = useCurrentUser();
+
+  
+  const currentTab = (currentUser as any).userRole === "staff" ? "staff" : location.pathname.split("/").pop(); // Get current tab based on the route
+  
+  console.log(currentUser, currentTab)
 
   return (
     <Tabs defaultValue="overview">
@@ -21,10 +29,17 @@ const DashboardPage = () => {
         </TabsList>
       </div>
 
-        <TabsContent value={currentTab as string === "admin-dashboard" ? "overview" : currentTab as string}>
-          {currentTab === 'admin-dashboard' ? <OverviewDashboard /> : <Outlet />}
+        {(currentUser as any).userRole.includes("staff") && (
+          <TabsContent value={currentTab as string === "staff" ? "overview" : currentTab as string}>
+            {currentTab === 'staff' ? <OverviewDashboard /> : <Outlet />}
+          </TabsContent>
+        )}
 
-        </TabsContent>
+        {(currentUser as any).userRole.includes("admin") && (
+          <TabsContent value={currentTab as string === "admin-dashboard" ? "overview" : currentTab as string}>
+            {currentTab === 'admin-dashboard' ? <OverviewDashboard /> : <Outlet />}
+          </TabsContent>
+        )}
     </Tabs>
   )
 }

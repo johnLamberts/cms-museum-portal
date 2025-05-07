@@ -1,6 +1,8 @@
+import uploadImageToSupabase from "@/lib/storage-upload"
 import Details from "@tiptap-pro/extension-details"
 import DetailsContent from "@tiptap-pro/extension-details-content"
 import DetailsSummary from "@tiptap-pro/extension-details-summary"
+import FileHandler from "@tiptap-pro/extension-file-handler"
 import TableOfContents from "@tiptap-pro/extension-table-of-contents"
 import UniqueID from "@tiptap-pro/extension-unique-id"
 import CharacterCount from "@tiptap/extension-character-count"
@@ -23,20 +25,30 @@ import Typography from "@tiptap/extension-typography"
 import StarterKit from "@tiptap/starter-kit"
 import { BlockquoteFigure } from "./block-qoute"
 import { CodeBlock } from "./code-block"
+import { CustomPage } from "./custom-page/custom-page"
 import { Document } from "./document"
 import { FontSize } from "./font-size"
+import { Gallery, GalleryItem } from "./gallery/gallery"
 import Heading from "./heading/heading"
 import ImageBlock from "./image-block/image-block"
 import ImageUpload from "./image-upload/image-upload"
-import Column from "./multicolumn/column"
-import Columns from "./multicolumn/columns"
+// import Column from "./multicolumn/column"
+import { Columns } from "./multicolumn/columns"
+// import { Columns } from "lucide-react"
+import { Callout } from "./callout/callout"
+import { Card } from "./card/card"
+import { CardContent } from "./card/card-content"
+import { CardHeader } from "./card/card-header"
+import { Column } from "./multicolumn/column"
 import Selection from "./selection/selection"
 import SlashCommand from "./slash-command/slash-command"
 import { Table, TableCell } from "./table"
 import { TrailingNode } from "./trailing-node/trailing-node"
+import { VideoEmbed } from "./video/video"
 export { Table, TableCell, TableHeader, TableRow } from './table'
 
 export const ExtensionKit = () => [
+  CustomPage,
   Document,
   Columns,
   Column,
@@ -89,8 +101,6 @@ export const ExtensionKit = () => [
   DetailsContent,
   DetailsSummary,
   TrailingNode,
-  ImageBlock,
-  ImageUpload,
   Placeholder.configure({
     includeChildren: true,
     showOnlyCurrent: false,
@@ -101,33 +111,69 @@ export const ExtensionKit = () => [
     class: 'ProseMirror-dropcursor border-black',
   }),
   
+  VideoEmbed,
+    
+  // Layout components
+  Columns,
+  Column,
+  Callout,
+  Card,
+  CardHeader,
+  CardContent,
+  
+  // UI/UX
+  Placeholder.configure({
+    placeholder: 'Start writing content...',
+    emptyEditorClass: 'is-editor-empty',
+    showOnlyWhenEditable: true,
+  }),
+
+
   SlashCommand,
   Table,
   TableOfContents,
   TableCell,
   TableHeader,
   TableRow,
-  // FileHandler.configure({
-  //   allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
-  //   onDrop: (currentEditor, files, pos) => {
-  //     files.forEach(async file => {
-  //       // const url = await API.uploadImage(file)
-
-  //       currentEditor.chain().setImageBlockAt({ pos, src: "url" }).focus().run()
-  //     })
-  //   },
-  //   onPaste: (currentEditor, files) => {
-  //     files.forEach(async file => {
-  //       // const url = await API.uploadImage(file)
-
-  //       return currentEditor
-  //         .chain()
-  //         .setImageBlockAt({ pos: currentEditor.state.selection.anchor, src: "url" })
-  //         .focus()
-  //         .run()
-  //     })
-  //   },
-  // }),
+  ImageUpload,
+  ImageBlock,
+  Gallery,
+  GalleryItem,
+  FileHandler.configure({
+    allowedMimeTypes: ["image/png", "image/jpeg", "image/gif", "image/webp"],
+    onDrop: (currentEditor, files, pos) => {
+      files.forEach(async (file) => {
+        try {
+          const url = await uploadImageToSupabase(file)
+          // Check if cursor is inside a gallery
+          if (currentEditor.isActive("gallery")) {
+            currentEditor.chain().addGalleryItem({ src: url, alt: file.name }).focus().run()
+          } else {
+            currentEditor.chain().setImageBlockAt({ pos, src: url }).focus().run()
+          }
+        } catch (error) {
+          console.error("Error uploading image:", error)
+          // Handle error (e.g., show a notification to the user)
+        }
+      })
+    },
+    onPaste: (currentEditor, files) => {
+      files.forEach(async (file) => {
+        try {
+          const url = await uploadImageToSupabase(file)
+          // Check if cursor is inside a gallery
+          if (currentEditor.isActive("gallery")) {
+            currentEditor.chain().addGalleryItem({ src: url, alt: file.name }).focus().run()
+          } else {
+            currentEditor.chain().setImageBlockAt({ pos: currentEditor.state.selection.anchor, src: url }).focus().run()
+          }
+        } catch (error) {
+          console.error("Error uploading image:", error)
+          // Handle error (e.g., show a notification to the user)
+        }
+      })
+    },
+  }),
 
 ]
 
