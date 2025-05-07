@@ -2,9 +2,7 @@
 "use client"
 
 import {
-  ActivityIcon,
   BookOpen,
-  FolderEditIcon,
   Frame,
   LayoutDashboard,
   PieChart,
@@ -31,7 +29,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/admin-dashboard",
+      url: "/staff",
       icon: LayoutDashboard,
     },
     {
@@ -40,34 +38,11 @@ const data = {
       icon: UserIcon,
       items: [
         {
-          title: "User Management",
-          url: "users",
-        },
-        {
           title: "Visitor Management",
           url: "visitors",
         },
       ],
     },
-    // {
-    //   title: "Models",
-    //   url: "#",
-    //   icon: Bot,
-    //   items: [
-    //     {
-    //       title: "Genesis",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Explorer",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Quantum",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
     {
       title: "Content Management",
       url: "#",
@@ -106,11 +81,6 @@ const data = {
         },
       ],
     },
-    {
-      title: "Audit Trail",
-      url: "#",
-      icon: ActivityIcon,
-    },
   ],
   projects: [
     {
@@ -122,16 +92,11 @@ const data = {
       name: "Donations",
       url: "donations",
       icon: PieChart,
-    },
-    {
-      name: "Feedback",
-      url: "#",
-      icon: FolderEditIcon,
-    },
+    }
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebarStaff({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user: currentUser } = useCurrentUser();
   
   return (

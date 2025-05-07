@@ -87,7 +87,9 @@ export default function useLogin() {
         navigate("/admin-dashboard", { replace: true });
       } else if (user?.userRole === "visitor" ) {
         navigate("/visitor/", { replace: true });
-      } else {
+      } else if (user?.userRole === "staff" ) {
+        navigate("/staff/", { replace: true });
+      }else {
         // Handle unknown roles or status
         navigate("/", { replace: true });
       }

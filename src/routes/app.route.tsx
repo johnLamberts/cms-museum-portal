@@ -330,7 +330,227 @@ export const appRouter = createBrowserRouter([
       },
     ]
   },
+  {
+    path: '/staff',
+    lazy: async () => { 
 
+      const AdminLayout = await import('@/layouts/staff.layout');
+
+      const { withAuth } = await import("@/routes/with-auth");
+  
+      const ProtectedAdminLayout = withAuth(AdminLayout.default, ["staff"])
+  
+      return { Component: ProtectedAdminLayout }
+    },
+    errorElement: <GeneralError />,
+    children: [
+      {
+        index: true,
+        Component: DashboardPage
+      },
+      {
+        path: '/staff',
+        Component: DashboardPage,
+        children: [
+          {
+            index: true,
+            Component: OverviewDashboard
+          },
+          {
+            path: 'overview',
+            Component: OverviewDashboard
+          },
+          {
+            path: 'detailed',
+            Component: DetailedDashboard
+          }
+        ]
+      },
+
+      // Page editor
+      {
+        path: 'page_editor',
+        Component: PageEditorPage,
+        children: [
+          {
+            index: true,
+            Component: HomeEditor
+          },
+          {
+            path: 'homepage',
+            Component: HomeEditor
+          },
+          {
+            path: 'aboutpage',
+            Component: AboutEditor
+          },
+          {
+            path: 'home-content',
+            Component: HomeContent // ✅ Corrected placement
+          }
+          
+        ]
+      },
+      // Users
+      {
+        path: 'users',
+        Component: UsersPage,
+        children: [
+          {
+            index: true,
+            Component: UsersList
+          }, 
+         
+          {
+            path: 'add_form',
+            Component: UserForm
+          },
+          {
+            path: 'update_form/:userid',
+            Component: UserForm
+          }
+        ]
+      },
+       // Museum Gallery
+       {
+        path: 'museum_gallery',
+        Component: MuseumGallery,
+        children: [
+          {
+            index: true,
+            Component: GalleryList
+          }, 
+         
+          {
+            path: 'add_form',
+            Component: GalleryForm
+          },
+          {
+            path: 'update_form/:visitorId',
+            Component: VisitorForm
+          }
+        ]
+      },
+      // Visitors
+      {
+        path: 'visitors',
+        Component: VisitorPage,
+        children: [
+          {
+            index: true,
+            Component: VisitorList
+          }, 
+         
+          {
+            path: 'add_form',
+            Component: VisitorForm
+          },
+          {
+            path: 'update_form/:visitorId',
+            Component: VisitorForm
+          }
+        ]
+      },
+      //Museums
+      {
+        path: 'museums',
+        Component: MuseumPage,
+        children: [
+          {
+            index: true,
+            Component: MuseumLists
+          },
+          {
+            path: 'museum-lists',
+            Component: MuseumLists
+          }
+        ],
+      },
+       //Exhibits
+       {
+        path: 'exhibits_mgm',
+        Component: ExhibitsPage,
+        children: [
+          {
+            index: true,
+            Component: ExhibitsList
+          }
+        ],
+      },
+      {
+        path: 'settings',
+        Component: SettingsPage,
+        children: [
+          {
+            index: true,
+            Component: MunicipalitiesPage
+          }, 
+          {
+            path: 'municipalities',
+            Component: MunicipalitiesPage,
+            children: [
+              {
+                index: true,
+                Component: MunicipalitiesList
+              }
+            ]
+          },
+          {
+            path: 'baranggay',
+            Component: BaranggayPage,
+            children: [
+              {
+                index: true,
+                Component: BaranggayList
+              }
+            ]
+          },
+          {
+            path: 'exhibition',
+            Component: ExhibitionPage,
+            children: [
+              {
+                index: true,
+                Component: ExhibitionList
+              }
+            ]
+          }
+        ]
+      },
+      //Events
+      {
+        path: 'events',
+        Component: EventPage,
+        children: [
+          {
+            index: true,
+            Component: EventLists
+          },
+          {
+            path: 'museum-lists',
+            Component: MuseumLists
+          }
+        ],
+      },
+
+
+      //Donations
+      {
+        path: 'donations',
+        Component: DonationsPage,
+        children: [
+          {
+            index: true,
+            Component: DonationList
+          },
+          {
+            path: 'donation-lists',
+            Component: DonationList
+          }
+        ],
+      },
+    ]
+  },
   {
     path: '/visitor',
     lazy: async () => { 

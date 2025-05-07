@@ -13,8 +13,6 @@ export function withAuth<P extends object>(
     const { isLoading, user } = useCurrentUser();
     const navigate = useNavigate();
 
-    console.log(user)
-
     useEffect(() => {
       // Only redirect after we've checked auth status
       if (!isLoading) {
