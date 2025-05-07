@@ -16,7 +16,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
  * @returns {Promise} Supabase query response
  */
 export const getEvents = async (options = {}) => {
-  const { status, limit = 100, page = 0, search = null, orderBy = 'created_at', order = 'desc' } = options;
+  const { status, limit = 100, page = 0, search = null, orderBy = 'created_at', order = 'desc' } = options as any;
   
   let query = supabase
     .from('events')
