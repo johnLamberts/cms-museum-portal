@@ -178,7 +178,7 @@ export const deleteEventImage = async (imageId: any) => {
  * @param {string} path - Storage path
  * @returns {Promise} Upload result with URL
  */
-export const uploadEventImage = async (file: string | File | Blob | ArrayBuffer | ArrayBufferView<ArrayBufferLike> | Buffer<ArrayBufferLike> | FormData | NodeJS.ReadableStream | ReadableStream<Uint8Array<ArrayBufferLike>> | URLSearchParams, path = 'event-images') => {
+export const uploadEventImage = async (file: any, path = 'event-images') => {
   const fileExt = (file as any).name.split('.').pop();
   const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
   const filePath = `${path}/${fileName}`;
