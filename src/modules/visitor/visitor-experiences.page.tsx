@@ -14,12 +14,15 @@ import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
 import useCurrentUser from "../authentication/useCurrentUser"
 
+// Import the ImageCarousel component
+import ImageCarousel from "./visitor-experience-carousel"
+
 interface Post {
   post_id: string
   user_uid: string
-    firstName?: string,
-    lastName?: string,
-    visitorImg: string,
+  firstName?: string,
+  lastName?: string,
+  visitorImg: string,
   content: string
   images: string[]
   created_at: string
@@ -28,11 +31,8 @@ interface Post {
   shares: number
 }
 
-
 const VisitorExperiencePage = () => {
-
   const queryClient = useQueryClient()
-  // const { toast } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   // Local state
@@ -42,15 +42,9 @@ const VisitorExperiencePage = () => {
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-
   // Current user 
   const { user: currentUser } = useCurrentUser();
-
   const navigate = useNavigate();
-
-  console.log(currentUser);
-
-
 
   // Get user profile
   const { data: userProfile } = useQuery({
@@ -65,9 +59,6 @@ const VisitorExperiencePage = () => {
       return data
     }
   })
-
-
-
 
   // Fetch trending posts
   const { data: trendingPosts, isLoading: loadingTrending } = useQuery({
@@ -84,9 +75,9 @@ const VisitorExperiencePage = () => {
           likes,
           comments,
           shares,
-            firstName,
-            lastName,
-            visitorImg
+          firstName,
+          lastName,
+          visitorImg
         `)
         .order("likes", { ascending: false })
         .limit(10)
@@ -105,7 +96,7 @@ const VisitorExperiencePage = () => {
       const { data } = await supabase
         .from("posts_with_users")
         .select(`
-           post_id,
+          post_id,
           user_uid,
           content,
           images,
@@ -113,9 +104,9 @@ const VisitorExperiencePage = () => {
           likes,
           comments,
           shares,
-            firstName,
-            lastName,
-            visitorImg
+          firstName,
+          lastName,
+          visitorImg
         `)
         .order("created_at", { ascending: false })
         .limit(10)
@@ -126,107 +117,43 @@ const VisitorExperiencePage = () => {
       })) || []
     }
   })
-  
-  // Fetch following users' posts
-  // const { data: followingPosts, isLoading: loadingFollowing } = useQuery({
-  //   queryKey: ["posts", "following"],
-  //   enabled: !!currentUser?.id,
-  //   queryFn: async () => {
-  //     // First get list of users you're following
-  //     const { data: followingData } = await supabase
-  //       .from("follows")
-  //       .select("following_id")
-  //       .eq("follower_id", currentUser!.id)
-      
-  //     if (!followingData || followingData.length === 0) {
-  //       return []
-  //     }
-      
-  //     const followingIds = followingData.map(f => f.following_id)
-      
-  //     // Then get posts from those users
-  //     const { data } = await supabase
-  //       .from("posts")
-  //       .select(`
-  //         id,
-  //         user_id,
-  //         content,
-  //         images,
-  //         exhibition,
-  //         created_at,
-  //         likes,
-  //         comments,
-  //         shares,
-  //         profiles:user_id (
-  //           username,
-  //           firstName,
-  //           avatar_url
-  //         )
-  //       `)
-  //       .in("user_id", followingIds)
-  //       .order("created_at", { ascending: false })
-  //       .limit(10)
-      
-  //     return data?.map(post => ({
-  //       ...post,
-  //       user: post.profiles,
-  //       created_at: new Date(post.created_at).toLocaleString()
-  //     })) || []
-  //   }
-  // })
 
-    // Fetch upcoming events
-    const { data: upcomingEvents } = useQuery({
-      queryKey: ["events", "upcoming"],
-      queryFn: async () => {
-        const { data } = await supabase
-          .from("events")
-          .select("*")
-          // .gte("created_at", new Date().toISOString())
-          .order("created_at", { ascending: true })
-          .limit(3)
-        
-        return data || []
-      }
-    })
+  // Fetch upcoming events
+  const { data: upcomingEvents } = useQuery({
+    queryKey: ["events", "upcoming"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("events")
+        .select("*")
+        .order("created_at", { ascending: true })
+        .limit(3)
+      
+      return data || []
+    }
+  })
     
-    // Fetch popular exhibitions
-    const { data: popularExhibitions } = useQuery({
-      queryKey: ["exhibitions", "popular"],
-      queryFn: async () => {
-        const { data } = await supabase
-          .from("exhibits")
-          .select("*")
-          // .order("visitors_count", { ascending: false })
-          .limit(3)
-        
-        return data || []
-      }
-    })
-    
-    // Fetch exhibitions for dropdown
-    // const { data: exhibitions } = useQuery({
-    //   queryKey: ["exhibitions"],
-    //   queryFn: async () => {
-    //     const { data } = await supabase
-    //       .from("exhibits")
-    //       .select("exhibits_id, title")
-    //       .order("title")
-        
-    //     return data || []
-    //   }
-    // })
+  // Fetch popular exhibitions
+  const { data: popularExhibitions } = useQuery({
+    queryKey: ["exhibitions", "popular"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("exhibits")
+        .select("*")
+        .limit(3)
+      
+      return data || []
+    }
+  })
 
   // Create post mutation
   const createPost = useMutation({
     mutationFn: async ({ content, images }: { content: string, images: File[], exhibition: string }) => {
       if (!currentUser) throw new Error("User not authenticated")
         
-        // 1. Create the post record first
-        
-        const postId = uuidv4()
+      // 1. Create the post record first
+      const postId = uuidv4()
 
-      const {  data: posts, error: postError } = await supabase
+      const { data: posts, error: postError } = await supabase
         .from("experience_posts")
         .insert({
           user_uid: (currentUser as any).user_uid,
@@ -261,10 +188,7 @@ const VisitorExperiencePage = () => {
             .from("museo_rizal")
             .getPublicUrl(filePath)
 
-            console.log(publicUrl)
-
-            imageUrls.push(publicUrl);
-          
+          imageUrls.push(publicUrl);
         }
         
         // 3. Update post with image URLs
@@ -273,7 +197,7 @@ const VisitorExperiencePage = () => {
           .update({ images: imageUrls })
           .eq("post_id", posts.at(0).post_id)
 
-        if (updateError ) throw `${JSON.stringify(updateError, null, 2)}`
+        if (updateError) throw `${JSON.stringify(updateError, null, 2)}`
       }
       
       return { id: postId, imageUrls }
@@ -288,15 +212,13 @@ const VisitorExperiencePage = () => {
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["posts"] })
       
-      toast.success(
-         "Your experience has been shared."
-      )
+      toast.success("Your experience has been shared.")
       
       setIsSubmitting(false)
     },
     onError: (error) => {
       console.error("Error creating post:", error)
-      toast.error( "Failed to share your experience. Please try again.")
+      toast.error("Failed to share your experience. Please try again.")
       
       setIsSubmitting(false)
     }
@@ -307,7 +229,6 @@ const VisitorExperiencePage = () => {
     mutationFn: async (postId: string) => {
       if (!currentUser) throw new Error("User not authenticated")
 
-      
       // Check if already liked
       const { data: existingLike } = await supabase
         .from("experience_post_likes")
@@ -315,8 +236,6 @@ const VisitorExperiencePage = () => {
         .eq("user_uid", (currentUser as any).user_uid)
         .eq("post_id", postId)
         .single()
-
-        console.log("existingLike", existingLike)
       
       if (existingLike) {
         // Unlike
@@ -355,9 +274,7 @@ const VisitorExperiencePage = () => {
       // Optimistic update would be better, but for simplicity we'll refetch
       queryClient.invalidateQueries({ queryKey: ["posts"] })
       
-      toast.info(
-        data.action === "like" ? "Post liked!" : "Post unliked"
-      )
+      toast.info(data.action === "like" ? "Post liked!" : "Post unliked")
     }
   })
 
@@ -402,400 +319,274 @@ const VisitorExperiencePage = () => {
       exhibition: selectedExhibition
     })
   }
-  
-  // Format time elapsed
-  // const formatTimeElapsed = (dateString: string): string => {
-  //   const now = new Date()
-  //   const postDate = new Date(dateString)
-  //   const diffInSeconds = Math.floor((now.getTime() - postDate.getTime()) / 1000)
-    
-  //   if (diffInSeconds < 60) return `${diffInSeconds}s ago`
-  //   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
-  //   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
-  //   return `${Math.floor(diffInSeconds / 86400)}d ago`
-  // }
-  
 
   return (
     <main className="flex-1">
-    <div className="container grid grid-cols-1 md:grid-cols-[1fr_300px] gap-6 p-4 md:p-6">
-      <div className="space-y-6">
-        {/* Post creation area */}
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-3">
-            <h3 className="text-lg font-semibold">Share Your Museum Experience</h3>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-start gap-4">
-              <Avatar className="mt-1">
-                <AvatarImage src={userProfile?.visitorImg || "/placeholder.svg?height=40&width=40"} alt="Your Avatar" />
-                <AvatarFallback>{userProfile?.display_name?.charAt(0) || "U"}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 space-y-3">
-                <Input
-                  placeholder="Share your museum experience..."
-                  className="rounded-xl bg-muted"
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}
-                  disabled={isSubmitting}
-                />
-                
-                {/* Exhibition selection */}
-                {/* <select
-                  className="w-full rounded-md border px-3 py-2 text-sm bg-muted"
-                  value={selectedExhibition}
-                  onChange={(e) => setSelectedExhibition(e.target.value)}
-                  disabled={isSubmitting}
-                >
-                  <option value="">Select an exhibition (optional)</option>
-                  {exhibitions?.map((exhibition) => (
-                    <option key={exhibition.id} value={exhibition.id}>{exhibition.title}</option>
-                  ))}
-                </select>
-                 */}
-                {/* Image preview area */}
-                {previewUrls.length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
-                    {previewUrls.map((url, index) => (
-                      <div key={index} className="relative aspect-square rounded-md overflow-hidden border">
-                        <img
-                          src={url}
-                          alt={`Selected image ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                        <Button
-                          size="icon"
-                          variant="destructive"
-                          className="absolute top-1 right-1 h-6 w-6 rounded-full"
-                          onClick={() => removeImage(index)}
-                          disabled={isSubmitting}
-                        >
-                          <X className="h-3 w-3" />
-                          <span className="sr-only">Remove image</span>
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between border-t p-4">
-            <div className="flex items-center gap-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isSubmitting || selectedImages.length >= 5}
-                    >
-                      <ImageIcon className="h-5 w-5" />
-                      <span className="sr-only">Add images</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Add up to 5 images</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept="image/*"
-                multiple
-                onChange={handleImageSelect}
-                className="hidden"
-                disabled={isSubmitting || selectedImages.length >= 5}
-              />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => {
-                        if (navigator.mediaDevices) {
-                          // Camera functionality would be implemented here
-                          toast.warning( "Camera functionality would open here")
-                        }
-                      }}
-                      disabled={isSubmitting || selectedImages.length >= 5}
-                    >
-                      <Camera className="h-5 w-5" />
-                      <span className="sr-only">Take photo</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Take a photo</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <span className="text-xs text-muted-foreground">
-                {selectedImages.length}/5 images
-              </span>
-            </div>
-            <Button 
-              onClick={handleSubmitPost} 
-              disabled={isSubmitting || (!postContent.trim() && selectedImages.length === 0)}
-            >
-              {isSubmitting ? "Sharing you're greatness..." : "Share you experience"}
-            </Button>
-          </CardFooter>
-        </Card>
-
-        {/* Tabs for posts */}
-        <Tabs defaultValue="trending">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="trending">Trending</TabsTrigger>
-            <TabsTrigger value="latest">Latest</TabsTrigger>
-            <TabsTrigger value="following">Following</TabsTrigger>
-          </TabsList>
-          
-          {/* Trending tab */}
-          <TabsContent value="trending" className="space-y-4 mt-4">
-            {loadingTrending ? (
-              <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : trendingPosts?.length === 0 ? (
-              <Card className="p-6 text-center">
-                <p>No trending posts found.</p>
-              </Card>
-            ) : (
-              trendingPosts?.map((post) => (
-                <PostCard 
-                key={post.post_id} 
-                post={{
-                  ...post,
-                }} 
-                onLike={() => likePost.mutate(post.post_id)} 
-/>
-              ))
-            )}
-          </TabsContent>
-          
-          {/* Latest tab */}
-          <TabsContent value="latest" className="space-y-4 mt-4">
-            {loadingLatest ? (
-              <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : latestPosts?.length === 0 ? (
-              <Card className="p-6 text-center">
-                <p>No recent posts found.</p>
-              </Card>
-            ) : (
-              latestPosts?.map((post) => (
-                <PostCard 
-                key={post.post_id} 
-                post={{
-                  ...post,
-                }} 
-                onLike={() => likePost.mutate(post.post_id)} 
-                />
-              ))
-            )}
-          </TabsContent>
-          
-          {/* Following tab */}
-          <TabsContent value="following" className="mt-4">
-            {/* {loadingFollowing ? (
-              <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : followingPosts?.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="mb-4 rounded-full bg-muted p-6">
-                  <User className="h-10 w-10 text-muted-foreground" />
+      <div className="container grid grid-cols-1 md:grid-cols-[1fr_300px] gap-6 p-4 md:p-6">
+        <div className="space-y-6">
+          {/* Post creation area */}
+          <Card className="overflow-hidden">
+            <CardHeader className="pb-3">
+              <h3 className="text-lg font-semibold">Share Your Museum Experience</h3>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-start gap-4">
+                <Avatar className="mt-1">
+                  <AvatarImage src={userProfile?.visitorImg || "/placeholder.svg?height=40&width=40"} alt="Your Avatar" />
+                  <AvatarFallback>{userProfile?.display_name?.charAt(0) || "U"}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-3">
+                  <Input
+                    placeholder="Share your museum experience..."
+                    className="rounded-xl bg-muted"
+                    value={postContent}
+                    onChange={(e) => setPostContent(e.target.value)}
+                    disabled={isSubmitting}
+                  />
+                  
+                  {/* Image preview area */}
+                  {previewUrls.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                      {previewUrls.map((url, index) => (
+                        <div key={index} className="relative aspect-square rounded-md overflow-hidden border">
+                          <img
+                            src={url}
+                            alt={`Selected image ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            className="absolute top-1 right-1 h-6 w-6 rounded-full"
+                            onClick={() => removeImage(index)}
+                            disabled={isSubmitting}
+                          >
+                            <X className="h-3 w-3" />
+                            <span className="sr-only">Remove image</span>
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <h3 className="mb-2 text-lg font-semibold">Follow other museum visitors</h3>
-                <p className="mb-4 text-sm text-muted-foreground max-w-md">
-                  Follow other art enthusiasts to see their experiences and recommendations in your feed.
-                </p>
-                <Button>Discover People</Button>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {followingPosts?.map((post) => (
+            </CardContent>
+            <CardFooter className="flex justify-between border-t p-4">
+              <div className="flex items-center gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isSubmitting || selectedImages.length >= 5}
+                      >
+                        <ImageIcon className="h-5 w-5" />
+                        <span className="sr-only">Add images</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Add up to 5 images</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageSelect}
+                  className="hidden"
+                  disabled={isSubmitting || selectedImages.length >= 5}
+                />
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          if (navigator.mediaDevices) {
+                            // Camera functionality would be implemented here
+                            toast.warning("Camera functionality would open here")
+                          }
+                        }}
+                        disabled={isSubmitting || selectedImages.length >= 5}
+                      >
+                        <Camera className="h-5 w-5" />
+                        <span className="sr-only">Take photo</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Take a photo</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <span className="text-xs text-muted-foreground">
+                  {selectedImages.length}/5 images
+                </span>
+              </div>
+              <Button 
+                onClick={handleSubmitPost} 
+                disabled={isSubmitting || (!postContent.trim() && selectedImages.length === 0)}
+              >
+                {isSubmitting ? "Sharing your greatness..." : "Share your experience"}
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Tabs for posts */}
+          <Tabs defaultValue="trending">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="trending">Trending</TabsTrigger>
+              <TabsTrigger value="latest">Latest</TabsTrigger>
+              <TabsTrigger value="following">Following</TabsTrigger>
+            </TabsList>
+            
+            {/* Trending tab */}
+            <TabsContent value="trending" className="space-y-4 mt-4">
+              {loadingTrending ? (
+                <div className="flex justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : trendingPosts?.length === 0 ? (
+                <Card className="p-6 text-center">
+                  <p>No trending posts found.</p>
+                </Card>
+              ) : (
+                trendingPosts?.map((post) => (
                   <PostCard 
                     key={post.post_id} 
-                    post={post} 
-                    // onLike={() => likePost.mutate(post.id)} 
+                    post={{...post}} 
+                    onLike={() => likePost.mutate(post.post_id)} 
                   />
-                ))}
-              </div>
-            )} */}
-          </TabsContent>
-        </Tabs>
-      </div>
-      
-      {/* Sidebar */}
-      <div className="hidden md:block space-y-6">
-        {/* Upcoming Events */}
-        <Card>
-          <CardHeader>
-            <h3 className="text-lg font-semibold">Upcoming Events</h3>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {upcomingEvents?.map((event) => (
-              <div key={event.event_id} className="flex flex-col gap-1 pb-3 border-b last:border-0 last:pb-0">
-                <h4 className="font-medium">{event.title}</h4>
-                <p className="text-sm text-muted-foreground">
-                  {new Date(event.date).toLocaleDateString()} • {event.eventTime}
-                </p>
-                <Button variant="link" onClick={()=> navigate(`/visitor/event/${event.event_id}`)} className="p-0 h-auto w-auto justify-start text-sm">
-                  Learn more
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-        
-        {/* Popular Exhibitions */}
-        <Card>
-          <CardHeader>
-            <h3 className="text-lg font-semibold">Popular Exhibitions</h3>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {popularExhibitions?.map((exhibition, i) => (
-              <div key={exhibition.exhibits_id} className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10">
-                  <span className="font-medium text-primary">{i + 1}</span>
+                ))
+              )}
+            </TabsContent>
+            
+            {/* Latest tab */}
+            <TabsContent value="latest" className="space-y-4 mt-4">
+              {loadingLatest ? (
+                <div className="flex justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
-                <div className="space-y-1">
-                  <h4 className="font-medium leading-none">{exhibition.title}</h4>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              ) : latestPosts?.length === 0 ? (
+                <Card className="p-6 text-center">
+                  <p>No recent posts found.</p>
+                </Card>
+              ) : (
+                latestPosts?.map((post) => (
+                  <PostCard 
+                    key={post.post_id} 
+                    post={{...post}} 
+                    onLike={() => likePost.mutate(post.post_id)} 
+                  />
+                ))
+              )}
+            </TabsContent>
+            
+            {/* Following tab */}
+            <TabsContent value="following" className="mt-4">
+              {/* Following tab content here */}
+            </TabsContent>
+          </Tabs>
+        </div>
         
-        {/* Suggested Connections */}
-        <Card>
-          <CardHeader>
-            <h3 className="text-lg font-semibold">Suggested Connections</h3>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* {suggestedUsers?.map((user) => (
-              <div key={user.id} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src={user.avatar_url || "/placeholder.svg?height=40&width=40"} alt={user.display_name} />
-                    <AvatarFallback>{user.display_name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-sm font-medium leading-none">{user.display_name}</p>
-                    <p className="text-xs text-muted-foreground">@{user.username}</p>
+        {/* Sidebar */}
+        <div className="hidden md:block space-y-6">
+          {/* Upcoming Events */}
+          <Card>
+            <CardHeader>
+              <h3 className="text-lg font-semibold">Upcoming Events</h3>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {upcomingEvents?.map((event) => (
+                <div key={event.event_id} className="flex flex-col gap-1 pb-3 border-b last:border-0 last:pb-0">
+                  <h4 className="font-medium">{event.title}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(event.date).toLocaleDateString()} • {event.eventTime}
+                  </p>
+                  <Button variant="link" onClick={()=> navigate(`/visitor/event/${event.event_id}`)} className="p-0 h-auto w-auto justify-start text-sm">
+                    Learn more
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+          
+          {/* Popular Exhibitions */}
+          <Card>
+            <CardHeader>
+              <h3 className="text-lg font-semibold">Popular Exhibitions</h3>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {popularExhibitions?.map((exhibition, i) => (
+                <div key={exhibition.exhibits_id} className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10">
+                    <span className="font-medium text-primary">{i + 1}</span>
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-medium leading-none">{exhibition.title}</h4>
                   </div>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => followUser.mutate(user.id)}
-                >
-                  Follow
-                </Button>
-              </div>
-            ))} */}
-          </CardContent>
-        </Card>
+              ))}
+            </CardContent>
+          </Card>
+          
+          {/* Suggested Connections */}
+          <Card>
+            <CardHeader>
+              <h3 className="text-lg font-semibold">Suggested Connections</h3>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Suggested connections content here */}
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
-  </main>
-)
+    </main>
+  )
 }
 
-// Post Card Component
+// Updated PostCard Component with TypeScript ImageCarousel
 interface PostCardProps {
-post: Post
-onLike?: () => void
+  post: Post
+  onLike?: () => void
 }
 
 const PostCard = ({ post, onLike }: PostCardProps) => {
-return (
-  <Card className="overflow-hidden">
-    <CardHeader className="flex flex-row items-center gap-4 p-4">
-      <Avatar>
-        <AvatarImage src={post?.visitorImg || "/placeholder.svg?height=40&width=40"} alt={post?.firstName} />
-        <AvatarFallback>{post?.firstName?.charAt(0)}</AvatarFallback>
-      </Avatar>
-      <div className="grid gap-1">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">{post?.firstName}</span>
-          <span className="text-xs text-muted-foreground">@{post?.lastName}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* {post.exhibition && (
-            <Badge variant="outline" className="text-xs">
-              {post.exhibition}
-            </Badge>
-          )} */}
-          <span className="text-xs text-muted-foreground">{post.created_at}</span>
-        </div>
-      </div>
-    </CardHeader>
-    <CardContent className="p-0">
-      {post.content && (
-        <div className="px-4 pb-4">
-          <p className="text-sm">{post.content}</p>
-        </div>
-      )}
-      {post.images.length === 1 ? (
-        // Single image display
-        <img
-          src={post.images[0] || "/placeholder.svg?height=400&width=600"}
-          alt="Post image"
-          className="aspect-video object-cover w-full"
-        />
-      ) : post.images.length > 1 ? (
-        // Multiple images grid
-        <div className={`grid grid-cols-${Math.min(post.images.length, 2)} gap-1`}>
-          {post.images.map((image, index) => (
-            <div 
-              key={index} 
-              className={`relative ${post.images.length === 3 && index === 2 ? "col-span-2" : ""}`}
-            >
-              <img
-                src={image || "/placeholder.svg?height=300&width=300"}
-                alt={`Post image ${index + 1}`}
-                className="aspect-square object-cover w-full"
-              />
-              {post.images.length > 4 && index === 3 && (
-                <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white font-bold text-2xl">
-                  +{post.images.length - 4}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      ) : null}
-      {post.images.length === 1 ? (
-          // Single image display
-          <img
-            src={post.images[0] || "/placeholder.svg?height=400&width=600"}
-            alt="Post image"
-            className="aspect-video object-cover w-full"
-          />
-        ) : post.images.length > 1 ? (
-          // Multiple images grid
-          <div className={`grid ${post.images.length === 2 ? "grid-cols-2" : post.images.length === 3 ? "grid-cols-2" : "grid-cols-2"} gap-1`}>
-            {post.images.slice(0, 4).map((image, index) => (
-              <div 
-                key={index} 
-                className={`relative ${post.images.length === 3 && index === 2 ? "col-span-2" : ""}`}
-              >
-                <img
-                  src={image || "/placeholder.svg?height=300&width=300"}
-                  alt={`Post image ${index + 1}`}
-                  className="aspect-square object-cover w-full"
-                />
-                {post.images.length > 4 && index === 3 && (
-                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white font-bold text-2xl">
-                    +{post.images.length - 4}
-                  </div>
-                )}
-              </div>
-            ))}
+  return (
+    <Card className="overflow-hidden">
+      <CardHeader className="flex flex-row items-center gap-4 p-4">
+        <Avatar>
+          <AvatarImage src={post?.visitorImg || "/placeholder.svg?height=40&width=40"} alt={post?.firstName} />
+          <AvatarFallback>{post?.firstName?.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div className="grid gap-1">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">{post?.firstName}</span>
+            <span className="text-xs text-muted-foreground">@{post?.lastName}</span>
           </div>
-        ) : null}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{post.created_at}</span>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        {post.content && (
+          <div className="px-4 pb-4">
+            <p className="text-sm">{post.content}</p>
+          </div>
+        )}
+        
+        {/* Instagram-style image carousel */}
+        {post.images && post.images.length > 0 && (
+          <div className="w-full">
+            <ImageCarousel 
+              images={post.images} 
+              aspectRatio="square"
+              height="h-80"
+            />
+          </div>
+        )}
+        
       </CardContent>
       <CardFooter className="p-4">
         <div className="flex items-center gap-6 w-full">
@@ -812,15 +603,10 @@ return (
             <MessageCircle className="h-4 w-4" />
             <span>{post.comments}</span>
           </Button>
-          {/* <Button variant="ghost" size="sm" className="gap-1">
-            <Share2 className="h-4 w-4" />
-            <span>{post.shares}</span>
-          </Button> */}
         </div>
       </CardFooter>
     </Card>
   )
 }
-
 
 export default VisitorExperiencePage

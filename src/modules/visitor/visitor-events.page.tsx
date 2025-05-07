@@ -1,38 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
-
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { AnimatePresence, motion } from "framer-motion"
-import { Calendar, Clock, Search, Sparkles, X } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { Calendar, Clock, MapPin, Search, Sparkles, X } from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useEvents } from "../admin/events/hooks/useEvents"
+import { toast } from "sonner"
 import MuseumLoader from "../admin/museums/exhibit-loader"
-
-// Define the Event type
-export type EventFormData = {
-  title: string;
-  coverPhoto: string;
-  status?: string;
-  eventDate?: string;
-  eventTime?: string;
-  eventContent?: string | any;
-};
-
-// Define the Event interface
-interface Event {
-  id: string;
-  title: string;
-  coverPhoto: string;
-  status?: string;
-  eventDate?: string;
-  eventTime?: string;
-  eventContent?: string | any;
-  category: string;
-}
+import useInfiniteEvents, { Event } from './hooks/useEventsForInfiniteScrolling'
+import DebouncedSearchInput from "./visitor-debounced-output"
 
 // Format date function
 const formatDate = (dateString?: string) => {
@@ -44,7 +19,8 @@ const formatDate = (dateString?: string) => {
       day: "numeric",
       year: "numeric"
     });
-  } catch (e: any) {
+  } catch (error) {
+    console.error("Date formatting error:", error);
     return "Date TBA";
   }
 };
@@ -71,7 +47,9 @@ const useMasonryLayout = (items: Event[], columns: number) => {
     });
     
     sortedItems.forEach((item, index) => {
-      columnArrays[index % columns].push(item);
+      // Distribute items evenly across columns
+      const targetColumn = index % columns;
+      columnArrays[targetColumn].push(item);
     });
 
     setMasonryItems(columnArrays);
@@ -81,13 +59,15 @@ const useMasonryLayout = (items: Event[], columns: number) => {
 };
 
 export default function VisitorEventsPage() {
+  // Local state
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [spotlightEvent, setSpotlightEvent] = useState<Event | null>(null)
   const navigate = useNavigate();
-
-  const { data: eventsData, isLoading } = useEvents()
+  
+  // Reference for infinite scrolling
+  const bottomRef = useRef<HTMLDivElement>(null);
   
   // Responsive column count based on screen size
   const [columnCount, setColumnCount] = useState(3);
@@ -108,42 +88,73 @@ export default function VisitorEventsPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Map eventsData to the Event interface
-  const events: Event[] = useMemo(() => {
-    return (
-      eventsData?.data?.events?.map((event: any) => ({
-        id: event.event_id,
-        title: event.title,
-        coverPhoto: event.coverPhoto || "/placeholder.svg",
-        category: event.status || "Upcoming",
-        status: event.status,
-        eventDate: event.eventDate,
-        eventTime: event.eventTime,
-        eventContent: event.eventContent
-      })) || []
+  // Use the custom hook for infinite events
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error,
+    categories
+  } = useInfiniteEvents({
+    pageSize: 5,
+    searchTerm,
+    category: selectedCategory
+  });
+
+  // Extract all events from all pages
+  const allEvents = useMemo(() => {
+    return data?.pages.flatMap(page => page.data) || [];
+  }, [data]);
+
+  // Handle error state
+  useEffect(() => {
+    if (isError && error) {
+      toast.error("Failed to load events. Please try again later.", {
+        description: error.toString(),
+      });
+    }
+  }, [isError, error]);
+
+  // Set up intersection observer for infinite scroll
+  useEffect(() => {
+    if (!bottomRef.current) return;
+    
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.5 }
     );
-  }, [eventsData]);
+    
+    observer.observe(bottomRef.current);
+    
+    return () => {
+      if (bottomRef.current) {
+        observer.unobserve(bottomRef.current);
+      }
+    };
+  }, [bottomRef, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  // Memoize filteredEvents to prevent unnecessary recomputation
-  const filteredEvents = useMemo(() => {
-    return events.filter(
-      (event) =>
-        event.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (!selectedCategory || event.category === selectedCategory)
-    );
-  }, [events, searchTerm, selectedCategory]);
-
-  // Use the masonry layout hook with filtered events
-  const masonryItems = useMasonryLayout(filteredEvents, columnCount);
-
-  // Extract unique categories dynamically
-  const categories = Array.from(new Set(events.map((event) => event.category)));
+  // Use the masonry layout hook with all events
+  const masonryItems = useMasonryLayout(allEvents, columnCount);
 
   // Handle spotlight event
   const handleSpotlight = () => {
-    if (events.length > 0) {
-      const randomEvent = events[Math.floor(Math.random() * events.length)];
+    if (allEvents.length > 0) {
+      const randomEvent = allEvents[Math.floor(Math.random() * allEvents.length)];
       setSpotlightEvent(randomEvent);
+      toast.success("Spotlight event featured! Check it out.", {
+        position: "top-center",
+      });
+    } else {
+      toast.error("No events available to feature.", {
+        position: "top-center",
+      });
     }
   };
 
@@ -160,9 +171,16 @@ export default function VisitorEventsPage() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [spotlightEvent]);
 
-  if (isLoading) return <MuseumLoader />;
+  // Clear filters
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory(null);
+    toast.success("Filters cleared", {
+      position: "top-center",
+    });
+  };
 
-  console.log(events)
+  if (isLoading && !data) return <MuseumLoader />;
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -179,14 +197,13 @@ export default function VisitorEventsPage() {
         <div className="bg-white rounded-xl shadow-md p-6 mb-12">
           <div className="flex flex-col md:flex-row gap-6 items-center">
             <div className="relative flex-grow w-full md:w-auto">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <Input
-                type="text"
-                placeholder="Search events..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-12 w-full border-gray-300 focus:ring-2 focus:ring-indigo-500"
-              />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10" size={20} />
+                <DebouncedSearchInput
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="Search events..."
+                  debounceTime={500} // Set to 500ms for responsiveness
+                />
               {searchTerm && (
                 <button 
                   onClick={() => setSearchTerm('')}
@@ -200,6 +217,7 @@ export default function VisitorEventsPage() {
             <Button 
               onClick={handleSpotlight} 
               className="bg-indigo-600 hover:bg-indigo-700 text-white w-full md:w-auto flex-shrink-0"
+              disabled={allEvents.length === 0}
             >
               <Sparkles className="mr-2 h-4 w-4" /> Discover Random Event
             </Button>
@@ -232,31 +250,37 @@ export default function VisitorEventsPage() {
         {/* Results summary */}
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-semibold text-gray-800">
-            {filteredEvents.length} 
+            {data?.pages[0]?.count || 0} 
             {selectedCategory ? ` ${selectedCategory}` : ''} 
-            {filteredEvents.length === 1 ? ' Event' : ' Events'}
+            {(data?.pages[0]?.count || 0) === 1 ? ' Event' : ' Events'}
           </h2>
+          
+          {(searchTerm || selectedCategory) && (
+            <Button variant="outline" size="sm" onClick={handleClearFilters}>
+              <X className="h-4 w-4 mr-2" /> Clear Filters
+            </Button>
+          )}
         </div>
         
-        {/* Events grid */}
+        {/* Events grid with masonry layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {masonryItems.map((column, columnIndex) => (
             <div key={columnIndex} className="flex flex-col gap-8">
               {column.map((event) => (
                 <motion.div
-                  key={event.id}
-                  layoutId={`event-${event.id}`}
+                  key={event.event_id}
+                  layoutId={`event-${event.event_id}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="group bg-white overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={() => navigate(`/visitor/event/${event.id}`)}
+                  className="group bg-white overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                  onClick={() => navigate(`/visitor/event/${event.event_id}`)}
                 >
                   <div className="relative">
                     <div className="aspect-[16/9] overflow-hidden">
                       <img
-                        src={event.coverPhoto || "/placeholder.svg"}
+                        src={event.coverPhoto || "/placeholder.svg?height=400&width=600"}
                         alt={event.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
@@ -280,10 +304,16 @@ export default function VisitorEventsPage() {
                       <Calendar className="h-4 w-4 mr-2" />
                       <span className="text-sm">{formatDate(event.eventDate)}</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-gray-600 mb-2">
                       <Clock className="h-4 w-4 mr-2" />
                       <span className="text-sm">{formatTime(event.eventTime)}</span>
                     </div>
+                    {event.location && (
+                      <div className="flex items-center text-gray-600">
+                        <MapPin className="h-4 w-4 mr-2" />
+                        <span className="text-sm">{event.location}</span>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}
@@ -292,18 +322,28 @@ export default function VisitorEventsPage() {
         </div>
         
         {/* Empty state */}
-        {filteredEvents.length === 0 && (
+        {allEvents.length === 0 && !isLoading && (
           <div className="text-center py-16 bg-white rounded-xl shadow-md">
             <h3 className="text-2xl font-semibold text-gray-800 mb-2">No events found</h3>
             <p className="text-gray-600 mb-8">Try adjusting your search or filter criteria</p>
-            <Button onClick={() => {setSearchTerm(''); setSelectedCategory(null)}} variant="outline">
+            <Button onClick={handleClearFilters} variant="outline">
               Clear Filters
             </Button>
           </div>
         )}
+        
+        {/* Loading indicator at the bottom for infinite scroll */}
+        <div ref={bottomRef} className="mt-8 py-8 flex justify-center">
+          {isFetchingNextPage && (
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          )}
+          {!hasNextPage && allEvents.length > 0 && !isFetchingNextPage && (
+            <p className="text-gray-500">You've reached the end of the events list</p>
+          )}
+        </div>
       </div>
 
-      {/* Detailed event modal */}
+      {/* Event Quick View Modal */}
       <AnimatePresence>
         {selectedEvent && (
           <motion.div
@@ -314,7 +354,7 @@ export default function VisitorEventsPage() {
             onClick={() => setSelectedEvent(null)}
           >
             <motion.div
-              layoutId={`event-${selectedEvent.id}`}
+              layoutId={`event-${selectedEvent.event_id}`}
               className="bg-white rounded-xl max-w-3xl w-full overflow-hidden relative"
               onClick={(e) => e.stopPropagation()}
             >
@@ -327,7 +367,7 @@ export default function VisitorEventsPage() {
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-1/2">
                   <img
-                    src={selectedEvent.coverPhoto || "/placeholder.svg"}
+                    src={selectedEvent.coverPhoto || "/placeholder.svg?height=400&width=600"}
                     alt={selectedEvent.title}
                     className="w-full h-full object-cover aspect-video md:aspect-auto"
                   />
@@ -352,13 +392,19 @@ export default function VisitorEventsPage() {
                       <Clock className="h-5 w-5 mr-3" />
                       <span>{formatTime(selectedEvent.eventTime)}</span>
                     </div>
+                    {selectedEvent.location && (
+                      <div className="flex items-center text-gray-700">
+                        <MapPin className="h-5 w-5 mr-3" />
+                        <span>{selectedEvent.location}</span>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex-grow overflow-y-auto prose prose-sm max-w-none">
                     <div dangerouslySetInnerHTML={{ __html: selectedEvent.eventContent || 'No additional details available.' }} />
                   </div>
                   
-                  <Button className="mt-6 w-full" onClick={() => navigate(`/visitor/event/${selectedEvent.id}`)}>
+                  <Button className="mt-6 w-full" onClick={() => navigate(`/visitor/event/${selectedEvent.event_id}`)}>
                     View Full Details
                   </Button>
                 </div>
@@ -391,7 +437,7 @@ export default function VisitorEventsPage() {
             </div>
             <div className="overflow-hidden rounded-lg mb-3">
               <img
-                src={spotlightEvent.coverPhoto || "/placeholder.svg"}
+                src={spotlightEvent.coverPhoto || "/placeholder.svg?height=400&width=600"}
                 alt={spotlightEvent.title}
                 className="w-full h-48 object-cover transform hover:scale-105 transition-transform duration-300"
               />
@@ -413,11 +459,17 @@ export default function VisitorEventsPage() {
               <Clock className="h-3.5 w-3.5 mr-1.5" />
               <span>{formatTime(spotlightEvent.eventTime)}</span>
             </div>
+            {spotlightEvent.location && (
+              <div className="flex items-center text-gray-600 mb-3 text-sm">
+                <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                <span>{spotlightEvent.location}</span>
+              </div>
+            )}
             <Button 
               className="w-full bg-indigo-600 hover:bg-indigo-700" 
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/visitor/event/${spotlightEvent.id}`);
+                navigate(`/visitor/event/${spotlightEvent.event_id}`);
               }}
             >
               Learn More
@@ -426,5 +478,5 @@ export default function VisitorEventsPage() {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
