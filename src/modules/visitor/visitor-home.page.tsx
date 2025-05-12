@@ -30,8 +30,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { MuseumLoading } from "@/layouts/page.layout"
 import { NavLink } from "react-router-dom"
-import MuseumLoader from "../admin/museums/exhibit-loader"
 import useFeaturedEvents from "./hooks/useFeaturedEvent"
 
 const featuredContent = {
@@ -144,7 +144,7 @@ export default function Visitor() {
   const { data: featuredEvents, isLoading } = useFeaturedEvents();
 
 
-  if(isLoading) return <MuseumLoader />
+  if(isLoading) return <MuseumLoading />
 
   return (
 

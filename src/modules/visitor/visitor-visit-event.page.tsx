@@ -9,10 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { MuseumLoading } from "@/layouts/page.layout"
 import { EditorContent } from "@tiptap/react"
 import { NavLink, useParams } from "react-router-dom"
 import { usePastEvents } from "../admin/events/usePastEvents"
-import MuseumLoader from "../admin/museums/exhibit-loader"
 import { useBlockEditor } from "../admin/museums/hooks/useMuseumEditor"
 import useFeaturedEventById from "./hooks/useFeaturedEventById"
 import EventGalleryDisplay from "./visitor-event-gallery-display"
@@ -379,7 +379,7 @@ export default function VisitorVisitEvent() {
 
   const isLoading = isFeatureEventLoading || isEventDataLoading;
 
-  if(isLoading) return <MuseumLoader />
+  if(isLoading) return <MuseumLoading />
 
   // Format event status for display
   const getStatusBadge = () => {

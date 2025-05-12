@@ -3,7 +3,7 @@ import useViewHomeEditor from "@/modules/admin/page-editor/home-editor/hooks/use
 import { motion } from "framer-motion";
 import { Outlet } from "react-router-dom";
 
-const MuseumLoading = () => {
+export const MuseumLoading = () => {
   return (
     <div className="fixed inset-0 bg-[#F5F4F1] flex flex-col items-center justify-center z-50">
       <div className="max-w-md w-full mx-auto px-4">

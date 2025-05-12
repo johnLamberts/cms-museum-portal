@@ -4,11 +4,11 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { MuseumLoading } from "@/layouts/page.layout"
 import { AnimatePresence, motion } from "framer-motion"
 import { Search, Sparkles, X } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import MuseumLoader from "../admin/museums/exhibit-loader"
 import { useMuseums } from "../admin/museums/hooks/useMuseums"
 
 // Define the MuseumFormData type
@@ -142,7 +142,7 @@ export default function VisitorExhibitPage() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [spotlightExhibit]);
 
-  if (isLoading) return <MuseumLoader />
+  if (isLoading) return <MuseumLoading />
 
   return (
     <div className="bg-gray-50 min-h-screen">

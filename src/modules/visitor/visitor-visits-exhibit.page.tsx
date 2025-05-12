@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { MuseumLoading } from "@/layouts/page.layout"
 import { EditorContent } from "@tiptap/react"
 import { useEffect, useMemo } from "react"
 import { NavLink, useParams } from "react-router-dom"
-import MuseumLoader from "../admin/museums/exhibit-loader"
 import { useBlockEditor } from "../admin/museums/hooks/useMuseumEditor"
 import { useMuseums } from "../admin/museums/hooks/useMuseums"
 
@@ -36,7 +36,7 @@ export default function VisitorVisitsExhibit() {
     }
   }, [editor, exhibit?.museumContent])
   
-  if(isLoading) return <MuseumLoader />
+  if(isLoading) return <MuseumLoading />
 
   return (
     <div className="min-h-screen bg-background">
