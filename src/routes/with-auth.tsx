@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { MuseumLoading } from "@/layouts/page.layout";
 import useCurrentUser from "@/modules/authentication/useCurrentUser";
 import { ComponentType, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +26,7 @@ export function withAuth<P extends object>(
 
     // Show loading while checking auth
     if (isLoading) {
-      return <div>Loading...</div>; // Replace with proper loading component
+      return <MuseumLoading />; // Replace with proper loading component
     }
 
     // Only render the component if user is authenticated

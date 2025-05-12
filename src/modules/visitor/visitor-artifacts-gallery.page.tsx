@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { MuseumLoading } from '@/layouts/page.layout';
 import { ArrowLeft, ArrowRight, Filter, Info, Maximize, Search, Star, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import useArtifacts from '../admin/museum-gallery/hooks/useUsers';
@@ -84,9 +85,7 @@ const VisitorGalleryPage = () => {
   };
 
   if (isLoading) return (
-    <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
-    </div>
+    <MuseumLoading />
   );
   
   if (error) return (
