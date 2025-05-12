@@ -1,11 +1,11 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { MuseumLoading } from "@/layouts/page.layout"
 import { AnimatePresence, motion } from "framer-motion"
 import { Calendar, Clock, MapPin, Search, Sparkles, X } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
-import MuseumLoader from "../admin/museums/exhibit-loader"
 import useInfiniteEvents, { Event } from './hooks/useEventsForInfiniteScrolling'
 import DebouncedSearchInput from "./visitor-debounced-output"
 
@@ -180,7 +180,7 @@ export default function VisitorEventsPage() {
     });
   };
 
-  if (isLoading && !data) return <MuseumLoader />;
+  if (isLoading && !data) return <MuseumLoading />;
 
   return (
     <div className="bg-gray-50 min-h-screen">
