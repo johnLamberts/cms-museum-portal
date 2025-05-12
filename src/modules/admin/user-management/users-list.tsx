@@ -186,10 +186,6 @@ const UsersList = () => {
       <div className="flex items-center">
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="active">Active</TabsTrigger>
-          <TabsTrigger className="hidden sm:flex" value="archived">
-            Archived
-          </TabsTrigger>
         </TabsList>
         <div className="ml-auto flex items-center gap-2">
           <div className="relative ml-auto flex-1 md:grow-0">

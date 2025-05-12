@@ -1,4 +1,5 @@
 import HomeLayout from "@/layouts/home.layout";
+import AdminAuditLogViewer from "@/modules/admin/audit-trails/audit-trail.page";
 import DashboardPage from "@/modules/admin/dashboard/dashboard.page";
 import DetailedDashboard from "@/modules/admin/dashboard/detailed.dashboard";
 import OverviewDashboard from "@/modules/admin/dashboard/overview.dashboard";
@@ -43,6 +44,7 @@ import RegisterPage from "@/modules/authentication/register.page";
 import GeneralError from "@/modules/errors/general-error.page";
 import { default as ExhibitLandPage } from "@/modules/landing-page/exhibits.page";
 import MoreAbout from "@/modules/landing-page/more-about.page";
+import MoreEventsPage from "@/modules/landing-page/more-events";
 import Museums from "@/modules/landing-page/museums.page";
 import VisitorGalleryPage from "@/modules/visitor/visitor-artifacts-gallery.page";
 import VisitorEventsPage from "@/modules/visitor/visitor-events.page";
@@ -83,8 +85,8 @@ export const appRouter = createBrowserRouter([
         errorElement: <GeneralError />
       },
       {
-        path: '/events',
-        Component: EventPage,
+        path: '/events-page',
+        Component: MoreEventsPage,
         errorElement: <GeneralError />
       },
       {
@@ -312,6 +314,17 @@ export const appRouter = createBrowserRouter([
         ],
       },
 
+      //Events
+      {
+        path: 'audit_trails',
+        Component: AdminAuditLogViewer,
+        children: [
+          {
+            index: true,
+            Component: AdminAuditLogViewer
+          },
+        ],
+      },
 
       //Donations
       {

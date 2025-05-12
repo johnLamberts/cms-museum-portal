@@ -4,8 +4,6 @@
 import {
   ActivityIcon,
   BookOpen,
-  FolderEditIcon,
-  Frame,
   LayoutDashboard,
   PieChart,
   Settings2,
@@ -78,13 +76,17 @@ const data = {
           url: "museums",
         },
         {
+          title: "Events",
+          url: "events",
+        },
+        {
           title: "Museum Gallery",
           url: "museum_gallery",
         },
         {
           title: "Site Editor",
           url: "page_editor",
-        }
+        },
       ],
     },
     {
@@ -108,26 +110,17 @@ const data = {
     },
     {
       title: "Audit Trail",
-      url: "#",
+      url: "audit_trails",
       icon: ActivityIcon,
     },
   ],
   projects: [
-    {
-      name: "Events",
-      url: "events",
-      icon: Frame,
-    },
+    
     {
       name: "Donations",
       url: "donations",
       icon: PieChart,
-    },
-    {
-      name: "Feedback",
-      url: "#",
-      icon: FolderEditIcon,
-    },
+    }
   ],
 }
 

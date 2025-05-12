@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import useLogin from "./useLogin";
@@ -15,7 +15,6 @@ const LoginPage = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleLoginSubmit =  (payload: Record<string, any>) => {
-    // console.log(payload);
     loginUser(payload)
   };
 
@@ -30,15 +29,6 @@ const LoginPage = () => {
           className="bg-[#0B0400]"
         >
           Back home
-        </Button>
-        <Button
-          onClick={() => navigate("/admin-dashboard")}
-          variant={"expandIcon"}
-          iconPlacement="right"
-          Icon={ArrowRightIcon}
-          className="bg-[#0B0400]"
-        >
-          Go to Admin UI
         </Button>
       </div>
       <div className="relative hidden h-full flex-col bg-muted text-white lg:flex dark:border-r">

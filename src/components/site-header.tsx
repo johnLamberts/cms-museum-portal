@@ -167,17 +167,7 @@ const SiteHeader = () => {
                     Exhibits
                   </Link>
                   <Link
-                    to="/museums"
-                    className={`duration-200 hover:text-neutral-900	 ${
-                      pathname === "/museums"
-                        ? "text-neutral-900	underline"
-                        : "text-slate-950	"
-                    }`}
-                  >
-                    Museums
-                  </Link>
-                  <Link
-                    to="/contact"
+                    to="/events-page"
                     className={`duration-200 hover:text-neutral-900	 ${
                       pathname === "/contact"
                         ? "text-neutral-900	"

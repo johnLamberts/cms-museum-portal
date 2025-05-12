@@ -26,7 +26,10 @@ export default {
         throw new Error("User data not found");
       }
   
-      return data.user.user_metadata;
+      return {
+        id: data.user.id,
+        ...data.user.user_metadata
+      } as any;
     } catch (err) {
       // Handle different error types
       if (err instanceof axios.AxiosError) {

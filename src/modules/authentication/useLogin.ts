@@ -3,11 +3,15 @@ import CMS_KEYZ from "@/lib/enum";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useAudit } from "../admin/audit-trails/hooks/useAudits";
 import authService from "./auth.service";
 
 export default function useLogin() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const { logCreate } = useAudit();
+
 
   const {
     mutate: loginUser,
@@ -53,9 +57,12 @@ export default function useLogin() {
           "Your account is still pending approval. You will receive an email once approved.",
           { duration: 6000 }
         );
+
         
         // Redirect to pending approval page
         navigate("/pending-approval", { replace: true });
+
+        logCreate(user?.id, "users", user?.id, `${user?.firstName} ${user?.lastName} - ${user?.id} is trying to login but account status were still ${user?.status}`)
         
         // Exit early - don't set the current user
         return;
@@ -72,6 +79,7 @@ export default function useLogin() {
         // Redirect to inactive account page or login
         navigate("/pending-approval", { replace: true, state: { status: "inactive" } });
         
+        logCreate(user?.id, "users", user?.user_id, `${user?.firstName} ${user?.lastName} - ${user?.user_id} is trying to login but account status was ${user?.status}`)
         // Exit early
         return;
       }
@@ -94,6 +102,7 @@ export default function useLogin() {
         navigate("/", { replace: true });
       }
 
+      logCreate(user?.id, "users", user?.user_id, `${user?.firstName} ${user?.lastName} - ${user?.user_id} sucessfully login`)
       toast.success(`You successfully logged in as ${user?.userRole}`);
     },
     
