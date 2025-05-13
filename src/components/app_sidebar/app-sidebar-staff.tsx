@@ -68,14 +68,6 @@ const data = {
       icon: Settings2,
       items: [
         {
-          title: "Municipality",
-          url: "settings/municipalities",
-        },
-        {
-          title: "Baranggay",
-          url: "settings/baranggay",
-        },
-        {
           title: "Exhibition",
           url: "settings/exhibition",
         },
