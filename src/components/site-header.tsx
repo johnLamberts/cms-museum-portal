@@ -177,7 +177,7 @@ const SiteHeader = () => {
                     Events
                   </Link>
                   <Link
-                    to="/donation"
+                    to="/donations"
                     className={`duration-200 hover:text-neutral-900	 ${
                       pathname === "/donation"
                         ? "text-neutral-900	"

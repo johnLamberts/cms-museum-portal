@@ -42,6 +42,7 @@ import LoginPage from "@/modules/authentication/login.page";
 import AccountStatusPage from "@/modules/authentication/pending-approval";
 import RegisterPage from "@/modules/authentication/register.page";
 import GeneralError from "@/modules/errors/general-error.page";
+import SimpleDonationPage from "@/modules/landing-page/donation.page";
 import { default as ExhibitLandPage } from "@/modules/landing-page/exhibits.page";
 import MoreAbout from "@/modules/landing-page/more-about.page";
 import MoreEventsPage from "@/modules/landing-page/more-events";
@@ -92,6 +93,11 @@ export const appRouter = createBrowserRouter([
       {
         path: '/exhibits',
         Component: ExhibitLandPage,
+        errorElement: <GeneralError />
+      },
+      {
+        path: '/donations',
+        Component: SimpleDonationPage,
         errorElement: <GeneralError />
       }
     ]
