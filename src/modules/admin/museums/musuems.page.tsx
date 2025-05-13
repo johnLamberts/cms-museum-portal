@@ -13,10 +13,6 @@ const MuseumPage = () => {
           <Link to={'museum-lists'}>
             <TabsTrigger value="museum-lists">All</TabsTrigger>
           </Link>
-            
-          <Link to={"archive_musuems"}>
-            <TabsTrigger value="aboutpage">Archive</TabsTrigger>
-          </Link>
         </TabsList>
       </div>
 

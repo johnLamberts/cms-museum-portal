@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { FileIcon, MoreHorizontalIcon, PlusCircleIcon, SearchIcon } from "lucide-react"
 import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
-import useMuseums from "./hooks/useMuseums"
+import { useMuseums } from "./hooks/useMuseums"
 
 
 // Utility function to adjust text color for readability based on the background color
@@ -63,6 +63,7 @@ const MuseumLists = () => {
   const navigate = useNavigate();
 
   const { data: museumsData, isLoading, error } = useMuseums();
+
 
   const memoMuseums = useMemo(() => {
     return museumsData?.data?.museums || [];
@@ -141,8 +142,8 @@ const MuseumLists = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigate(`update_form/${museum.museum_id}`)}>Edit</DropdownMenuItem>
-              <DropdownMenuItem>Delete</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate(`/musuem/update_museum/${museum.exhibits_id}`)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem>Add Gallery</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </TableCell>

@@ -60,3 +60,12 @@ input[type='range'] {
     @apply dark:bg-neutral-100 dark:active:bg-white;
   }
 }
+
+/* Adjust z-index to be lower than other elements like the table */
+.sheet-class {
+  z-index: 1000;
+}
+
+.table-class {
+  z-index: 1010;
+}

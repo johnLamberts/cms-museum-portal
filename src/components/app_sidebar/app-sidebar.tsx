@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import {
+  ActivityIcon,
   BookOpen,
-  FolderEditIcon,
-  Frame,
   LayoutDashboard,
   PieChart,
   Settings2,
@@ -23,13 +23,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import useCurrentUser from "@/modules/authentication/useCurrentUser"
 
 const data = {
-  user: {
-    name: "MuseoRizal",
-    email: "museorizal@site.library",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -79,14 +75,18 @@ const data = {
           title: "Exhibits",
           url: "museums",
         },
-        // {
-        //   title: "Exhibits",
-        //   url: "exhibits_mgm",
-        // },
+        {
+          title: "Events",
+          url: "events",
+        },
+        {
+          title: "Museum Gallery",
+          url: "museum_gallery",
+        },
         {
           title: "Site Editor",
           url: "page_editor",
-        }
+        },
       ],
     },
     {
@@ -95,36 +95,30 @@ const data = {
       icon: Settings2,
       items: [
         {
-          title: "Municipality",
-          url: "settings/municipalities",
-        },
-        {
-          title: "Baranggay",
-          url: "settings/baranggay",
+          title: "Exhibition",
+          url: "settings/exhibition",
         },
       ],
     },
+    {
+      title: "Audit Trail",
+      url: "audit_trails",
+      icon: ActivityIcon,
+    },
   ],
   projects: [
-    {
-      name: "Events",
-      url: "events",
-      icon: Frame,
-    },
+    
     {
       name: "Donations",
       url: "donations",
       icon: PieChart,
-    },
-    {
-      name: "Feedback",
-      url: "#",
-      icon: FolderEditIcon,
-    },
+    }
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user: currentUser } = useCurrentUser();
+  
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -150,7 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={currentUser as any} />
       </SidebarFooter>
     </Sidebar>
   )

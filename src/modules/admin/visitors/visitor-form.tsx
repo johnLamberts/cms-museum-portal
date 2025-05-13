@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,19 +8,17 @@ import {
 } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
 import generatePassword from "@/lib/generaPassword";
+
 import { UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const VisitorForm = ({ form }: any) => {
-  const navigate = useNavigate();
-  const { setFocus, setValue, formState } = form;
-  const { errors } = formState;
+const VisitorForm = ({ form, isEditingMode }: any) => {
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null); // To store the image preview URL
+  const { setValue} = form;
+
+  const [imagePreview, setImagePreview] = useState<string | null>(form.getValues("visitorImg") || null) // To store the image preview URL
 
   // Handle file change
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,22 +26,33 @@ const VisitorForm = ({ form }: any) => {
     if (file) {
       const reader = new FileReader()
       reader.onloadend = () => {
-        setImagePreview(reader.result as string)
+        const img = reader.result as string
+        setImagePreview(img)
+
+        form.setValue("visitorImg", img)
       }
       reader.readAsDataURL(file)
     }
-  };
+  }
 
   useEffect(() => {
-     // If there are errors, focus on the first field that has an error
-     if (Object.keys(errors).length > 0) {
-      const firstErrorKey = Object.keys(errors)[0]; // Get the first error key
-      setFocus(firstErrorKey); // Automatically focus on the first error field
+    //  // If there are errors, focus on the first field that has an error
+    //  if (Object.keys(errors).length > 0) {
+    //   const firstErrorKey = Object.keys(errors)[0]; // Get the first error key
+    //   setFocus(firstErrorKey); // Automatically focus on the first error field
+    // }
+
+    // Set image preview if visitorImgAttachment exists in form data
+    const visitorImg = form.getValues("visitorImg")
+
+    if (visitorImg && typeof visitorImg === "string") {
+      setImagePreview(visitorImg)
     }
 
-    setValue("password", generatePassword());
-  }, [])
-
+    if (isEditingMode) {
+      setValue("password", generatePassword())
+    }
+  }, [form, isEditingMode, setValue])
   
   return (
         <main className="grid flex-1 items-start gap-4 p-4 md:gap-8">
@@ -92,7 +100,7 @@ const VisitorForm = ({ form }: any) => {
                                 name="middleName"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Middle Name <span className="text-red-600">*</span></FormLabel>
+                                    <FormLabel>Middle Name <span className="text-blue-600">*</span></FormLabel>
                                     <FormControl>
                                       <Input placeholder="Dela Cruz" {...field} />
                                     </FormControl>
@@ -164,7 +172,7 @@ const VisitorForm = ({ form }: any) => {
                                   <FormItem>
                                     <FormLabel>Password <span className="text-red-600">*</span></FormLabel>
                                     <FormControl>
-                                      <Input placeholder="shadcn" type="password" disabled {...field} />
+                                      <Input placeholder="shadcn" type="password"  {...field} />
                                     </FormControl>
                                     <FormMessage />
                                   </FormItem>
@@ -233,12 +241,6 @@ const VisitorForm = ({ form }: any) => {
                     </Card>
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-2 md:hidden">
-                  <Button size="sm" variant="outline" onClick={() => navigate(-1)}>
-                    Cancel
-                  </Button>
-                  <Button size="sm">Save Product</Button>
-                </div>
               </form>
            </Form>
           </div>
@@ -246,3 +248,4 @@ const VisitorForm = ({ form }: any) => {
   );
 };
 export default VisitorForm;
+

@@ -24,7 +24,6 @@ const SiteHeader = () => {
 
   
   const { pathname } = useLocation();
-  console.log(pathname === "/home" )
   return (
     <header ref={ref}>
       <div
@@ -135,7 +134,7 @@ const SiteHeader = () => {
                   <HamburgerMenuIcon className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent>
+              <SheetContent side={'left'}>
                 <div className="flex flex-col items-center justify-between gap-8">
                   <Link
                     to="/"
@@ -160,7 +159,7 @@ const SiteHeader = () => {
                   <Link
                     to="/exhibits"
                     className={`duration-200 hover:text-neutral-900	 ${
-                      pathname === "/projects"
+                      pathname === "/exhibits"
                         ? "text-neutral-900	"
                         : "text-slate-950	"
                     }`}
@@ -168,19 +167,9 @@ const SiteHeader = () => {
                     Exhibits
                   </Link>
                   <Link
-                    to="/museums"
+                    to="/events-page"
                     className={`duration-200 hover:text-neutral-900	 ${
-                      pathname === "/museums"
-                        ? "text-neutral-900	underline"
-                        : "text-slate-950	"
-                    }`}
-                  >
-                    Museums
-                  </Link>
-                  <Link
-                    to="/contact"
-                    className={`duration-200 hover:text-neutral-900	 ${
-                      pathname === "/contact"
+                      pathname === "/events-page"
                         ? "text-neutral-900	"
                         : "text-slate-950	"
                     }`}
@@ -188,21 +177,21 @@ const SiteHeader = () => {
                     Events
                   </Link>
                   <Link
-                    to="/contact"
+                    to="/donation"
                     className={`duration-200 hover:text-neutral-900	 ${
-                      pathname === "/contact"
+                      pathname === "/donation"
                         ? "text-neutral-900	"
                         : "text-slate-950	"
                     }`}
                   >
-                    Contact Us
+                    Donation
                   </Link>
 
                   <Separator />
                   <Link
                     to="/login"
                     className={`flex lg:hidden xl:hidden duration-200 hover:text-neutral-900	 ${
-                      pathname === "/contact"
+                      pathname === "/login"
                         ? "text-neutral-900	"
                         : "text-slate-950	"
                     }`}
