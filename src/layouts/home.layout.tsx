@@ -2,8 +2,8 @@ import { useBlockEditor } from "@/modules/admin/page-editor/home-editor/hooks/us
 import useViewHomeEditor from "@/modules/admin/page-editor/home-editor/hooks/useViewHomeEditor";
 import About from "@/modules/landing-page/about.page";
 import Hero from "@/modules/landing-page/hero.page";
-import Highlights from "@/modules/landing-page/highlights.page";
-import UpcomingEvents from "@/modules/landing-page/upcoming-events.page";
+import { Highlights } from "@/modules/landing-page/highlights.page";
+import { UpcomingEvents } from "@/modules/landing-page/upcoming-events.page";
 import { useEffect } from "react";
 import "../styles/partials/index.css";
 

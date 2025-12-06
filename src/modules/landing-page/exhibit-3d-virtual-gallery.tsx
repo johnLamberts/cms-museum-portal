@@ -1,17 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ChevronLeft,
   ChevronRight,
   Info,
   Maximize,
+  Minimize,
   Navigation,
   Pause,
   Play,
   RotateCcw,
   Volume2,
-  VolumeX,
-  X
+  VolumeX
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -19,128 +18,150 @@ const InteractiveVirtualGallery = ({
   title = "360° Virtual Gallery Preview",
   subtitle = "Interactive Museum Experience",
   description = "Explore our museum spaces with this interactive 360° viewer. Click and drag to look around, or use the navigation controls.",
-  // onLaunch = () => console.log('Launch experience')
 }) => {
   const [currentScene, setCurrentScene] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
+  const [showInfo, setShowInfo] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const [, setImagePosition] = useState({ x: 0, y: 0 });
+  const [startX, setStartX] = useState(0);
   
-  const viewerRef = useRef(null);
-  const imageRef = useRef(null);
-  const autoRotateRef: any = useRef(null);
+  const viewerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   // Museum scenes data
   const scenes = [
     {
       id: 1,
       name: "Traditional Artifacts Gallery",
-      image: "/aws-1.jpeg", // Your first panoramic image
+      image: "/aws-1.jpeg",
       description: "Discover traditional Filipino tools and artifacts that showcase our rich cultural heritage.",
-      hotspots: [
-        { x: 30, y: 45, title: "Traditional Boats", description: "Historic Filipino watercraft models" },
-        { x: 70, y: 35, title: "Farming Tools", description: "Ancient agricultural implements" },
-        { x: 85, y: 60, title: "Cultural Artifacts", description: "Traditional household items" }
-      ]
     },
     {
       id: 2,
       name: "Heritage Documentation Center",
-      image: "/aws-2.jpeg", // Your second panoramic image
+      image: "/aws-2.jpeg",
       description: "Explore our collection of historical documents, photographs, and memorabilia.",
-      hotspots: [
-        { x: 25, y: 40, title: "Historical Records", description: "Important documents and manuscripts" },
-        { x: 60, y: 50, title: "Photo Collection", description: "Vintage photographs of Rizal" },
-        { x: 80, y: 30, title: "Interactive Displays", description: "Digital heritage exhibits" }
-      ]
     }
   ];
 
   const currentSceneData = scenes[currentScene];
 
-  // Auto-rotation effect
+  // Auto-rotation effect - smooth continuous rotation
   useEffect(() => {
     if (isPlaying && !isDragging) {
-      autoRotateRef.current = setInterval(() => {
-        setRotation(prev => ({
-          ...prev,
-          y: prev.y + 0.5
-        }));
-      }, 50);
+      const animate = () => {
+        setRotation(prev => prev - 0.2); // Negative for clockwise rotation
+        animationFrameRef.current = requestAnimationFrame(animate);
+      };
+      animationFrameRef.current = requestAnimationFrame(animate);
     } else {
-      clearInterval(autoRotateRef.current);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     }
     
-    return () => clearInterval(autoRotateRef.current);
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
   }, [isPlaying, isDragging]);
 
-  // Handle mouse/touch interactions
-  const handleMouseDown = (e: any) => {
+  // Handle mouse/touch interactions for 360° panorama
+  const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
     setIsDragging(true);
-    setDragStart({
-      x: e.clientX || e.touches?.[0]?.clientX,
-      y: e.clientY || e.touches?.[0]?.clientY
-    });
     setIsPlaying(false);
+    
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    setStartX(clientX);
+    
+    // Hide info panel after first interaction
+    if (showInfo) {
+      setTimeout(() => setShowInfo(false), 2000);
+    }
   };
 
-  const handleMouseMove = (e: any) => {
+  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging) return;
+    e.preventDefault();
     
-    const currentX = e.clientX || e.touches?.[0]?.clientX;
-    const currentY = e.clientY || e.touches?.[0]?.clientY;
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const deltaX = clientX - startX;
     
-    const deltaX = currentX - dragStart.x;
-    const deltaY = currentY - dragStart.y;
-    
-    setRotation(prev => ({
-      x: Math.max(-45, Math.min(45, prev.x - deltaY * 0.5)),
-      y: prev.y + deltaX * 0.5
-    }));
-    
-    setDragStart({ x: currentX, y: currentY });
+    // Adjust sensitivity for better control
+    setRotation(prev => prev + deltaX * 0.5);
+    setStartX(clientX);
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
   };
 
-  // Handle wheel zoom
-  const handleWheel = (e: any) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    setZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
-  };
-
   const resetView = () => {
-    setRotation({ x: 0, y: 0 });
-    setZoom(1);
+    setRotation(0);
+    setImagePosition({ x: 0, y: 0 });
     setIsPlaying(false);
   };
 
   const toggleFullscreen = () => {
+    if (!isFullscreen) {
+      if (viewerRef.current?.requestFullscreen) {
+        viewerRef.current.requestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
     setIsFullscreen(!isFullscreen);
   };
 
   const nextScene = () => {
     setCurrentScene((prev) => (prev + 1) % scenes.length);
     setIsLoading(true);
+    setRotation(0);
   };
 
   const prevScene = () => {
     setCurrentScene((prev) => (prev - 1 + scenes.length) % scenes.length);
     setIsLoading(true);
+    setRotation(0);
   };
 
   const handleImageLoad = () => {
     setIsLoading(false);
   };
+
+  // Keyboard controls
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch(e.key) {
+        case 'ArrowLeft':
+          setRotation(prev => prev + 10);
+          break;
+        case 'ArrowRight':
+          setRotation(prev => prev - 10);
+          break;
+        case ' ':
+          e.preventDefault();
+          setIsPlaying(prev => !prev);
+          break;
+        case 'r':
+          resetView();
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <div className="py-24 bg-gradient-to-b from-white to-gray-100">
@@ -174,11 +195,12 @@ const InteractiveVirtualGallery = ({
 
         {/* Viewer Container */}
         <motion.div
+          ref={viewerRef}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
-          className={`relative bg-white shadow-2xl rounded-2xl overflow-hidden ${
-            isFullscreen ? 'fixed inset-4 z-50' : 'aspect-video max-w-6xl mx-auto'
+          className={`relative bg-black shadow-2xl rounded-2xl overflow-hidden ${
+            isFullscreen ? 'fixed inset-0 z-50 rounded-none' : 'aspect-video max-w-6xl mx-auto'
           }`}
         >
           {/* Loading State */}
@@ -188,7 +210,7 @@ const InteractiveVirtualGallery = ({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-gray-900 flex items-center justify-center z-10"
+                className="absolute inset-0 bg-gray-900 flex items-center justify-center z-30"
               >
                 <div className="text-center text-white">
                   <motion.div
@@ -204,8 +226,11 @@ const InteractiveVirtualGallery = ({
 
           {/* 360° Image Viewer */}
           <div
-            ref={viewerRef}
-            className="absolute inset-0 overflow-hidden cursor-grab active:cursor-grabbing"
+            className="absolute inset-0 overflow-hidden select-none"
+            style={{ 
+              cursor: isDragging ? 'grabbing' : 'grab',
+              touchAction: 'none'
+            }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
@@ -213,119 +238,138 @@ const InteractiveVirtualGallery = ({
             onTouchStart={handleMouseDown}
             onTouchMove={handleMouseMove}
             onTouchEnd={handleMouseUp}
-            onWheel={handleWheel}
           >
-            <motion.img
-              ref={imageRef}
-              src={currentSceneData.image}
-              alt={currentSceneData.name}
-              className="w-full h-full object-cover select-none"
+            <motion.div
+              className="absolute inset-0"
               style={{
-                transform: `scale(${zoom}) rotateY(${rotation.y}deg) rotateX(${rotation.x}deg)`,
-                transformOrigin: 'center center',
-                transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+                width: '300%', // Triple width for seamless panorama
+                height: '100%',
               }}
-              onLoad={handleImageLoad}
-              onError={() => setIsLoading(false)}
-              draggable={false}
-            />
-
-            {/* Hotspots */}
-            {!isLoading && currentSceneData.hotspots.map((hotspot, index) => (
-              <motion.div
-                key={index}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
-                className="absolute transform -translate-x-1/2 -translate-y-1/2 group"
+            >
+              {/* Render image three times for seamless loop */}
+              <img
+                ref={imageRef}
+                src={currentSceneData.image}
+                alt={currentSceneData.name}
+                className="absolute top-0 h-full w-1/3 object-cover select-none pointer-events-none"
                 style={{
-                  left: `${hotspot.x}%`,
-                  top: `${hotspot.y}%`
+                  left: '0%',
+                  transform: `translateX(${rotation % (100)}%)`,
                 }}
-              >
-                <div className="w-6 h-6 bg-amber-500 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform duration-200 flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                </div>
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                  <div className="bg-black/80 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap">
-                    <div className="font-semibold">{hotspot.title}</div>
-                    <div className="text-xs opacity-80">{hotspot.description}</div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                onLoad={handleImageLoad}
+                onError={() => setIsLoading(false)}
+                draggable={false}
+              />
+              <img
+                src={currentSceneData.image}
+                alt={currentSceneData.name}
+                className="absolute top-0 h-full w-1/3 object-cover select-none pointer-events-none"
+                style={{
+                  left: '33.333%',
+                  transform: `translateX(${rotation % (100)}%)`,
+                }}
+                draggable={false}
+              />
+              <img
+                src={currentSceneData.image}
+                alt={currentSceneData.name}
+                className="absolute top-0 h-full w-1/3 object-cover select-none pointer-events-none"
+                style={{
+                  left: '66.666%',
+                  transform: `translateX(${rotation % (100)}%)`,
+                }}
+                draggable={false}
+              />
+            </motion.div>
           </div>
 
           {/* Navigation Controls */}
-          <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-20">
-            <div className="bg-black/20 backdrop-blur-sm rounded-lg px-4 py-2">
-              <h3 className="text-white font-semibold">{currentSceneData.name}</h3>
-              <p className="text-white/80 text-sm">{currentSceneData.description}</p>
+          <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-20 pointer-events-none">
+            <div className="bg-black/60 backdrop-blur-md rounded-lg px-4 py-3 max-w-md pointer-events-auto">
+              <h3 className="text-white font-semibold text-lg">{currentSceneData.name}</h3>
+              <p className="text-white/80 text-sm mt-1">{currentSceneData.description}</p>
             </div>
             
             {isFullscreen && (
               <button
                 onClick={toggleFullscreen}
-                className="bg-black/20 backdrop-blur-sm text-white p-2 rounded-lg hover:bg-black/30 transition-colors"
+                className="bg-black/60 backdrop-blur-md text-white p-3 rounded-lg hover:bg-black/70 transition-colors pointer-events-auto"
               >
-                <X className="w-6 h-6" />
+                <Minimize className="w-5 h-5" />
               </button>
             )}
           </div>
 
           {/* Scene Navigation */}
-          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20">
-            <button
-              onClick={prevScene}
-              className="bg-black/20 backdrop-blur-sm text-white p-3 rounded-lg hover:bg-black/30 transition-colors"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-          </div>
-          
-          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20">
-            <button
-              onClick={nextScene}
-              className="bg-black/20 backdrop-blur-sm text-white p-3 rounded-lg hover:bg-black/30 transition-colors"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div>
+          {scenes.length > 1 && (
+            <>
+              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20">
+                <button
+                  onClick={prevScene}
+                  className="bg-black/60 backdrop-blur-md text-white p-4 rounded-lg hover:bg-black/70 transition-all hover:scale-110"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20">
+                <button
+                  onClick={nextScene}
+                  className="bg-black/60 backdrop-blur-md text-white p-4 rounded-lg hover:bg-black/70 transition-all hover:scale-110"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </div>
+            </>
+          )}
 
           {/* Control Panel */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
-            <div className="bg-black/20 backdrop-blur-sm rounded-2xl px-6 py-3 flex items-center gap-4">
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20">
+            <div className="bg-black/60 backdrop-blur-md rounded-2xl px-6 py-3 flex items-center gap-3">
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
-                className="text-white hover:text-amber-400 transition-colors p-2"
+                className="text-white hover:text-amber-400 transition-all p-2 hover:scale-110"
+                title={isPlaying ? "Pause rotation" : "Auto-rotate"}
               >
                 {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </button>
               
+              <div className="w-px h-6 bg-white/20" />
+              
               <button
                 onClick={resetView}
-                className="text-white hover:text-amber-400 transition-colors p-2"
+                className="text-white hover:text-amber-400 transition-all p-2 hover:scale-110"
+                title="Reset view"
               >
                 <RotateCcw className="w-5 h-5" />
               </button>
               
+              <div className="w-px h-6 bg-white/20" />
+              
               <button
                 onClick={() => setSoundEnabled(!soundEnabled)}
-                className="text-white hover:text-amber-400 transition-colors p-2"
+                className="text-white hover:text-amber-400 transition-all p-2 hover:scale-110"
+                title={soundEnabled ? "Mute" : "Unmute"}
               >
                 {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
               </button>
               
+              <div className="w-px h-6 bg-white/20" />
+              
               <button
                 onClick={toggleFullscreen}
-                className="text-white hover:text-amber-400 transition-colors p-2"
+                className="text-white hover:text-amber-400 transition-all p-2 hover:scale-110"
+                title="Fullscreen"
               >
                 <Maximize className="w-5 h-5" />
               </button>
               
+              <div className="w-px h-6 bg-white/20" />
+              
               <button
                 onClick={() => setShowInfo(!showInfo)}
-                className="text-white hover:text-amber-400 transition-colors p-2"
+                className={`transition-all p-2 hover:scale-110 ${showInfo ? 'text-amber-400' : 'text-white hover:text-amber-400'}`}
+                title="Show instructions"
               >
                 <Info className="w-5 h-5" />
               </button>
@@ -333,22 +377,25 @@ const InteractiveVirtualGallery = ({
           </div>
 
           {/* Scene Indicators */}
-          <div className="absolute bottom-4 right-4 z-20">
-            <div className="bg-black/20 backdrop-blur-sm rounded-lg px-3 py-2 flex gap-2">
-              {scenes.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setCurrentScene(index);
-                    setIsLoading(true);
-                  }}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentScene ? 'bg-amber-400' : 'bg-white/50'
-                  }`}
-                />
-              ))}
+          {scenes.length > 1 && (
+            <div className="absolute bottom-6 right-6 z-20">
+              <div className="bg-black/60 backdrop-blur-md rounded-lg px-3 py-2 flex gap-2">
+                {scenes.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setCurrentScene(index);
+                      setIsLoading(true);
+                      setRotation(0);
+                    }}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      index === currentScene ? 'bg-amber-400 w-6' : 'bg-white/50 hover:bg-white/70'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Instructions */}
           <AnimatePresence>
@@ -357,23 +404,41 @@ const InteractiveVirtualGallery = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="absolute top-20 left-4 right-4 z-20"
+                className="absolute top-24 left-1/2 transform -translate-x-1/2 z-20 w-full max-w-2xl px-4"
               >
-                <div className="bg-black/80 backdrop-blur-sm text-white rounded-lg p-6">
-                  <h4 className="font-semibold mb-3 flex items-center gap-2">
-                    <Navigation className="w-5 h-5" />
-                    How to Navigate
+                <div className="bg-black/80 backdrop-blur-md text-white rounded-xl p-6 shadow-2xl">
+                  <h4 className="font-semibold mb-4 flex items-center gap-2 text-lg">
+                    <Navigation className="w-5 h-5 text-amber-400" />
+                    How to Navigate the 360° Gallery
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="mb-2"><strong>Mouse/Touch:</strong> Click and drag to look around</p>
-                      <p className="mb-2"><strong>Scroll:</strong> Zoom in and out</p>
-                      <p><strong>Auto-rotate:</strong> Click play button for automatic rotation</p>
+                    <div className="space-y-2">
+                      <p className="flex items-start gap-2">
+                        <span className="text-amber-400 font-bold">→</span>
+                        <span><strong>Click & Drag:</strong> Look around the gallery</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <span className="text-amber-400 font-bold">⌨</span>
+                        <span><strong>Arrow Keys:</strong> Navigate left/right</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <span className="text-amber-400 font-bold">▶</span>
+                        <span><strong>Auto-rotate:</strong> Press play button or spacebar</span>
+                      </p>
                     </div>
-                    <div>
-                      <p className="mb-2"><strong>Arrows:</strong> Navigate between gallery sections</p>
-                      <p className="mb-2"><strong>Hotspots:</strong> Hover over yellow dots for information</p>
-                      <p><strong>Fullscreen:</strong> Expand for immersive experience</p>
+                    <div className="space-y-2">
+                      <p className="flex items-start gap-2">
+                        <span className="text-amber-400 font-bold">⟲</span>
+                        <span><strong>Reset:</strong> Return to starting view</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <span className="text-amber-400 font-bold">←→</span>
+                        <span><strong>Scene Arrows:</strong> Switch between galleries</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <span className="text-amber-400 font-bold">⛶</span>
+                        <span><strong>Fullscreen:</strong> Immersive experience</span>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -382,22 +447,15 @@ const InteractiveVirtualGallery = ({
           </AnimatePresence>
         </motion.div>
 
-        {/* Launch Full Experience Button */}
+        {/* Additional Info */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           className="text-center mt-12"
         >
-          {/* <button
-            onClick={onLaunch}
-            className="bg-[#492309] hover:bg-[#492309]/90 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center gap-3"
-          >
-            <Eye className="w-6 h-6" />
-            Explore Full Virtual Tour
-          </button> */}
-          <p className="text-gray-600 mt-4 max-w-md mx-auto text-sm">
-            Experience all our museum galleries with full navigation, audio guides, and interactive features
+          <p className="text-gray-600 max-w-md mx-auto text-sm">
+            Experience all our museum galleries with full 360° navigation, audio guides, and interactive features
           </p>
         </motion.div>
       </div>

@@ -405,7 +405,7 @@ export const appRouter = createBrowserRouter([
           },
           {
             path: 'home-content',
-            Component: HomeContent // ✅ Corrected placement
+            Component: HomeContent 
           }
           
         ]
