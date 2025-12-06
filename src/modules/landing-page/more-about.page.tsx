@@ -42,7 +42,7 @@ const MoreAbout = () => {
     <div className="relative">
       <a href="/">
         <img
-          src={"/mock/pinto1.png"}
+          src={"/mock/about-1.jpeg"}
           alt="Get in touch"
           className="w-screen h-auto contain	"
         />

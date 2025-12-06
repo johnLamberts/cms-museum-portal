@@ -32,31 +32,31 @@ const formatTime = (timeString?: string) => {
 };
 
 // Custom hook for masonry layout with stable updates
-const useMasonryLayout = (items: Event[], columns: number) => {
-  const [masonryItems, setMasonryItems] = useState<Event[][]>([]);
+// const useMasonryLayout = (items: Event[], columns: number) => {
+//   const [masonryItems, setMasonryItems] = useState<Event[][]>([]);
 
-  useEffect(() => {
-    // Create column arrays only if items or columns change
-    const columnArrays: Event[][] = Array.from({ length: columns }, () => []);
+//   useEffect(() => {
+//     // Create column arrays only if items or columns change
+//     const columnArrays: Event[][] = Array.from({ length: columns }, () => []);
     
-    // Sort events by date first (most recent first)
-    const sortedItems = [...items].sort((a, b) => {
-      if (!a.eventDate) return 1;
-      if (!b.eventDate) return -1;
-      return new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime();
-    });
+//     // Sort events by date first (most recent first)
+//     const sortedItems = [...items].sort((a, b) => {
+//       if (!a.eventDate) return 1;
+//       if (!b.eventDate) return -1;
+//       return new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime();
+//     });
     
-    sortedItems.forEach((item, index) => {
-      // Distribute items evenly across columns
-      const targetColumn = index % columns;
-      columnArrays[targetColumn].push(item);
-    });
+//     sortedItems.forEach((item, index) => {
+//       // Distribute items evenly across columns
+//       const targetColumn = index % columns;
+//       columnArrays[targetColumn].push(item);
+//     });
 
-    setMasonryItems(columnArrays);
-  }, [items, columns]);
+//     setMasonryItems(columnArrays);
+//   }, [items, columns]);
 
-  return masonryItems;
-};
+//   return masonryItems;
+// };
 
 export default function VisitorEventsPage() {
   // Local state
@@ -70,7 +70,7 @@ export default function VisitorEventsPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   
   // Responsive column count based on screen size
-  const [columnCount, setColumnCount] = useState(3);
+  const [, setColumnCount] = useState(3);
   
   useEffect(() => {
     const handleResize = () => {
@@ -141,7 +141,7 @@ export default function VisitorEventsPage() {
   }, [bottomRef, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   // Use the masonry layout hook with all events
-  const masonryItems = useMasonryLayout(allEvents, columnCount);
+   
 
   // Handle spotlight event
   const handleSpotlight = () => {
@@ -263,63 +263,66 @@ export default function VisitorEventsPage() {
         </div>
         
         {/* Events grid with masonry layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {masonryItems.map((column, columnIndex) => (
-            <div key={columnIndex} className="flex flex-col gap-8">
-              {column.map((event) => (
-                <motion.div
-                  key={event.event_id}
-                  layoutId={`event-${event.event_id}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="group bg-white overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-                  onClick={() => navigate(`/visitor/event/${event.event_id}`)}
-                >
-                  <div className="relative">
-                    <div className="aspect-[16/9] overflow-hidden">
-                      <img
-                        src={event.coverPhoto || "/placeholder.svg?height=400&width=600"}
-                        alt={event.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    </div>
-                    <div className="absolute top-0 right-0 m-4">
-                      <Badge className={`
-                        ${event.status === 'Upcoming' ? 'bg-green-100 text-green-800' : 
-                        event.status === 'Cancelled' ? 'bg-red-100 text-red-800' : 
-                        event.status === 'Completed' ? 'bg-gray-100 text-gray-800' : 
-                        'bg-blue-100 text-blue-800'}
-                      `}>
-                        {event.status || 'Upcoming'}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors">
-                      {event.title}
-                    </h3>
-                    <div className="flex items-center text-gray-600 mb-2">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{formatDate(event.eventDate)}</span>
-                    </div>
-                    <div className="flex items-center text-gray-600 mb-2">
-                      <Clock className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{formatTime(event.eventTime)}</span>
-                    </div>
-                    {event.location && (
-                      <div className="flex items-center text-gray-600">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{event.location}</span>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ))}
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+  {allEvents.map((event) => (
+    <motion.div
+      key={event.event_id}
+      layoutId={`event-${event.event_id}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="group bg-white overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+      onClick={() => navigate(`/visitor/event/${event.event_id}`)}
+    >
+      <div className="relative">
+        <div className="aspect-[16/9] overflow-hidden">
+          <img
+            src={event.coverPhoto || "/placeholder.svg?height=400&width=600"}
+            alt={event.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
         </div>
+
+        <div className="absolute top-0 right-0 m-4">
+          <Badge className={`
+            ${event.status === 'Upcoming' ? 'bg-green-100 text-green-800' :
+              event.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
+              event.status === 'Completed' ? 'bg-gray-100 text-gray-800' :
+              'bg-blue-100 text-blue-800'}
+          `}>
+            {event.status || 'Upcoming'}
+          </Badge>
+        </div>
+      </div>
+
+      <div className="p-5">
+        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors">
+          {event.title}
+        </h3>
+
+        <div className="flex items-center text-gray-600 mb-2">
+          <Calendar className="h-4 w-4 mr-2" />
+          <span className="text-sm">{formatDate(event.eventDate)}</span>
+        </div>
+
+        <div className="flex items-center text-gray-600 mb-2">
+          <Clock className="h-4 w-4 mr-2" />
+          <span className="text-sm">{formatTime(event.eventTime)}</span>
+        </div>
+
+        {event.location && (
+          <div className="flex items-center text-gray-600">
+            <MapPin className="h-4 w-4 mr-2" />
+            <span className="text-sm">{event.location}</span>
+          </div>
+        )}
+      </div>
+
+    </motion.div>
+  ))}
+</div>
+
         
         {/* Empty state */}
         {allEvents.length === 0 && !isLoading && (

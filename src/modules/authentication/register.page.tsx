@@ -107,7 +107,7 @@ const RegisterPage: React.FC = () => {
       </div>
       
       <div className="relative hidden h-full flex-col bg-muted text-white lg:flex dark:border-r">
-        <img src="/mock/login.jpg" className="h-screen w-screen md:none" alt="Registration background" />
+        <img src="/mock/register.jpeg" className="h-screen w-screen md:none" alt="Registration background" />
       </div>
       
       <div className="lg:p-8">

@@ -17,7 +17,7 @@ const Hero = () => {
     <div className="relative">
       <a href="/">
         <img
-          src={"/mock/mus1.png"}
+          src={"/mock/labas.jpeg"}
           alt="Get in touch"
           className="w-screen h-auto contain	"
         />
