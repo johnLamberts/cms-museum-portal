@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useMuseums } from "../admin/museums/hooks/useMuseums"
 
 const featuredContent = {
   title: "The Last Letters of Jose Rizal",
@@ -164,6 +165,10 @@ export default function Visitor() {
   const prevExperience = () => {
     setActiveExperience((prev) => (prev - 1 + visitorExperiences.length) % visitorExperiences.length)
   }
+
+  const { data: museumsData } = useMuseums();
+
+  console.log(museumsData)
 
   return (
     <div className="min-h-screen bg-background">

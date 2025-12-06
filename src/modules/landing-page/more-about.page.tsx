@@ -15,12 +15,6 @@ import {
 } from "lucide-react"
 
 const MoreAbout = () => {
-  const stats = [
-    { icon: Users, label: "Active Visitors", value: "10,000+", color: "text-blue-600" },
-    { icon: MapPin, label: "Partner Museums", value: "25+", color: "text-green-600" },
-    { icon: Calendar, label: "Annual Events", value: "150+", color: "text-purple-600" },
-    { icon: Award, label: "Exhibitions", value: "200+", color: "text-amber-600" },
-  ]
 
   const offerings = [
     {
