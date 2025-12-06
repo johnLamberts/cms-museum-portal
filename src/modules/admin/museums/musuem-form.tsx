@@ -6,49 +6,30 @@ import LinkMenu from "@/components/content-menus/link-menu"
 import { TextMenu } from "@/components/content-menus/text-menus/text-menu"
 import { Form } from "@/components/ui/form"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import GalleryMenu from "@/modules/extensions/gallery/gallery-menu"
 import ImageBlockMenu from "@/modules/extensions/image-block/image-menu.block"
-import { EditorContent } from "@tiptap/react"
-import { useEffect, useRef } from "react"
-import { useWatch } from "react-hook-form"
-import MuseumHeaderForm from "./components/museum-header"
-import { useBlockEditor } from "./hooks/useMuseumEditor"
-// import EditorMenuBar from "./components/editor-menu-bar"
+import ColumnsMenu from "@/modules/extensions/multicolumn/columns-menu"
+import TableColumnMenu from "@/modules/extensions/table/menus/table-column"
+import TableRowMenu from "@/modules/extensions/table/menus/table-row"
 import "@/styles/partials/index.css"
+import { EditorContent } from "@tiptap/react"
+import { useRef } from "react"
+import MuseumHeaderForm from "./components/museum-header"
+
+interface MuseumProps {
+  form: any;
+  editor?: any;
+  isEditingMode?: boolean;
+  exhibit?: Record<string, any>;
+}
+
+const MuseumForm = ({ form, editor }: MuseumProps) => {
+  const menuContainerRef = useRef<HTMLDivElement | null>(null);
 
 
+  // No need to try to sync editor content here - it's handled in MuseumContent
 
-const MuseumForm = ({ form }: any) => {
-  const menuContainerRef = useRef<HTMLDivElement | null>(null)
-  const { editor } = useBlockEditor()
-
-  // const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-
-  const editorContent = useWatch({
-    control: form.control,
-    name: 'museumContent',
-  })
-
-  useEffect(() => {
-    if (editor && !editor.isDestroyed) {
-      const updateFormContent = () => {
-        form.setValue('museumContent', editor.getHTML(), { shouldDirty: true })
-      }
-
-      editor.on('update', updateFormContent)
-
-      return () => {
-        editor.off('update', updateFormContent)
-      }
-    }
-  }, [editor, form])
-
-  useEffect(() => {
-    if (editor && !editor.isDestroyed && editorContent !== editor.getHTML()) {
-      editor.commands.setContent(editorContent)
-    }
-  }, [editor, editorContent])
-
-  if (!editor) return null
+  if (!editor) return null;
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -64,29 +45,24 @@ const MuseumForm = ({ form }: any) => {
                 </div>
               </ScrollArea>
             </div>
-            
-            {/* <div className={`w-64 bg-secondary p-4 transition-all duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-              <button
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="absolute top-4 -left-8 bg-secondary p-2 rounded-l-md"
-              >
-                {isSidebarOpen ? '→' : '←'}
-              </button>
-              <TextMenu editor={editor} />
-            </div> */}
           </div>
-
+          
           <div ref={menuContainerRef} className="sticky bottom-0 bg-background border-t">
-            <ContentItemMenu editor={editor} />
-            <LinkMenu editor={editor} appendTo={menuContainerRef} />
-            <TextMenu editor={editor} />
-            <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
+            <>
+              <ContentItemMenu editor={editor} />
+              <TextMenu editor={editor} />
+              <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
+              <LinkMenu editor={editor} appendTo={menuContainerRef} />
+              <TableRowMenu editor={editor} appendTo={menuContainerRef} />
+              <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
+              <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
+              <GalleryMenu editor={editor} appendTo={menuContainerRef} />
+            </>
           </div>
         </form>
       </Form>
     </div>
-  )
-}
+  );
+};
 
-export default MuseumForm
-
+export default MuseumForm;

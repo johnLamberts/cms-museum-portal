@@ -14,7 +14,7 @@ export default function useCreateEvent() {
           `Success! The ${(data).title} has been created successfully. `
         );
         queryClient.invalidateQueries({
-          queryKey: [CMS_KEYZ.READ_CREATE_MUSEUMS_ADDED],
+          queryKey: [CMS_KEYZ.READ_CREATE_EVENTS_ADDED],
         });
       },
       onError: (err) => toast.error(err.message),

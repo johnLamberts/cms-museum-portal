@@ -13,10 +13,6 @@ const EventPage = () => {
           <Link to={'event-lists'}>
             <TabsTrigger value="event-lists">All</TabsTrigger>
           </Link>
-            
-          <Link to={"archive_musuems"}>
-            <TabsTrigger value="aboutpage">Incoming</TabsTrigger>
-          </Link>
         </TabsList>
       </div>
 

@@ -1,153 +1,404 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  CalendarDays,
+  Camera,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Eye,
+  MapPin,
+  MessageSquare,
+  PlusCircle,
+  Share2,
+  Sparkles,
+  Star,
+  ThumbsUp,
+  TrendingUp,
+  Users
+} from "lucide-react"
+import { useState } from "react"
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { cn } from "@/lib/utils"
-import { Clock, Heart, MessageCircle, Share2 } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-import useFeaturedEvents from "./hooks/useFeaturedEvent"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import supabase from "@/lib/supabase"
+import { useQuery } from "@tanstack/react-query"
+import { useMuseums } from "../admin/museums/hooks/useMuseums"
+import useInfiniteEvents from "./hooks/useEventsForInfiniteScrolling"
 
 
-
-const visitorPosts = [
+const exhibits = [
   {
-    id: 1,
-    visitor: "John D.",
-    visitorImage: "/placeholder.svg?height=40&width=40",
-    image: "/placeholder.svg?height=600&width=600",
-    exhibit: "The Last Letters of Jose Rizal",
-    description:
-      "An incredible experience seeing these historical artifacts. The detail in Rizal's handwriting is remarkable. #RizalLetters #History",
-    likes: 24,
-    comments: 5,
-    timeAgo: "2h ago",
+    id: "last-letters-rizal",
+    title: "The Last Letters of Jose Rizal",
+    description: "A powerful exhibition showcasing Rizal's final correspondences.",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
+    date: "Feb 20 - Mar 30, 2024",
+    location: "Main Gallery",
+    visitors: "2,847",
+    rating: "4.9"
   },
   {
-    id: 2,
-    visitor: "Maria S.",
-    visitorImage: "/placeholder.svg?height=40&width=40",
-    image: "/placeholder.svg?height=600&width=600",
-    exhibit: "Philippine Revolution Gallery",
-    description:
-      "Learning about our history through these preserved artifacts. Every piece tells a story of courage. #History #Culture",
-    likes: 18,
-    comments: 3,
-    timeAgo: "4h ago",
+    id: "iskolar-ni-ynares",
+    title: "Iskolar ni Ynares: Artistic Visions",
+    description: "Celebrating local talent and creativity through diverse artworks.",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
+    date: "Apr 1 - Apr 30, 2024",
+    location: "East Wing Gallery",
+    visitors: "1,523",
+    rating: "4.7"
+  },
+  {
+    id: "ccs-days",
+    title: "CCS Days: Digital Heritage",
+    description: "Exploring the intersection of technology and cultural preservation.",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
+    date: "May 15 - Jun 15, 2024",
+    location: "Tech Pavilion",
+    visitors: "3,142",
+    rating: "4.8"
   },
 ]
 
-export default function VisitorHome() {
 
-  const {data: featuredEvents, isLoading } = useFeaturedEvents();
+const visitorExperiences = [
+  {
+    id: 1,
+    user: {
+      name: "Maria Santos",
+      avatar: "/placeholder.svg",
+    },
+    content:
+      "The Rizal exhibition was truly eye-opening. I never realized how powerful his last letters were. A must-visit for every Filipino! 🇵🇭",
+    likes: 128,
+    comments: 12,
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
+    date: "2 hours ago",
+  },
+  {
+    id: 2,
+    user: {
+      name: "Juan dela Cruz",
+      avatar: "/placeholder.svg",
+    },
+    content:
+      "Attended the Philippine Literature seminar today. The discussions were so engaging, I lost track of time! Excited to dive deeper into our literary heritage. 📚",
+    likes: 95,
+    comments: 8,
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
+    date: "1 day ago",
+  },
+  {
+    id: 3,
+    user: {
+      name: "Ana Reyes",
+      avatar: "/placeholder.svg",
+    },
+    content:
+      "The CCS Days exhibition blew my mind! It's amazing to see how technology is helping preserve our cultural heritage. Kudos to the organizers! 🖥️🏛️",
+    likes: 112,
+    comments: 15,
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
+    date: "3 days ago",
+  },
+]
 
-  const navigate = useNavigate();
+const trendingTopics = [
+  { name: "Rizal's Legacy", posts: 1247 },
+  { name: "Philippine Literature", posts: 892 },
+  { name: "Digital Preservation", posts: 734 },
+  { name: "Local Artists", posts: 623 },
+  { name: "Historical Films", posts: 501 },
+]
 
 
-  if(isLoading) return <>Loading...</>
+export default function Visitor() {
+  const [activeExperience, setActiveExperience] = useState(0)
+
+  const nextExperience = () => {
+    setActiveExperience((prev) => (prev + 1) % visitorExperiences.length)
+  }
+
+  const prevExperience = () => {
+    setActiveExperience((prev) => (prev - 1 + visitorExperiences.length) % visitorExperiences.length)
+  }
+
+  const { data: museumsData } = useMuseums();
+
+   const {
+      data,
+    } = useInfiniteEvents({
+      pageSize: 5,
+    });
+
+    console.log(data?.pages[0]?.data)
+  
+
+    const { data: latestPosts, } = useQuery({
+      queryKey: ["posts", "latest"],
+      queryFn: async () => {
+        const { data } = await supabase
+          .from("posts_with_users")
+          .select(`
+            post_id,
+            user_uid,
+            content,
+            images,
+            created_at,
+            likes,
+            comments,
+            shares,
+            firstName,
+            lastName,
+            visitorImg
+          `)
+          .order("created_at", { ascending: false })
+          .limit(10)
+        
+        return data?.map(post => ({
+          ...post,
+          created_at: new Date(post.created_at).toLocaleString()
+        })) || []
+      }
+    })
+
+    console.log(latestPosts);
+
+
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      {/* Featured Exhibits */}
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">Featured Event</h2>
-        <ScrollArea className="w-full">
-          <div className="flex gap-4">
-            {featuredEvents?.map((exhibit: any) => (
-              <Card key={exhibit.event_id} className="w-[300px] flex-shrink-0">
-                <CardHeader className="relative h-[200px] p-0">
-                  <img
-                    src={exhibit.coverPhoto || "/placeholder.svg"}
-                    alt={exhibit.title}
-                    className="object-cover rounded-t-lg max-h-24"
-                  />
-                  <div className="absolute top-2 right-2">
-                    <span
-                      className={cn(
-                        "px-2 py-1 rounded text-xs",
-                        exhibit.status === "Now Showing" ? "bg-green-500 text-white" : "bg-yellow-500 text-white",
-                      )}
-                    >
-                      {exhibit.status}
-                    </span>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="lg:w-2/3 space-y-8">
+            {/* Enhanced Hero Section */}
+            <section className="relative h-[60vh] overflow-hidden rounded-xl shadow-2xl">
+              <img
+                src={museumsData?.data?.museums[0]?.coverPhoto}
+                alt={museumsData?.data?.museums[0]?.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-8">
+                <Badge className="mb-3 text-sm">{museumsData?.data?.museums[0]?.type}</Badge>
+                <h1 className="text-4xl font-bold text-white mb-3">{museumsData?.data?.museums[0]?.title}</h1>
+                <p className="text-white/90 mb-6 text-lg max-w-2xl">{museumsData?.data?.museums[0]?.description}</p>
+                <div className="flex flex-wrap items-center gap-6 text-white/90 text-sm mb-4">
+                  <div className="flex items-center">
+                    <CalendarDays className="h-4 w-4 mr-2" />
+                    {museumsData?.data?.museums[0]?.updated_at}
                   </div>
-                </CardHeader>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold">{exhibit.title}</h3>
-                  {/* <p className="text-sm text-gray-500">Curator: {exhibit.curator}</p> */}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </section>
+                  <div className="flex items-center">
+                    <Users className="h-4 w-4 mr-2" />
+                    {museumsData?.data?.museums[0]?.visitors} visitors
+                  </div>
+                  <div className="flex items-center">
+                    <Star className="h-4 w-4 mr-2 fill-yellow-400 text-yellow-400" />
+                    {museumsData?.data?.museums[0]?.rating} rating
+                  </div>
+                </div>
+              </div>
+            </section>
 
-      {/* Visitor Experiences */}
-      <section>
-        <div className="flex justify-between">
-          <h2 className="text-2xl font-semibold mb-4">Visitor Experiences</h2>
-            <Button variant="shine" size="sm" onClick={() => navigate("visitor_exhibits")}>
-              View more
-            </Button>
-        </div>
-        <div className="grid gap-6">
-          {visitorPosts.map((post) => (
-            <Card key={post.id}>
-              <CardContent className="p-6">
-                {/* Post Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={post.visitorImage || "/placeholder.svg"}
-                      alt={post.visitor}
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                    <div>
-                      <h3 className="font-semibold">{post.visitor}</h3>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Clock className="w-4 h-4 mr-1" />
-                        {post.timeAgo}
+            {/* Enhanced Tabs for Events and Exhibits */}
+            <Tabs defaultValue="events" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 h-12">
+                <TabsTrigger value="events" className="text-base">Upcoming Events</TabsTrigger>
+                <TabsTrigger value="exhibits" className="text-base">Current Exhibits</TabsTrigger>
+              </TabsList>
+              <TabsContent value="events" className="space-y-4 mt-6">
+                <div className="grid gap-6 md:grid-cols-2">
+                  {data?.pages[0]?.data.map((event) => (
+                    <Card key={event.event_id} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2">
+                      <div className="relative aspect-video">
+                        <img
+                          src={event.coverPhoto}
+                          alt={event.title}
+                          className="w-full h-full object-cover"
+                        />
+                        
                       </div>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="sm">
-                    <Share2 className="w-4 h-4" />
+                      <CardHeader>
+                        <CardTitle className="line-clamp-2">{event.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center text-muted-foreground">
+                            <CalendarDays className="h-4 w-4 mr-2" />
+                            {event.eventDate}
+                          </div>
+                          <div className="flex items-center text-muted-foreground">
+                            <Clock className="h-4 w-4 mr-2" />
+                            {event.eventTime}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+              <TabsContent value="exhibits" className="space-y-4 mt-6">
+                <div className="grid gap-6 md:grid-cols-2">
+                  {exhibits.map((exhibit) => (
+                    <Card key={exhibit.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2">
+                      <div className="relative aspect-video">
+                        <img
+                          src={exhibit.image}
+                          alt={exhibit.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-3 right-3 flex gap-2">
+                          <Badge className="bg-primary/90 backdrop-blur">
+                            <Star className="h-3 w-3 mr-1 fill-current" />
+                            {exhibit.rating}
+                          </Badge>
+                        </div>
+                      </div>
+                      <CardHeader>
+                        <CardTitle className="line-clamp-2">{exhibit.title}</CardTitle>
+                        <CardDescription className="line-clamp-2">{exhibit.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center text-muted-foreground">
+                            <CalendarDays className="h-4 w-4 mr-2" />
+                            {exhibit.date}
+                          </div>
+                          <div className="flex items-center text-muted-foreground">
+                            <MapPin className="h-4 w-4 mr-2" />
+                            {exhibit.location}
+                          </div>
+                          <div className="flex items-center text-muted-foreground">
+                            <Eye className="h-4 w-4 mr-2" />
+                            {exhibit.visitors} visitors
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardFooter>
+                        <Button variant="outline" className="w-full">View Details</Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Enhanced Sidebar */}
+          <div className="lg:w-1/3 space-y-6">
+            {/* Enhanced Visitor Experiences Section */}
+            <Card className="overflow-hidden border-2 shadow-lg">
+              <CardHeader className="bg-muted/50">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Camera className="h-5 w-5 text-primary" />
+                    Visitor Stories
+                  </CardTitle>
+                  <Button variant="default" size="sm">
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    Share
                   </Button>
                 </div>
-
-                {/* Post Image */}
-                <div className="relative aspect-video mb-4">
-                  <img
-                    src={post.image || "/placeholder.svg"}
-                    alt={post.exhibit}
-                    className="object-cover rounded-lg"
-                  />
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="relative h-[500px] overflow-hidden bg-black">
+                  {latestPosts?.map((experience, index) => (
+                    <div
+                      key={experience?.post_id}
+                      className={`absolute inset-0 transition-all duration-500 ease-in-out ${
+                        index === activeExperience ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full"
+                      }`}
+                    >
+                      <img
+                        src={experience?.images[0]}
+                        alt={`Experience by ${experience}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
+                      <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Avatar className="h-10 w-10 border-2 border-white">
+                            <AvatarImage src={experience?.content} />
+                            <AvatarFallback>{experience?.content}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                          </div>
+                        </div>
+                        <p className="text-sm text-white mb-4 leading-relaxed">{experience.content}</p>
+                        <div className="flex items-center gap-2 mb-3">
+                          <Button variant="secondary" size="sm" className="gap-1">
+                            <ThumbsUp className="h-3 w-3" />
+                            {experience.likes}
+                          </Button>
+                          <Button variant="secondary" size="sm" className="gap-1">
+                            <MessageSquare className="h-3 w-3" />
+                            {experience.comments}
+                          </Button>
+                          <Button variant="secondary" size="sm" className="gap-1">
+                            <Share2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 hover:text-white"
+                    onClick={prevExperience}
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 hover:text-white"
+                    onClick={nextExperience}
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </Button>
                 </div>
-
-                {/* Post Content */}
-                <div>
-                  <h4 className="font-semibold mb-2">{post.exhibit}</h4>
-                  <p className="text-gray-600 mb-4">{post.description}</p>
-
-                  {/* Post Actions */}
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <Button variant="ghost" size="sm" className="gap-2">
-                      <Heart className="w-4 h-4" />
-                      {post.likes}
-                    </Button>
-                    <Button variant="ghost" size="sm" className="gap-2">
-                      <MessageCircle className="w-4 h-4" />
-                      {post.comments}
-                    </Button>
-                  </div>
+                <div className="flex justify-center gap-2 p-3 bg-muted/50">
+                  {latestPosts?.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        index === activeExperience ? "bg-primary w-8" : "bg-muted-foreground/50"
+                      }`}
+                      onClick={() => setActiveExperience(index)}
+                    />
+                  ))}
                 </div>
               </CardContent>
             </Card>
-          ))}
+
+            {/* Enhanced Trending Topics */}
+            <Card className="border-2">
+              <CardHeader className="bg-muted/50">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Trending Topics
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <ul className="space-y-3">
+                  {trendingTopics.map((topic, index) => (
+                    <li key={index} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium">{topic.name}</span>
+                      </div>
+                      <Badge variant="secondary" className="text-xs">
+                        {topic.posts}
+                      </Badge>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   )
 }
-
