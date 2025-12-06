@@ -132,7 +132,7 @@ export const Highlights = () => {
         </div>
 
         {/* Bottom CTA */}
-        <div className="flex justify-center pt-8">
+        {/* <div className="flex justify-center pt-8">
           <Button 
             size="lg"
             className="bg-[#927B6B] hover:bg-[#492309] text-white px-8 group"
@@ -140,7 +140,7 @@ export const Highlights = () => {
             <span className="font-semibold">Explore All Museums</span>
             <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   )
