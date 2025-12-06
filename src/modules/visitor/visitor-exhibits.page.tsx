@@ -185,9 +185,9 @@ export default function Visitor() {
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <Badge className="mb-3 text-sm">{featuredEvent.status || 'Featured Event'}</Badge>
                   <h1 className="text-4xl font-bold text-white mb-3">{featuredEvent.title}</h1>
-                  <p className="text-white/90 mb-6 text-lg max-w-2xl line-clamp-2">
+                  {/* <p className="text-white/90 mb-6 text-lg max-w-2xl line-clamp-2">
                     {featuredEvent.eventContent?.replace(/<[^>]*>/g, '') || 'Join us for this special event'}
-                  </p>
+                  </p> */}
                   <div className="flex flex-wrap items-center gap-6 text-white/90 text-sm mb-4">
                     <div className="flex items-center">
                       <CalendarDays className="h-4 w-4 mr-2" />
