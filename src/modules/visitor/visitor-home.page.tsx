@@ -23,17 +23,11 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import supabase from "@/lib/supabase"
+import { useQuery } from "@tanstack/react-query"
 import { useMuseums } from "../admin/museums/hooks/useMuseums"
+import useInfiniteEvents from "./hooks/useEventsForInfiniteScrolling"
 
-const featuredContent = {
-  title: "The Last Letters of Jose Rizal",
-  description: "Discover the final thoughts of a national hero in this groundbreaking exhibition.",
-  image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-  type: "Featured Exhibition",
-  date: "Feb 20 - Mar 30, 2024",
-  visitors: "2,847",
-  rating: "4.9"
-}
 
 const exhibits = [
   {
@@ -68,41 +62,6 @@ const exhibits = [
   },
 ]
 
-const events = [
-  {
-    id: 1,
-    title: "Philippine Literature Seminar",
-    description: "An engaging discussion on contemporary Filipino writers and their contributions.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Dec 15, 2024",
-    time: "2:00 PM - 5:00 PM",
-    location: "Conference Hall",
-    attendees: 85,
-    spotsLeft: 15
-  },
-  {
-    id: 2,
-    title: "Art Workshop: Traditional Painting",
-    description: "Learn traditional Filipino painting techniques from master artists.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Dec 18, 2024",
-    time: "10:00 AM - 12:00 PM",
-    location: "Workshop Studio",
-    attendees: 24,
-    spotsLeft: 6
-  },
-  {
-    id: 3,
-    title: "Historical Film Screening",
-    description: "Watch and discuss classic Filipino historical documentaries.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-An9enVSaKzjLmh6eu5zyNTYrx0nNQc.png",
-    date: "Dec 20, 2024",
-    time: "6:00 PM - 9:00 PM",
-    location: "Theater",
-    attendees: 120,
-    spotsLeft: 30
-  },
-]
 
 const visitorExperiences = [
   {
@@ -168,7 +127,45 @@ export default function Visitor() {
 
   const { data: museumsData } = useMuseums();
 
-  console.log(museumsData)
+   const {
+      data,
+    } = useInfiniteEvents({
+      pageSize: 5,
+    });
+
+    console.log(data?.pages[0]?.data)
+  
+
+    const { data: latestPosts, } = useQuery({
+      queryKey: ["posts", "latest"],
+      queryFn: async () => {
+        const { data } = await supabase
+          .from("posts_with_users")
+          .select(`
+            post_id,
+            user_uid,
+            content,
+            images,
+            created_at,
+            likes,
+            comments,
+            shares,
+            firstName,
+            lastName,
+            visitorImg
+          `)
+          .order("created_at", { ascending: false })
+          .limit(10)
+        
+        return data?.map(post => ({
+          ...post,
+          created_at: new Date(post.created_at).toLocaleString()
+        })) || []
+      }
+    })
+
+    console.log(latestPosts);
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -178,27 +175,27 @@ export default function Visitor() {
             {/* Enhanced Hero Section */}
             <section className="relative h-[60vh] overflow-hidden rounded-xl shadow-2xl">
               <img
-                src={featuredContent.image}
-                alt={featuredContent.title}
+                src={museumsData?.data?.museums[0]?.coverPhoto}
+                alt={museumsData?.data?.museums[0]?.title}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-8">
-                <Badge className="mb-3 text-sm">{featuredContent.type}</Badge>
-                <h1 className="text-4xl font-bold text-white mb-3">{featuredContent.title}</h1>
-                <p className="text-white/90 mb-6 text-lg max-w-2xl">{featuredContent.description}</p>
+                <Badge className="mb-3 text-sm">{museumsData?.data?.museums[0]?.type}</Badge>
+                <h1 className="text-4xl font-bold text-white mb-3">{museumsData?.data?.museums[0]?.title}</h1>
+                <p className="text-white/90 mb-6 text-lg max-w-2xl">{museumsData?.data?.museums[0]?.description}</p>
                 <div className="flex flex-wrap items-center gap-6 text-white/90 text-sm mb-4">
                   <div className="flex items-center">
                     <CalendarDays className="h-4 w-4 mr-2" />
-                    {featuredContent.date}
+                    {museumsData?.data?.museums[0]?.updated_at}
                   </div>
                   <div className="flex items-center">
                     <Users className="h-4 w-4 mr-2" />
-                    {featuredContent.visitors} visitors
+                    {museumsData?.data?.museums[0]?.visitors} visitors
                   </div>
                   <div className="flex items-center">
                     <Star className="h-4 w-4 mr-2 fill-yellow-400 text-yellow-400" />
-                    {featuredContent.rating} rating
+                    {museumsData?.data?.museums[0]?.rating} rating
                   </div>
                 </div>
                 <Button size="lg" className="gap-2">
@@ -216,45 +213,31 @@ export default function Visitor() {
               </TabsList>
               <TabsContent value="events" className="space-y-4 mt-6">
                 <div className="grid gap-6 md:grid-cols-2">
-                  {events.map((event) => (
-                    <Card key={event.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2">
+                  {data?.pages[0]?.data.map((event) => (
+                    <Card key={event.event_id} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2">
                       <div className="relative aspect-video">
                         <img
-                          src={event.image}
+                          src={event.coverPhoto}
                           alt={event.title}
                           className="w-full h-full object-cover"
                         />
-                        <Badge className="absolute top-3 right-3 bg-primary">
-                          {event.spotsLeft} spots left
-                        </Badge>
+                        
                       </div>
                       <CardHeader>
                         <CardTitle className="line-clamp-2">{event.title}</CardTitle>
-                        <CardDescription className="line-clamp-2">{event.description}</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center text-muted-foreground">
                             <CalendarDays className="h-4 w-4 mr-2" />
-                            {event.date}
+                            {event.eventDate}
                           </div>
                           <div className="flex items-center text-muted-foreground">
                             <Clock className="h-4 w-4 mr-2" />
-                            {event.time}
-                          </div>
-                          <div className="flex items-center text-muted-foreground">
-                            <MapPin className="h-4 w-4 mr-2" />
-                            {event.location}
-                          </div>
-                          <div className="flex items-center text-muted-foreground">
-                            <Users className="h-4 w-4 mr-2" />
-                            {event.attendees} registered
+                            {event.eventTime}
                           </div>
                         </div>
                       </CardContent>
-                      <CardFooter>
-                        <Button className="w-full">Register Now</Button>
-                      </CardFooter>
                     </Card>
                   ))}
                 </div>
@@ -324,28 +307,26 @@ export default function Visitor() {
               </CardHeader>
               <CardContent className="p-0">
                 <div className="relative h-[500px] overflow-hidden bg-black">
-                  {visitorExperiences.map((experience, index) => (
+                  {latestPosts?.map((experience, index) => (
                     <div
-                      key={experience.id}
+                      key={experience?.post_id}
                       className={`absolute inset-0 transition-all duration-500 ease-in-out ${
                         index === activeExperience ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full"
                       }`}
                     >
                       <img
-                        src={experience.image}
-                        alt={`Experience by ${experience.user.name}`}
+                        src={experience?.images[0]}
+                        alt={`Experience by ${experience}`}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
                       <div className="absolute inset-0 p-6 flex flex-col justify-end">
                         <div className="flex items-center gap-3 mb-3">
                           <Avatar className="h-10 w-10 border-2 border-white">
-                            <AvatarImage src={experience.user.avatar} />
-                            <AvatarFallback>{experience.user.name[0]}</AvatarFallback>
+                            <AvatarImage src={experience?.content} />
+                            <AvatarFallback>{experience?.content}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-semibold text-white">{experience.user.name}</p>
-                            <p className="text-xs text-white/80">{experience.date}</p>
                           </div>
                         </div>
                         <p className="text-sm text-white mb-4 leading-relaxed">{experience.content}</p>
@@ -383,7 +364,7 @@ export default function Visitor() {
                   </Button>
                 </div>
                 <div className="flex justify-center gap-2 p-3 bg-muted/50">
-                  {visitorExperiences.map((_, index) => (
+                  {latestPosts?.map((_, index) => (
                     <button
                       key={index}
                       className={`w-2 h-2 rounded-full transition-all ${
