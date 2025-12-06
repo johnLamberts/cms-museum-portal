@@ -12,9 +12,8 @@ import {
   Sparkles,
   Star,
   ThumbsUp,
-  Ticket,
   TrendingUp,
-  Users,
+  Users
 } from "lucide-react"
 import { useState } from "react"
 
@@ -198,10 +197,6 @@ export default function Visitor() {
                     {museumsData?.data?.museums[0]?.rating} rating
                   </div>
                 </div>
-                <Button size="lg" className="gap-2">
-                  <Ticket className="h-4 w-4" />
-                  Book Your Visit
-                </Button>
               </div>
             </section>
 
